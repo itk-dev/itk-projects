@@ -111,7 +111,9 @@ final class DashboardData
 
         usort($timeline, static fn (array $a, array $b): int => strcmp($a['start'], $b['start']));
 
-        $inProgress = $statusDistribution[$statusIndex[Status::Active->value]] ?? 0;
+        // "In progress" on the dashboard means funded and running, i.e. granted;
+        // applications still being written or awaiting an answer are not counted.
+        $inProgress = $statusDistribution[$statusIndex[Status::Granted->value]] ?? 0;
         $collaborationCount = 0;
         foreach ($areas as $area) {
             if (\count($titlesByAreaDept[$area['key']] ?? []) >= 2) {

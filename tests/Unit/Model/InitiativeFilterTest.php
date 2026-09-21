@@ -31,7 +31,7 @@ final class InitiativeFilterTest extends TestCase
     {
         $filter = new InitiativeFilter();
         $filter->q = 'klima';
-        $filter->status = Status::Active;
+        $filter->status = Status::Granted;
         $filter->area = (new Area())->setName('Klima og miljø');
         $filter->initiativeType = InitiativeType::Project;
         $filter->organizationalAnchoring = (new Department())->setName('Sundhed og Omsorg');
@@ -40,7 +40,7 @@ final class InitiativeFilterTest extends TestCase
         $filter->direction = 'ASC';
 
         self::assertSame('klima', $filter->q);
-        self::assertSame(Status::Active, $filter->status);
+        self::assertSame(Status::Granted, $filter->status);
         self::assertTrue($filter->endorsement);
     }
 }

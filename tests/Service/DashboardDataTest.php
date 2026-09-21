@@ -55,10 +55,10 @@ final class DashboardDataTest extends KernelTestCase
         $initiatives->method('dashboardRows')->willReturn([
             // "Shared" worked on in two departments -> a collaboration opportunity;
             // also carries budget, funding (a known and an unknown slug) and a span.
-            ['title' => 'Shared A', 'area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000, 'funding' => [Funding::MunicipalBudget->value, 'unknown'], 'timePeriodStart' => $start, 'timePeriodEnd' => $end],
-            ['title' => 'Shared B', 'area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
+            ['title' => 'Shared A', 'area' => (string) $shared->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000, 'funding' => [Funding::MunicipalBudget->value, 'unknown'], 'timePeriodStart' => $start, 'timePeriodEnd' => $end],
+            ['title' => 'Shared B', 'area' => (string) $shared->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
             // "Solo" only in one department -> skipped by collaboration().
-            ['title' => 'Solo', 'area' => (string) $solo->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
+            ['title' => 'Solo', 'area' => (string) $solo->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
             // No area/department/status -> exercises the null guards.
             ['title' => 'Loose', 'area' => null, 'status' => null, 'organizationalAnchoring' => null, 'budget' => null, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
         ]);

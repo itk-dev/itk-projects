@@ -35,7 +35,7 @@ final class InitiativeRepositoryTest extends KernelTestCase
 
         $filter = new InitiativeFilter();
         $filter->q = '100%_'; // also exercises LIKE wildcard escaping
-        $filter->status = Status::Active;
+        $filter->status = Status::Granted;
         $filter->area = $areas->findAllOrdered()[0];
         $filter->initiativeType = InitiativeType::Project;
         $filter->organizationalAnchoring = $departments->findAllOrdered()[0];

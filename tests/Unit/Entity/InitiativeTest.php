@@ -54,7 +54,7 @@ final class InitiativeTest extends TestCase
             ->setArea($area)
             ->setDescription('Beskrivelse')
             ->setInitiativeType(InitiativeType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->setStatusAdditional('Igangsat')
             ->setOrganizationalAnchoring($department)
             ->setEndorsement(false)
@@ -68,7 +68,7 @@ final class InitiativeTest extends TestCase
         self::assertSame($area, $initiative->getArea());
         self::assertSame('Beskrivelse', $initiative->getDescription());
         self::assertSame(InitiativeType::Project, $initiative->getInitiativeType());
-        self::assertSame(Status::Active, $initiative->getStatus());
+        self::assertSame(Status::Granted, $initiative->getStatus());
         self::assertSame('Igangsat', $initiative->getStatusAdditional());
         self::assertSame($department, $initiative->getOrganizationalAnchoring());
         self::assertFalse($initiative->isEndorsement());
@@ -88,7 +88,7 @@ final class InitiativeTest extends TestCase
             ->setArea((new Area())->setName('Klima og miljø'))
             ->setDescription('D')
             ->setInitiativeType(InitiativeType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->setOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
             ->setFunding([Funding::EuFunds])

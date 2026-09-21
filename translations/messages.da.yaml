@@ -391,11 +391,13 @@ flash:
 enum:
     status:
         idea: Idé
-        planned: Planlagt
-        active: Igangværende
+        opportunity: Mulighed
+        application_in_progress: Ansøgning igangværende
+        application_submitted: Ansøgning afsendt
+        granted: Bevilliget
         on_hold: Sat i bero
+        rejected: Afvist
         completed: Afsluttet
-        cancelled: Annulleret
     initiative_type:
         project: Projekt
         programme: Program

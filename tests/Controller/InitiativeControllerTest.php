@@ -16,14 +16,14 @@ final class InitiativeControllerTest extends FunctionalTestCase
     public function testIndexAppliesFiltersFromTheQueryString(): void
     {
         $this->loginAsAdmin();
-        $match = $this->createInitiative('Deeplinked initiative', Status::Active);
-        $other = $this->createInitiative('Deeplinked other initiative', Status::Cancelled);
+        $match = $this->createInitiative('Deeplinked initiative', Status::Granted);
+        $other = $this->createInitiative('Deeplinked other initiative', Status::Rejected);
 
         // Opening a shared link must narrow the list, not just fill the form.
-        $crawler = $this->client->request('GET', '/initiatives?q=Deeplinked&status=active&sort=title&direction=ASC');
+        $crawler = $this->client->request('GET', '/initiatives?q=Deeplinked&status=granted&sort=title&direction=ASC');
 
         $this->assertResponseIsSuccessful();
-        self::assertSame('active', $crawler->filter('#initiative-filters select[name="status"] option[selected]')->attr('value'));
+        self::assertSame('granted', $crawler->filter('#initiative-filters select[name="status"] option[selected]')->attr('value'));
         self::assertSame('Deeplinked', $crawler->filter('#initiative-filters input[name="q"]')->attr('value'));
 
         $titles = $crawler->filter('#initiative-results .cell-title')->each(static fn ($node): string => $node->text());

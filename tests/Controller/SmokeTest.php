@@ -88,7 +88,7 @@ final class SmokeTest extends WebTestCase
     {
         yield 'dashboard' => ['/'];
         yield 'initiatives' => ['/initiatives'];
-        yield 'initiatives filtered' => ['/initiatives?status=active&endorsement=1&sort=title&direction=ASC'];
+        yield 'initiatives filtered' => ['/initiatives?status=granted&endorsement=1&sort=title&direction=ASC'];
         yield 'initiatives freetext search' => ['/initiatives?q=teknik'];
         yield 'initiative new' => ['/initiatives/new'];
         yield 'csv export' => ['/initiatives/export'];

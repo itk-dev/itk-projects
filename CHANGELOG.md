@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-31](https://github.com/itk-dev/itk-projects/pull/31)
+  Replace the initiative statuses with a set that follows a funding
+  application: Idé, Mulighed, Ansøgning igangværende, Ansøgning afsendt,
+  Bevilliget, Sat i bero, Afvist and Afsluttet.
+
 ## [0.3.0] - 2026-08-24
 
 * [PR-27](https://github.com/itk-dev/itk-projects/pull/27)
