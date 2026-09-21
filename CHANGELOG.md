@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-29](https://github.com/itk-dev/itk-projects/pull/29)
+  Made the department field on the contact entity relate to the department
+  entity.
+
 ## [0.3.0] - 2026-08-24
 
 * [PR-27](https://github.com/itk-dev/itk-projects/pull/27)
