@@ -262,6 +262,7 @@ contact:
     phone_help: Telefonnummer, hvis det kendes.
     department: Afdeling
     department_help: Afdeling eller enhed, personen hører til.
+    department_placeholder: Vælg afdeling
     index:
         title: Kontaktpersoner
         subtitle: Personer der er tilknyttet initiativer.
