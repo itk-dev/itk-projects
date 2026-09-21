@@ -20,7 +20,7 @@ use ITKDev\EntityBundle\Entity\Trait\TimestampableTrait;
  * timestamps and created-by/modified-by blame, both populated on flush by the
  * bundle's listeners.
  *
- * The Vich-backed media entities ({@see InitiativeImage}, {@see InitiativeAttachment})
+ * The Vich-backed media entities ({@see ProjectImage}, {@see ProjectAttachment})
  * extend this base too; they reuse the timestampable "updatedAt" column as the
  * field Vich touches on upload rather than declaring their own.
  */

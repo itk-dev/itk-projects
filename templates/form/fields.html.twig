@@ -2,7 +2,7 @@
 
 {% block form_label_content %}
     {%- if completion_field|default(false) -%}
-        <span class="completion-star" aria-hidden="true" title="{{ 'initiative.completion_field_hint'|trans }}">★</span>
+        <span class="completion-star" aria-hidden="true" title="{{ 'project.completion_field_hint'|trans }}">★</span>
     {%- endif -%}
     {{- parent() -}}
 {% endblock %}

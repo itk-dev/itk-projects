@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ project.title }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% macro term_list(terms) %}
+    {% if terms|length > 0 %}
+        <div class="tag-list">
+            {% for term in terms %}<span class="tag">{{ term.name }}</span>{% endfor %}
+        </div>
+    {% else %}<span class="muted">—</span>{% endif %}
+{% endmacro %}
+
+{% block body %}
+    {% import _self as h %}
+    <div class="page">
+        <twig:Page:Header :title="project.title">
+            <twig:block name="breadcrumb">
+                <div class="breadcrumb"><a href="{{ path('app_project_index') }}">{{ 'nav.projects'|trans }}</a></div>
+            </twig:block>
+            <twig:block name="subtitle">
+                {% if project.status %}<span class="badge badge--status-{{ project.status.value }}">{{ project.status.labelKey|trans }}</span>{% endif %}
+            </twig:block>
+            <a href="{{ path('app_project_edit', {id: project.id}) }}" class="btn btn--primary">{{ 'action.edit'|trans }}</a>
+        </twig:Page:Header>
+
+        <div class="detail-grid">
+            <div class="stack">
+                <div class="card">
+                    <twig:Card:Header :title="'project.show.details'|trans" />
+                    <div class="card__body">
+                        {% if project.description %}<p class="prose">{{ project.description }}</p>{% else %}<p class="muted">—</p>{% endif %}
+                        {% if project.topic %}
+                            <h3 class="detail-subhead">{{ 'project.topic'|trans }}</h3>
+                            <p class="prose">{{ project.topic }}</p>
+                        {% endif %}
+                        {% if project.statusAdditional %}
+                            <h3 class="detail-subhead">{{ 'project.status_additional'|trans }}</h3>
+                            <p class="prose">{{ project.statusAdditional }}</p>
+                        {% endif %}
+                        {% if project.links|length > 0 %}
+                            <h3 class="detail-subhead">{{ 'project.links'|trans }}</h3>
+                            <ul class="link-list">
+                                {% for link in project.links %}<li>{% if link starts with 'http://' or link starts with 'https://' %}<a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a>{% else %}{{ link }}{% endif %}</li>{% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <twig:Card:Header :title="'project.show.contacts'|trans" />
+                    <div class="card__body">
+                        {% if project.contacts|length > 0 %}
+                            {% for contact in project.contacts %}
+                                <div class="contact-card">
+                                    <div class="contact-card__name">{{ contact.name }}</div>
+                                    <div class="contact-card__meta">
+                                        {%- if contact.department %}{{ contact.department }}{% endif -%}
+                                        {%- if contact.email %} · <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif -%}
+                                        {%- if contact.phone %} · {{ contact.phone }}{% endif -%}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="muted">{{ 'project.show.no_contacts'|trans }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card">
+                    <twig:Card:Header :title="'project.show.partners'|trans" />
+                    <div class="card__body">
+                        {% if project.partners|length > 0 %}
+                            {% for partner in project.partners %}
+                                <div class="contact-card">
+                                    <div class="contact-card__name">{{ partner.name }}</div>
+                                    {% if partner.description %}<div class="contact-card__meta">{{ partner.description }}</div>{% endif %}
+                                    {% if partner.website %}
+                                        <div class="contact-card__meta"><a href="{{ partner.website }}" target="_blank" rel="noopener">{{ partner.website }}</a></div>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="muted">{{ 'project.show.no_partners'|trans }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if project.images|length > 0 or project.attachments|length > 0 %}
+                    <div class="card">
+                        <twig:Card:Header :title="'project.show.media'|trans" />
+                        <div class="card__body">
+                            {% if project.images|length > 0 %}
+                                <div class="image-grid">
+                                    {% for image in project.images %}
+                                        <a href="{{ path('app_media_image', {id: image.id}) }}" class="image-thumb"
+                                           data-controller="lightbox" data-action="click->lightbox#open"
+                                           data-lightbox-close-label-value="{{ 'common.close'|trans }}">
+                                            <img src="{{ path('app_media_image', {id: image.id}) }}" alt="{{ image.alt }}">
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            {% if project.attachments|length > 0 %}
+                                <ul class="file-list">
+                                    {% for attachment in project.attachments %}
+                                        <li>
+                                            <a href="{{ path('app_media_attachment', {id: attachment.id}) }}">{{ attachment.originalName ?: 'file' }}</a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <twig:Card:Header :title="'project.show.classification'|trans" />
+                <div class="card__body">
+                    <dl class="detail-list">
+                        <dt>{{ 'project.area'|trans }}</dt>
+                        <dd>{{ project.area ? project.area.name : '—' }}</dd>
+
+                        <dt>{{ 'project.project_type'|trans }}</dt>
+                        <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>
+
+                        <dt>{{ 'project.organizational_anchoring'|trans }}</dt>
+                        <dd>{{ project.organizationalAnchoring ? project.organizationalAnchoring.name : '—' }}</dd>
+
+                        <dt>{{ 'project.endorsement'|trans }}</dt>
+                        <dd>{{ project.endorsement ? 'common.yes'|trans : 'common.no'|trans }}{% if project.endorsementAuthor %} · {{ project.endorsementAuthor.labelKey|trans }}{% endif %}</dd>
+
+                        <dt>{{ 'project.budget'|trans }}</dt>
+                        <dd>{{ project.budget is not null ? project.budget|number_format(0, ',', '.') ~ ' kr.' : '—' }}</dd>
+
+                        <dt>{{ 'project.funding'|trans }}</dt>
+                        <dd>
+                            {% if project.funding|length > 0 %}
+                                {{ project.funding|map(f => f.labelKey|trans)|join(', ') }}
+                            {% else %}—{% endif %}
+                        </dd>
+
+                        <dt>{{ 'project.time_period'|trans }}</dt>
+                        <dd>
+                            {% if project.timePeriodStart %}
+                                {{ project.timePeriodStart|date('d.m.Y') }}{% if project.timePeriodEnd %} – {{ project.timePeriodEnd|date('d.m.Y') }}{% endif %}
+                            {% else %}—{% endif %}
+                        </dd>
+
+                        <dt>{{ 'project.strategies'|trans }}</dt>
+                        <dd>{{ h.term_list(project.strategies) }}</dd>
+
+                        <dt>{{ 'project.stakeholders'|trans }}</dt>
+                        <dd>{{ h.term_list(project.stakeholders) }}</dd>
+
+                        <dt>{{ 'project.tags'|trans }}</dt>
+                        <dd>{{ h.term_list(project.tags) }}</dd>
+
+                        <dt>{{ 'project.author'|trans }}</dt>
+                        <dd>{{ project.createdBy ? project.createdBy.name : '—' }}</dd>
+
+                        <dt>{{ 'common.created'|trans }}</dt>
+                        <dd>{{ project.createdAt|date('d.m.Y H:i') }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

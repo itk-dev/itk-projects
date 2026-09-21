@@ -5,7 +5,7 @@
 {% block body %}
     <div class="page" data-controller="dashboard-live dashboard-viz" data-dashboard-viz-empty-value="{{ 'dashboard.themes_heatmap_empty'|trans }}">
         <twig:Page:Header :title="'dashboard.title'|trans">
-            <a href="{{ path('app_initiative_new') }}" class="btn btn--primary">{{ 'action.new_initiative'|trans }}</a>
+            <a href="{{ path('app_project_new') }}" class="btn btn--primary">{{ 'action.new_project'|trans }}</a>
         </twig:Page:Header>
 
         {{ turbo_stream_from('activities') }}
@@ -20,18 +20,18 @@
             <div class="card span-6">
                 <twig:Card:Header :title="'dashboard.unfinished.title'|trans" :sub="'dashboard.unfinished.sub'|trans" />
                 <div class="feed-scroll">
-                    {% if unfinishedInitiatives is empty and incompleteContacts is empty %}
+                    {% if unfinishedProjects is empty and incompleteContacts is empty %}
                         <div class="todo-empty">
                             <div class="todo-empty__title">{{ 'dashboard.unfinished.empty_title'|trans }}</div>
                         </div>
                     {% else %}
-                        {% for initiative in unfinishedInitiatives %}
-                            <a class="recent-item" href="{{ path('app_initiative_edit', {id: initiative.id}) }}">
+                        {% for project in unfinishedProjects %}
+                            <a class="recent-item" href="{{ path('app_project_edit', {id: project.id}) }}">
                                 <span class="recent-item__body">
-                                    <span class="recent-item__title">{{ initiative.title }}</span>
-                                    <span class="recent-item__meta">{{ 'dashboard.unfinished.initiative'|trans }}</span>
+                                    <span class="recent-item__title">{{ project.title }}</span>
+                                    <span class="recent-item__meta">{{ 'dashboard.unfinished.project'|trans }}</span>
                                 </span>
-                                <span class="badge">{{ 'dashboard.unfinished.percent_done'|trans({'%percent%': initiative.completionPercentage}) }}</span>
+                                <span class="badge">{{ 'dashboard.unfinished.percent_done'|trans({'%percent%': project.completionPercentage}) }}</span>
                                 <span class="recent-item__cta">{{ 'dashboard.unfinished.cta'|trans }} →</span>
                             </a>
                         {% endfor %}
@@ -58,16 +58,16 @@
                                 <div class="todo-empty__title">{{ 'activity.empty'|trans }}</div>
                             </div>
                         {% else %}
-                            {% for initiative in recent %}
-                                {% set updated = initiative.wasUpdatedAfterCreation %}
-                                {% set actor = updated ? initiative.modifiedBy : initiative.createdBy %}
+                            {% for project in recent %}
+                                {% set updated = project.wasUpdatedAfterCreation %}
+                                {% set actor = updated ? project.modifiedBy : project.createdBy %}
                                 {{ include('activity/_item.html.twig', {
-                                    id: initiative.id,
+                                    id: project.id,
                                     action: updated ? 'updated' : 'created',
-                                    title: initiative.title,
-                                    url: path('app_initiative_show', {id: initiative.id}),
+                                    title: project.title,
+                                    url: path('app_project_show', {id: project.id}),
                                     actor: actor ? actor.name : null,
-                                    at: updated ? initiative.updatedAt : initiative.createdAt,
+                                    at: updated ? project.updatedAt : project.createdAt,
                                 }) }}
                             {% endfor %}
                         {% endif %}

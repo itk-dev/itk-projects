@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Initiative;
-use App\Entity\InitiativeImage;
+use App\Entity\Project;
+use App\Entity\ProjectImage;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
 
-final class InitiativeImageTest extends TestCase
+final class ProjectImageTest extends TestCase
 {
     public function testAccessors(): void
     {
-        $initiative = new Initiative();
-        $image = (new InitiativeImage())
-            ->setInitiative($initiative)
+        $project = new Project();
+        $image = (new ProjectImage())
+            ->setProject($project)
             ->setImageName('stored.png')
             ->setOriginalName('sample.png')
             ->setMimeType('image/png')
             ->setSize(1234)
             ->setAlt('A sample');
 
-        self::assertSame($initiative, $image->getInitiative());
+        self::assertSame($project, $image->getProject());
         self::assertSame('stored.png', $image->getImageName());
         self::assertSame('sample.png', $image->getOriginalName());
         self::assertSame('image/png', $image->getMimeType());
@@ -32,7 +32,7 @@ final class InitiativeImageTest extends TestCase
 
     public function testSettingAFileMarksItDirty(): void
     {
-        $image = new InitiativeImage();
+        $image = new ProjectImage();
         self::assertNull($image->getImageFile());
         self::assertFalse($image->hasFile());
 
@@ -46,7 +46,7 @@ final class InitiativeImageTest extends TestCase
 
     public function testHasFileIsTrueWhenOnlyAStoredNameIsPresent(): void
     {
-        $image = (new InitiativeImage())->setImageName('stored.png');
+        $image = (new ProjectImage())->setImageName('stored.png');
 
         self::assertTrue($image->hasFile());
     }

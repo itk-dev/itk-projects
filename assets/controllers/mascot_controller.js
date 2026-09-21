@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus";
 /*
  * A friendly star mascot in the bottom-right corner. It greets the user, then
  * periodically pops a speech bubble cheering them on to start or finish an
- * initiative. Rarely it invites the user to a game of catch: click it and it
+ * project. Rarely it invites the user to a game of catch: click it and it
  * darts away from the pointer; catch it and it turns the tables and chases the
  * pointer until it tags it back. Messages arrive already translated.
  */
@@ -258,7 +258,7 @@ export default class extends Controller {
             return;
         }
 
-        // Now and then, nudge the user to finish their least-complete initiative,
+        // Now and then, nudge the user to finish their least-complete project,
         // picking one of the finish lines at random for variety.
         const finishTexts = this.finishTextsValue;
         if (

@@ -22,15 +22,15 @@ class PartnerController extends AbstractController
     #[Route('', name: 'admin_partners', methods: ['GET'])]
     public function index(PartnerRepository $partners): Response
     {
-        $usage = $partners->findInitiativeUsage();
+        $usage = $partners->findProjectUsage();
 
-        // Pair each partner with its initiatives here rather than looking the usage
+        // Pair each partner with its projects here rather than looking the usage
         // up per row, which would mean keying a Twig array by a Ulid object.
         $rows = [];
         foreach ($partners->findAllOrdered() as $partner) {
             $rows[] = [
                 'partner' => $partner,
-                'initiatives' => $usage[(string) $partner->getId()] ?? [],
+                'projects' => $usage[(string) $partner->getId()] ?? [],
             ];
         }
 
@@ -71,11 +71,11 @@ class PartnerController extends AbstractController
         return $this->render('admin/partners/edit.html.twig', [
             'form' => $form,
             'partner' => $partner,
-            'initiatives' => $partners->findInitiativesUsing($partner),
+            'projects' => $partners->findProjectsUsing($partner),
         ]);
     }
 
-    // Also detaches the partner from every initiative: the join table is cleared by
+    // Also detaches the partner from every project: the join table is cleared by
     // its ON DELETE CASCADE, which Doctrine never sees (unidirectional association).
     #[Route('/{id}/delete', name: 'admin_partner_delete', requirements: ['id' => Requirement::ULID], methods: ['POST'])]
     public function delete(Request $request, Partner $partner, EntityManagerInterface $entityManager): Response

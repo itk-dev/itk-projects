@@ -327,7 +327,7 @@ export default class extends Controller {
         el.innerHTML = "";
         if (!this.viz.collaboration.length) {
             el.innerHTML =
-                '<p class="collab-empty">Ingen tværgående områder endnu — kategorisér initiativer for at finde sammenfald.</p>';
+                '<p class="collab-empty">Ingen tværgående områder endnu — kategorisér projekter for at finde sammenfald.</p>';
             return;
         }
         // Hold the entrance paused until the panel scrolls into view; once seen,
@@ -349,7 +349,7 @@ export default class extends Controller {
                     <span class="opp__theme">${this.esc(o.theme)}</span>
                     <span class="opp__rank ${o.rank === "high" ? "rank-high" : "rank-med"}">${o.rank === "high" ? "Højt potentiale" : "Muligt"}</span>
                 </div>
-                <div class="opp__meta">${o.departmentCount} afdelinger · ${o.initiativeCount} initiativer</div>
+                <div class="opp__meta">${o.departmentCount} afdelinger · ${o.projectCount} projekter</div>
                 <div class="opp__chips">${chips}</div>
                 <div class="meter"><i style="width:${this.reduce ? o.strength : 0}%" data-w="${o.strength}"></i></div>`;
             el.appendChild(div);

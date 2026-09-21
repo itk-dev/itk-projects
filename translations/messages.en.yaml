@@ -4,11 +4,11 @@ app:
 mascot:
     label: Your creative buddy
     close: Close
-    cta: Create a new initiative
+    cta: Create a new project
     farewell: "See you around — I'm here whenever you need me! 👋"
     welcome: "Yay, I'm back! Let's make something together. 🌟"
     intro: "Hi, I'm Glimt — your friend in the corner. Shall we create something?"
-    praise: "{1}You've created one initiative — nice start! 🌟|]1,Inf[You've created %count% initiatives — great work! 🌟"
+    praise: "{1}You've created one project — nice start! 🌟|]1,Inf[You've created %count% projects — great work! 🌟"
     finish:
         almost: "“%title%” is %percent%% done — want to finish it off?"
         touches: "“%title%” is %percent%% there and just needs its final touches. ✏️"
@@ -24,9 +24,9 @@ mascot:
     msg:
         idea: "Got a fresh idea? Let’s give it a home. ✨"
         roll: "You’re on a roll — what’s next?"
-        bold: "Every great initiative starts with one bold line."
+        bold: "Every great project starts with one bold line."
         creativity: "Your creativity makes all the difference. 🌟"
-        another: "Another initiative? Yes please!"
+        another: "Another project? Yes please!"
         draft: "Don’t let that draft gather dust — wrap it up."
         future: "Look at you, shaping the future."
         spark: "Every big change needs a first spark — got one? ⚡"
@@ -55,9 +55,9 @@ tour:
     skip: Skip
     done: I'm ready
     steps:
-        intro: "This is the Project database — where we gather the departments' initiatives and projects in one place, so we can see what's happening across them."
+        intro: "This is the Project database — where we gather the departments' projects in one place, so we can see what's happening across them."
         dashboard: "The overview shows key figures, status and any opportunities for collaboration across departments."
-        create: "Browse every initiative from the Initiativer menu — or create a new one right away with the Opret button."
+        create: "Browse every project from the Projects menu — or create a new one right away with the Opret button."
         admin: "Inside this menu you'll find Administration, where you can create, view and edit departments, areas, partners and contacts."
         outro: "You're all set! I'm always right here in the corner if you need a tip. 🌟"
 
@@ -81,7 +81,7 @@ activity:
 
 nav:
     dashboard: Overview
-    initiatives: Initiatives
+    projects: Projects
     contacts: Contacts
     partners: Partners
     departments: Departments
@@ -97,7 +97,7 @@ nav:
 
 action:
     new: New
-    new_initiative: Create a new initiative
+    new_project: Create a new project
     edit: Edit
     delete: Delete
     save: Save
@@ -145,74 +145,74 @@ filter:
 
 dashboard:
     title: Overview
-    total: Total initiatives
+    total: Total projects
     total_hint: registered in total
     in_progress: In progress
     in_progress_hint: active right now
     departments_involved: Departments involved
-    departments_involved_hint: with at least one initiative
+    departments_involved_hint: with at least one project
     collaboration_count: Possible collaborations
     collaboration_count_hint: areas across departments
     by_status: By status
-    by_status_sub: All initiatives grouped by their current status.
+    by_status_sub: All projects grouped by their current status.
     recent: Recently created
     no_status: No status
-    empty: No initiatives have been created yet.
+    empty: No projects have been created yet.
     themes_heatmap: Areas across departments
-    themes_heatmap_sub: Number of initiatives per area in each department. Darker = more; marked areas span at least three departments.
+    themes_heatmap_sub: Number of projects per area in each department. Darker = more; marked areas span at least three departments.
     themes_heatmap_empty: Add both departments and areas to see this chart.
     collaboration: Possible collaboration
-    collaboration_sub: Initiatives in different departments sharing an area.
+    collaboration_sub: Projects in different departments sharing an area.
     status_by_dept: Status by department
-    status_by_dept_sub: Initiative statuses broken down by department.
+    status_by_dept_sub: Project statuses broken down by department.
     funding_sources: Funding sources
-    funding_sources_sub: Number of initiatives per funding source.
+    funding_sources_sub: Number of projects per funding source.
     budget_by_dept: Budget by department
-    budget_by_dept_sub: Total budget of the initiatives in each department.
+    budget_by_dept_sub: Total budget of the projects in each department.
     reach: Areas by department reach
     reach_sub: How many departments each area appears in.
     timeline: Timeline
-    timeline_sub: Each initiative's time period on a timeline.
+    timeline_sub: Each project's time period on a timeline.
     unfinished:
         title: Your work
-        sub: Your initiatives and contacts that are still missing details.
-        initiative: Initiative
+        sub: Your projects and contacts that are still missing details.
+        project: Project
         contact: Contact
         contact_badge: Missing details
         percent_done: "%percent% % filled in"
         cta: Finish
         empty_title: You're all caught up
 
-initiative:
+project:
     title: Title
-    title_help: A short, descriptive name for the initiative.
+    title_help: A short, descriptive name for the project.
     topic: Topic
-    topic_help: The wider programme this initiative is part of.
+    topic_help: The wider programme this project is part of.
     area: Area
-    area_help: The thematic area the initiative belongs to.
+    area_help: The thematic area the project belongs to.
     description: Short description
     description_help: A brief summary of the purpose and content.
     strategies: Strategies and plans
-    initiative_type: Type of initiative
-    initiative_type_help: The nature of the initiative, e.g. project or operation.
+    project_type: Type of project
+    project_type_help: The nature of the project, e.g. project or operation.
     status: Status
-    status_help: How far along the initiative is.
+    status_help: How far along the project is.
     status_additional: Status – additional text
     status_additional_help: Add detail to the status if needed.
     organizational_anchoring: Department
-    organizational_anchoring_help: The department responsible for the initiative.
-    endorsement: Has the initiative been endorsed
+    organizational_anchoring_help: The department responsible for the project.
+    endorsement: Has the project been endorsed
     endorsement_author: Where it was endorsed
-    endorsement_author_help: Where the initiative was endorsed.
+    endorsement_author_help: Where the project was endorsed.
     budget: Budget (DKK)
     budget_help: Total budget in whole kroner.
     funding: Funding sources
     stakeholders: Stakeholders and partners
     tags: Tags
     time_period_start: Time period – start
-    time_period_start_help: When the initiative starts.
+    time_period_start_help: When the project starts.
     time_period_end: Time period – end
-    time_period_end_help: When the initiative is expected to end.
+    time_period_end_help: When the project is expected to end.
     time_period: Time period
     links: Relevant links
     contacts: Contacts
@@ -227,12 +227,12 @@ initiative:
     attachment_file: File
     attachment_invalid_type: "The file type is not allowed (allowed: pdf, doc, docx, xls, xlsx)."
     index:
-        title: Initiatives
-        subtitle: Search, filter and create initiatives.
+        title: Projects
+        subtitle: Search, filter and create projects.
     new:
-        title: New initiative
+        title: New project
     edit:
-        title: Edit initiative
+        title: Edit project
     show:
         details: Details
         contacts: Contacts
@@ -242,8 +242,8 @@ initiative:
         no_contacts: No contacts attached.
         no_partners: No partners attached.
     empty:
-        title: No initiatives found
-        hint: Try adjusting your filters, or create a new initiative.
+        title: No projects found
+        hint: Try adjusting your filters, or create a new project.
     section:
         basics: Basics
         classification: Classification
@@ -264,18 +264,18 @@ contact:
     department_help: The department or unit the person belongs to.
     index:
         title: Contacts
-        subtitle: People attached to initiatives.
+        subtitle: People attached to projects.
     new:
         title: New contact
     edit:
         title: Edit contact
     empty:
         title: No contacts yet
-        hint: Create a contact, or add one directly on an initiative.
+        hint: Create a contact, or add one directly on a project.
 
 partner:
     name: Name
-    name_help: The partner's name as shown on initiatives.
+    name_help: The partner's name as shown on projects.
     name_duplicate: A partner with this name already exists.
     name_comma: The name cannot contain a comma.
     description: Description
@@ -284,52 +284,52 @@ partner:
     website_help: Link to the partner's website, if any.
     usage: Used in
     usage_none: Not in use
-    usage_count: "{1}1 initiative|]1,Inf[%count% initiatives"
+    usage_count: "{1}1 project|]1,Inf[%count% projects"
     delete:
-        in_use: "{1}This partner is attached to one initiative:|]1,Inf[This partner is attached to %count% initiatives:"
-        unused: This partner is not attached to any initiatives.
-        consequence: Deleting removes the partner from the initiatives above.
+        in_use: "{1}This partner is attached to one project:|]1,Inf[This partner is attached to %count% projects:"
+        unused: This partner is not attached to any projects.
+        consequence: Deleting removes the partner from the projects above.
         confirm: Delete anyway
     index:
         title: Partners
-        subtitle: Partners that can be attached to initiatives.
+        subtitle: Partners that can be attached to projects.
     new:
         title: New partner
     edit:
         title: Edit partner
     empty:
         title: No partners yet
-        hint: Create a partner, or add one directly on an initiative.
+        hint: Create a partner, or add one directly on a project.
 
 department:
     name: Name
-    name_help: The department name as shown on initiatives.
+    name_help: The department name as shown on projects.
     name_duplicate: A department with this name already exists.
     index:
         title: Departments
-        subtitle: Organisational anchoring that can be chosen on initiatives.
+        subtitle: Organisational anchoring that can be chosen on projects.
     new:
         title: New department
     edit:
         title: Edit department
     empty:
         title: No departments yet
-        hint: Create a department so it can be chosen on initiatives.
+        hint: Create a department so it can be chosen on projects.
 
 area:
     name: Name
-    name_help: The area name as shown on initiatives.
+    name_help: The area name as shown on projects.
     name_duplicate: An area with this name already exists.
     index:
         title: Areas
-        subtitle: Thematic area that can be chosen on initiatives.
+        subtitle: Thematic area that can be chosen on projects.
     new:
         title: New area
     edit:
         title: Edit area
     empty:
         title: No areas yet
-        hint: Create an area so it can be chosen on initiatives.
+        hint: Create an area so it can be chosen on projects.
 
 user:
     email: Email
@@ -362,10 +362,10 @@ login:
     error: Invalid email or password.
 
 flash:
-    initiative:
-        created: The initiative was created.
-        updated: The initiative was updated.
-        deleted: The initiative was deleted.
+    project:
+        created: The project was created.
+        updated: The project was updated.
+        deleted: The project was deleted.
     contact:
         created: The contact was created.
         updated: The contact was updated.
@@ -396,7 +396,7 @@ enum:
         on_hold: On hold
         completed: Completed
         cancelled: Cancelled
-    initiative_type:
+    project_type:
         project: Project
         programme: Programme
         policy: Policy

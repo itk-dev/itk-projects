@@ -27,11 +27,11 @@
                             <tr>
                                 <td class="cell-title">{{ partner.name }}</td>
                                 <td>{% if partner.website %}<a href="{{ partner.website }}" target="_blank" rel="noopener">{{ partner.website }}</a>{% else %}—{% endif %}</td>
-                                <td>{% if row.initiatives is empty %}<span class="muted">{{ 'partner.usage_none'|trans }}</span>{% else %}{{ 'partner.usage_count'|trans({'%count%': row.initiatives|length}) }}{% endif %}</td>
+                                <td>{% if row.projects is empty %}<span class="muted">{{ 'partner.usage_none'|trans }}</span>{% else %}{{ 'partner.usage_count'|trans({'%count%': row.projects|length}) }}{% endif %}</td>
                                 <td>
                                     <div class="cell-actions">
                                         <a href="{{ path('admin_partner_edit', {id: partner.id}) }}" class="btn btn--ghost btn--sm">{{ 'action.edit'|trans }}</a>
-                                        {{ include('admin/partners/_delete.html.twig', {partner: partner, initiatives: row.initiatives, small: true}) }}
+                                        {{ include('admin/partners/_delete.html.twig', {partner: partner, projects: row.projects, small: true}) }}
                                     </div>
                                 </td>
                             </tr>

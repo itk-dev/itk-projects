@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Service;
 
-use App\Model\InitiativeFilter;
-use App\Repository\InitiativeRepository;
+use App\Model\ProjectFilter;
+use App\Repository\ProjectRepository;
 use App\Service\Paginator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class PaginatorTest extends KernelTestCase
 {
     private Paginator $paginator;
-    private InitiativeRepository $initiatives;
+    private ProjectRepository $projects;
 
     protected function setUp(): void
     {
@@ -22,14 +22,14 @@ final class PaginatorTest extends KernelTestCase
         \assert($paginator instanceof Paginator);
         $this->paginator = $paginator;
 
-        $initiatives = static::getContainer()->get(InitiativeRepository::class);
-        \assert($initiatives instanceof InitiativeRepository);
-        $this->initiatives = $initiatives;
+        $projects = static::getContainer()->get(ProjectRepository::class);
+        \assert($projects instanceof ProjectRepository);
+        $this->projects = $projects;
     }
 
     public function testClampsPageBeyondTheLastPage(): void
     {
-        $result = $this->paginator->paginate($this->initiatives->search(new InitiativeFilter()), 999, 5);
+        $result = $this->paginator->paginate($this->projects->search(new ProjectFilter()), 999, 5);
 
         self::assertGreaterThan(0, $result->total);
         self::assertSame($result->pages, $result->page, 'A page beyond the range is clamped to the last page.');
@@ -39,7 +39,7 @@ final class PaginatorTest extends KernelTestCase
 
     public function testClampsPageBelowOne(): void
     {
-        $result = $this->paginator->paginate($this->initiatives->search(new InitiativeFilter()), 0, 5);
+        $result = $this->paginator->paginate($this->projects->search(new ProjectFilter()), 0, 5);
 
         self::assertSame(1, $result->page);
         self::assertSame(5, $result->perPage);

@@ -8,8 +8,8 @@ use App\Entity\User;
 use App\Repository\AreaRepository;
 use App\Repository\ContactRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\InitiativeRepository;
 use App\Repository\PartnerRepository;
+use App\Repository\ProjectRepository;
 use App\Repository\TermRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,10 +47,10 @@ abstract class FunctionalTestCase extends WebTestCase
         return $repository;
     }
 
-    protected function initiatives(): InitiativeRepository
+    protected function projects(): ProjectRepository
     {
-        $repository = static::getContainer()->get(InitiativeRepository::class);
-        \assert($repository instanceof InitiativeRepository);
+        $repository = static::getContainer()->get(ProjectRepository::class);
+        \assert($repository instanceof ProjectRepository);
 
         return $repository;
     }

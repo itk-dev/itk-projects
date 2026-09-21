@@ -6,27 +6,27 @@ namespace App\Entity;
 
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\InitiativeType;
+use App\Enum\ProjectType;
 use App\Enum\Status;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: InitiativeRepository::class)]
-class Initiative extends AbstractEntity
+#[ORM\Entity(repositoryClass: ProjectRepository::class)]
+class Project extends AbstractEntity
 {
     /**
      * Fields that count toward {@see getCompletionPercentage()} and the client-side
-     * progress bar. Limited to the initiative's own columns so list rendering stays
+     * progress bar. Limited to the project's own columns so list rendering stays
      * query-free; the booleans and the relational lists are intentionally excluded.
      *
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'area', 'description', 'initiativeType', 'status',
+        'title', 'area', 'description', 'projectType', 'status',
         'organizationalAnchoring',
         'budget', 'funding', 'timePeriodStart', 'timePeriodEnd',
     ];
@@ -36,7 +36,7 @@ class Initiative extends AbstractEntity
     private ?string $title = null;
 
     /**
-     * Which wider programme the initiative is a part of — the title names this
+     * Which wider programme the project is a part of — the title names this
      * project, the topic places it ("DS4SSCC" → "Digital Europe Blueprint for
      * Data Space for smart and sustainable cities and communities").
      */
@@ -52,11 +52,11 @@ class Initiative extends AbstractEntity
 
     /** @var Collection<int, Term> */
     #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'initiative_strategy')]
+    #[ORM\JoinTable(name: 'project_strategy')]
     private Collection $strategies;
 
-    #[ORM\Column(length: 32, nullable: true, enumType: InitiativeType::class)]
-    private ?InitiativeType $initiativeType = null;
+    #[ORM\Column(length: 32, nullable: true, enumType: ProjectType::class)]
+    private ?ProjectType $projectType = null;
 
     #[ORM\Column(length: 32, nullable: true, enumType: Status::class)]
     private ?Status $status = null;
@@ -76,7 +76,7 @@ class Initiative extends AbstractEntity
 
     /** @var Collection<int, Contact> */
     #[ORM\ManyToMany(targetEntity: Contact::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'initiative_contact')]
+    #[ORM\JoinTable(name: 'project_contact')]
     private Collection $contacts;
 
     /**
@@ -86,20 +86,20 @@ class Initiative extends AbstractEntity
      * @var Collection<int, Partner>
      */
     #[ORM\ManyToMany(targetEntity: Partner::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'initiative_partner')]
+    #[ORM\JoinTable(name: 'project_partner')]
     private Collection $partners;
 
-    /** @var Collection<int, InitiativeImage> */
-    #[ORM\OneToMany(targetEntity: InitiativeImage::class, mappedBy: 'initiative', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    /** @var Collection<int, ProjectImage> */
+    #[ORM\OneToMany(targetEntity: ProjectImage::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $images;
 
-    /** @var Collection<int, InitiativeAttachment> */
-    #[ORM\OneToMany(targetEntity: InitiativeAttachment::class, mappedBy: 'initiative', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    /** @var Collection<int, ProjectAttachment> */
+    #[ORM\OneToMany(targetEntity: ProjectAttachment::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $attachments;
 
     /** @var Collection<int, Term> */
     #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'initiative_stakeholder')]
+    #[ORM\JoinTable(name: 'project_stakeholder')]
     private Collection $stakeholders;
 
     #[Assert\PositiveOrZero]
@@ -116,7 +116,7 @@ class Initiative extends AbstractEntity
 
     /** @var Collection<int, Term> */
     #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'initiative_tag')]
+    #[ORM\JoinTable(name: 'project_tag')]
     private Collection $tags;
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
@@ -222,14 +222,14 @@ class Initiative extends AbstractEntity
         return $this;
     }
 
-    public function getInitiativeType(): ?InitiativeType
+    public function getProjectType(): ?ProjectType
     {
-        return $this->initiativeType;
+        return $this->projectType;
     }
 
-    public function setInitiativeType(?InitiativeType $initiativeType): static
+    public function setProjectType(?ProjectType $projectType): static
     {
-        $this->initiativeType = $initiativeType;
+        $this->projectType = $projectType;
 
         return $this;
     }
@@ -338,46 +338,46 @@ class Initiative extends AbstractEntity
         return $this;
     }
 
-    /** @return Collection<int, InitiativeImage> */
+    /** @return Collection<int, ProjectImage> */
     public function getImages(): Collection
     {
         return $this->images;
     }
 
-    public function addImage(InitiativeImage $image): static
+    public function addImage(ProjectImage $image): static
     {
         if (!$this->images->contains($image)) {
             $this->images->add($image);
-            $image->setInitiative($this);
+            $image->setProject($this);
         }
 
         return $this;
     }
 
-    public function removeImage(InitiativeImage $image): static
+    public function removeImage(ProjectImage $image): static
     {
         $this->images->removeElement($image);
 
         return $this;
     }
 
-    /** @return Collection<int, InitiativeAttachment> */
+    /** @return Collection<int, ProjectAttachment> */
     public function getAttachments(): Collection
     {
         return $this->attachments;
     }
 
-    public function addAttachment(InitiativeAttachment $attachment): static
+    public function addAttachment(ProjectAttachment $attachment): static
     {
         if (!$this->attachments->contains($attachment)) {
             $this->attachments->add($attachment);
-            $attachment->setInitiative($this);
+            $attachment->setProject($this);
         }
 
         return $this;
     }
 
-    public function removeAttachment(InitiativeAttachment $attachment): static
+    public function removeAttachment(ProjectAttachment $attachment): static
     {
         $this->attachments->removeElement($attachment);
 
@@ -541,7 +541,7 @@ class Initiative extends AbstractEntity
             null !== $this->title && '' !== $this->title,
             null !== $this->area,
             null !== $this->description && '' !== $this->description,
-            null !== $this->initiativeType,
+            null !== $this->projectType,
             null !== $this->status,
             null !== $this->organizationalAnchoring,
             null !== $this->budget,
@@ -554,7 +554,7 @@ class Initiative extends AbstractEntity
     }
 
     /**
-     * Whether the initiative has been edited since it was created — drives the
+     * Whether the project has been edited since it was created — drives the
      * "updated" vs "created" label in the dashboard activity feed. Only counts as
      * an edit once it's more than a day past creation, so the initial save and any
      * same-day tweaks still read as "created".

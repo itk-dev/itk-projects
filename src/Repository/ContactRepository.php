@@ -59,7 +59,7 @@ class ContactRepository extends ServiceEntityRepository
 
     /**
      * The user's most recent contact that still lacks an email — typically one
-     * they created on the fly from an initiative's contact picker (name only).
+     * they created on the fly from a project's contact picker (name only).
      * Used by the mascot to nudge them to fill in the rest.
      */
     public function findIncompleteByCreator(User $user): ?Contact

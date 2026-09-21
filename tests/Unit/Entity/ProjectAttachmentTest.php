@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Initiative;
-use App\Entity\InitiativeAttachment;
+use App\Entity\Project;
+use App\Entity\ProjectAttachment;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
 
-final class InitiativeAttachmentTest extends TestCase
+final class ProjectAttachmentTest extends TestCase
 {
     public function testAccessors(): void
     {
-        $initiative = new Initiative();
-        $attachment = (new InitiativeAttachment())
-            ->setInitiative($initiative)
+        $project = new Project();
+        $attachment = (new ProjectAttachment())
+            ->setProject($project)
             ->setFileName('stored.pdf')
             ->setOriginalName('report.pdf')
             ->setMimeType('application/pdf')
             ->setSize(4096);
 
-        self::assertSame($initiative, $attachment->getInitiative());
+        self::assertSame($project, $attachment->getProject());
         self::assertSame('stored.pdf', $attachment->getFileName());
         self::assertSame('report.pdf', $attachment->getOriginalName());
         self::assertSame('application/pdf', $attachment->getMimeType());
@@ -30,7 +30,7 @@ final class InitiativeAttachmentTest extends TestCase
 
     public function testSettingAFileMarksItDirty(): void
     {
-        $attachment = new InitiativeAttachment();
+        $attachment = new ProjectAttachment();
         self::assertNull($attachment->getFile());
         self::assertFalse($attachment->hasFile());
 
@@ -44,7 +44,7 @@ final class InitiativeAttachmentTest extends TestCase
 
     public function testHasFileIsTrueWhenOnlyAStoredNameIsPresent(): void
     {
-        $attachment = (new InitiativeAttachment())->setFileName('stored.pdf');
+        $attachment = (new ProjectAttachment())->setFileName('stored.pdf');
 
         self::assertTrue($attachment->hasFile());
     }

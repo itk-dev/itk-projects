@@ -1,10 +1,10 @@
 # ITK Projects
 
-A Symfony application for registering and browsing municipal **initiatives**.
+A Symfony application for registering and browsing municipal **projects**.
 It is a rebuild of the previous Drupal-based [project-database](https://github.com/itk-dev/project-database)
 with an accompanied react application for graph visualizations [project-database-app](https://github.com/itk-dev/project-database-app),
 focused on a friendlier interface for creating and getting an overview
-of initiatives.
+of projects.
 
 The project follows the itk-dev
 [`symfony` Docker template](https://github.com/itk-dev/devops_itkdev-docker) and

@@ -3,7 +3,7 @@
 {% macro sortlink(field, label, sort, direction) %}
     {% set isActive = sort == field %}
     {% set newDir = (isActive and direction == 'ASC') ? 'DESC' : 'ASC' %}
-    <a class="table__sort {{ isActive ? 'is-active' }}" href="{{ path('app_initiative_index', app.request.query.all|merge({sort: field, direction: newDir, page: 1})) }}">
+    <a class="table__sort {{ isActive ? 'is-active' }}" href="{{ path('app_project_index', app.request.query.all|merge({sort: field, direction: newDir, page: 1})) }}">
         {{ label|trans }}{% if isActive %} {{ direction == 'ASC' ? '▲' : '▼' }}{% endif %}
     </a>
 {% endmacro %}
@@ -19,51 +19,51 @@
 {% endmacro %}
 
 {% if pagination.items is empty %}
-    <twig:EmptyState :title="'initiative.empty.title'|trans" :hint="'initiative.empty.hint'|trans" />
+    <twig:EmptyState :title="'project.empty.title'|trans" :hint="'project.empty.hint'|trans" />
 {% else %}
     <div class="table-wrap">
         <table class="table">
             <thead>
                 <tr>
-                    <th>{{ h.sortlink('title', 'initiative.title', sort, direction) }}</th>
-                    <th>{{ 'initiative.status'|trans }}</th>
-                    <th>{{ 'initiative.initiative_type'|trans }}</th>
-                    <th>{{ 'initiative.organizational_anchoring'|trans }}</th>
-                    <th>{{ h.sortlink('timePeriodStart', 'initiative.time_period', sort, direction) }}</th>
-                    <th>{{ 'initiative.author'|trans }}</th>
+                    <th>{{ h.sortlink('title', 'project.title', sort, direction) }}</th>
+                    <th>{{ 'project.status'|trans }}</th>
+                    <th>{{ 'project.project_type'|trans }}</th>
+                    <th>{{ 'project.organizational_anchoring'|trans }}</th>
+                    <th>{{ h.sortlink('timePeriodStart', 'project.time_period', sort, direction) }}</th>
+                    <th>{{ 'project.author'|trans }}</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for initiative in pagination.items %}
+                {% for project in pagination.items %}
                     <tr>
                         <td>
-                            <a href="{{ path('app_initiative_show', {id: initiative.id}) }}" class="cell-title" data-turbo-frame="_top">{{ initiative.title }}</a>
+                            <a href="{{ path('app_project_show', {id: project.id}) }}" class="cell-title" data-turbo-frame="_top">{{ project.title }}</a>
                         </td>
                         <td>
-                            {% if initiative.status %}
-                                <span class="badge badge--status-{{ initiative.status.value }}">{{ initiative.status.labelKey|trans }}</span>
+                            {% if project.status %}
+                                <span class="badge badge--status-{{ project.status.value }}">{{ project.status.labelKey|trans }}</span>
                             {% else %}
                                 <span class="muted">—</span>
                             {% endif %}
                         </td>
-                        <td>{{ initiative.initiativeType ? initiative.initiativeType.labelKey|trans : '—' }}</td>
-                        <td>{{ initiative.organizationalAnchoring ? initiative.organizationalAnchoring.name : '—' }}</td>
+                        <td>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</td>
+                        <td>{{ project.organizationalAnchoring ? project.organizationalAnchoring.name : '—' }}</td>
                         <td>
-                            {% if initiative.timePeriodStart %}
-                                {{ initiative.timePeriodStart|date('d.m.Y') }}{% if initiative.timePeriodEnd %} – {{ initiative.timePeriodEnd|date('d.m.Y') }}{% endif %}
+                            {% if project.timePeriodStart %}
+                                {{ project.timePeriodStart|date('d.m.Y') }}{% if project.timePeriodEnd %} – {{ project.timePeriodEnd|date('d.m.Y') }}{% endif %}
                             {% else %}—{% endif %}
                         </td>
-                        <td>{{ initiative.createdBy ? initiative.createdBy.name : '—' }}</td>
+                        <td>{{ project.createdBy ? project.createdBy.name : '—' }}</td>
                         <td>
                             <div class="cell-actions">
-                                <a href="{{ path('app_initiative_show', {id: initiative.id}) }}" class="btn-icon" data-turbo-frame="_top" title="{{ 'action.view'|trans }}" aria-label="{{ 'action.view'|trans }}">{{ h.icon('eye') }}</a>
-                                <a href="{{ path('app_initiative_edit', {id: initiative.id}) }}" class="btn-icon" data-turbo-frame="_top" title="{{ 'action.edit'|trans }}" aria-label="{{ 'action.edit'|trans }}">{{ h.icon('edit') }}</a>
+                                <a href="{{ path('app_project_show', {id: project.id}) }}" class="btn-icon" data-turbo-frame="_top" title="{{ 'action.view'|trans }}" aria-label="{{ 'action.view'|trans }}">{{ h.icon('eye') }}</a>
+                                <a href="{{ path('app_project_edit', {id: project.id}) }}" class="btn-icon" data-turbo-frame="_top" title="{{ 'action.edit'|trans }}" aria-label="{{ 'action.edit'|trans }}">{{ h.icon('edit') }}</a>
                                 {% set trashIcon %}{{ h.icon('trash') }}{% endset %}
                                 <twig:ConfirmDelete
-                                    :action="path('app_initiative_delete', {id: initiative.id})"
-                                    :token="csrf_token('delete-initiative-' ~ initiative.id)"
-                                    :title="'action.confirm_delete_title'|trans({'%name%': initiative.title})"
+                                    :action="path('app_project_delete', {id: project.id})"
+                                    :token="csrf_token('delete-project-' ~ project.id)"
+                                    :title="'action.confirm_delete_title'|trans({'%name%': project.title})"
                                     triggerClass="btn-icon btn-icon--danger"
                                     :triggerTitle="'action.delete'|trans"
                                     :triggerContent="trashIcon"
@@ -81,15 +81,15 @@
         {% if pagination.pages > 1 %}
             <div class="pagination__pages">
                 {% if pagination.hasPrevious %}
-                    <a class="pagination__link" href="{{ path('app_initiative_index', app.request.query.all|merge({page: pagination.page - 1})) }}">‹</a>
+                    <a class="pagination__link" href="{{ path('app_project_index', app.request.query.all|merge({page: pagination.page - 1})) }}">‹</a>
                 {% endif %}
                 {% for p in 1..pagination.pages %}
                     {% if pagination.pages <= 12 or (p <= 2) or (p >= pagination.pages - 1) or (p >= pagination.page - 2 and p <= pagination.page + 2) %}
-                        <a class="pagination__link {{ p == pagination.page ? 'is-active' }}" href="{{ path('app_initiative_index', app.request.query.all|merge({page: p})) }}">{{ p }}</a>
+                        <a class="pagination__link {{ p == pagination.page ? 'is-active' }}" href="{{ path('app_project_index', app.request.query.all|merge({page: p})) }}">{{ p }}</a>
                     {% endif %}
                 {% endfor %}
                 {% if pagination.hasNext %}
-                    <a class="pagination__link" href="{{ path('app_initiative_index', app.request.query.all|merge({page: pagination.page + 1})) }}">›</a>
+                    <a class="pagination__link" href="{{ path('app_project_index', app.request.query.all|merge({page: pagination.page + 1})) }}">›</a>
                 {% endif %}
             </div>
         {% endif %}
