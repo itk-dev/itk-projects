@@ -29,6 +29,7 @@ final class ProjectTest extends TestCase
         self::assertFalse($project->isEndorsement());
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
+        self::assertCount(0, $project->getOrganizationalAnchoring());
         self::assertCount(0, $project->getStrategies());
         self::assertCount(0, $project->getStakeholders());
         self::assertCount(0, $project->getTags());
@@ -45,7 +46,6 @@ final class ProjectTest extends TestCase
     {
         $start = new \DateTimeImmutable('2025-01-01');
         $end = new \DateTimeImmutable('2025-12-31');
-        $department = (new Department())->setName('Teknik og Miljø');
         $area = (new Area())->setName('Klima og miljø');
 
         $project = (new Project())
@@ -56,7 +56,6 @@ final class ProjectTest extends TestCase
             ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Active)
             ->setStatusAdditional('Igangsat')
-            ->setOrganizationalAnchoring($department)
             ->setEndorsement(false)
             ->setEndorsementAuthor(EndorsementAuthor::CityCouncil)
             ->setBudget(500000)
@@ -70,7 +69,6 @@ final class ProjectTest extends TestCase
         self::assertSame(ProjectType::Project, $project->getProjectType());
         self::assertSame(Status::Active, $project->getStatus());
         self::assertSame('Igangsat', $project->getStatusAdditional());
-        self::assertSame($department, $project->getOrganizationalAnchoring());
         self::assertFalse($project->isEndorsement());
         self::assertSame(EndorsementAuthor::CityCouncil, $project->getEndorsementAuthor());
         self::assertSame(500000, $project->getBudget());
@@ -89,7 +87,7 @@ final class ProjectTest extends TestCase
             ->setDescription('D')
             ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Active)
-            ->setOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
+            ->addOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
             ->setFunding([Funding::EuFunds])
             ->setTimePeriodStart(new \DateTimeImmutable())
@@ -138,6 +136,27 @@ final class ProjectTest extends TestCase
         ]);
 
         self::assertSame(['https://ok.example', 'http://plain.example'], $project->getLinks());
+    }
+
+    public function testOrganizationalAnchoringCollection(): void
+    {
+        $project = new Project();
+        $department = (new Department())->setName('Teknik og Miljø');
+
+        $project->addOrganizationalAnchoring($department);
+        $project->addOrganizationalAnchoring($department);
+        self::assertCount(1, $project->getOrganizationalAnchoring());
+
+        $project->removeOrganizationalAnchoring($department);
+        self::assertCount(0, $project->getOrganizationalAnchoring());
+
+        $project->setOrganizationalAnchoring([
+            (new Department())->setName('Sundhed og Omsorg'),
+            (new Department())->setName('Børn og Unge'),
+        ]);
+        self::assertCount(2, $project->getOrganizationalAnchoring());
+        $project->setOrganizationalAnchoring([]);
+        self::assertCount(0, $project->getOrganizationalAnchoring());
     }
 
     public function testStrategyCollection(): void

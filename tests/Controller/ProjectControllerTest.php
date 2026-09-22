@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Entity\Department;
 use App\Entity\Project;
 use App\Entity\ProjectAttachment;
 use App\Entity\ProjectImage;
@@ -119,6 +120,65 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertStringContainsString($topic, $csv);
 
         $this->removeProject($id);
+    }
+
+    public function testDepartmentsAreSavedShownFilteredAndExported(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $first = (new Department())->setName('Dept first '.uniqid());
+        $second = (new Department())->setName('Dept second '.uniqid());
+        $em->persist($first);
+        $em->persist($second);
+        $em->flush();
+        $unanchored = $this->createProject('Unanchored project '.uniqid());
+        $title = 'Anchored project '.uniqid();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertCount(1, $crawler->filter('select[name="project[organizationalAnchoring][]"][multiple]'));
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'organizationalAnchoring' => [(string) $first->getId(), (string) $second->getId()],
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertCount(2, $project->getOrganizationalAnchoring());
+        $id = (string) $project->getId();
+
+        // Both departments are listed on the project page …
+        $crawler = $this->client->request('GET', '/projects/'.$id);
+        $details = $crawler->filter('.detail-list')->text();
+        self::assertStringContainsString((string) $first->getName(), $details);
+        self::assertStringContainsString((string) $second->getName(), $details);
+
+        // … the department filter narrows the list to projects anchored there …
+        $crawler = $this->client->request('GET', '/projects?organizationalAnchoring='.$first->getId());
+        $results = $crawler->filter('#project-results')->text();
+        self::assertStringContainsString($title, $results);
+        self::assertStringContainsString($first->getName().', '.$second->getName(), $results);
+        self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
+
+        // … and the export lists every department of the project.
+        $this->client->request('GET', '/projects/export?organizationalAnchoring='.$first->getId());
+        $csv = (string) $this->client->getInternalResponse()->getContent();
+        self::assertStringContainsString($first->getName().', '.$second->getName(), $csv);
+
+        $this->removeProject($id);
+        $this->removeProject((string) $unanchored->getId());
+        $em = $this->entityManager();
+        foreach ([$first->getId(), $second->getId()] as $departmentId) {
+            $department = $this->departments()->find($departmentId);
+            if (null !== $department) {
+                $em->remove($department);
+            }
+        }
+        $em->flush();
     }
 
     public function testEditUpdatesProject(): void

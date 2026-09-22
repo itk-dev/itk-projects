@@ -200,7 +200,7 @@ project:
     status_additional: Status – additional text
     status_additional_help: Add detail to the status if needed.
     organizational_anchoring: Department
-    organizational_anchoring_help: The department responsible for the project.
+    organizational_anchoring_help: The departments the project is anchored in. Pick several for a cross-cutting project.
     endorsement: Has the project been endorsed
     endorsement_author: Where it was endorsed
     endorsement_author_help: Where the project was endorsed.

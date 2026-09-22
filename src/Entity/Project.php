@@ -21,7 +21,9 @@ class Project extends AbstractEntity
     /**
      * Fields that count toward {@see getCompletionPercentage()} and the client-side
      * progress bar. Limited to the project's own columns so list rendering stays
-     * query-free; the booleans and the relational lists are intentionally excluded.
+     * query-free; the booleans and the free-tagging lists are intentionally excluded.
+     * Departments are the one collection counted: they are a fixed, admin-managed
+     * pool and the anchoring is core to what a project is.
      *
      * @var list<string>
      */
@@ -64,9 +66,15 @@ class Project extends AbstractEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $statusAdditional = null;
 
-    #[ORM\ManyToOne(targetEntity: Department::class)]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    private ?Department $organizationalAnchoring = null;
+    /**
+     * The departments a project is anchored in. Cross-cutting projects belong to
+     * several, which is what the dashboard's collaboration views build on.
+     *
+     * @var Collection<int, Department>
+     */
+    #[ORM\ManyToMany(targetEntity: Department::class)]
+    #[ORM\JoinTable(name: 'project_department')]
+    private Collection $organizationalAnchoring;
 
     #[ORM\Column]
     private bool $endorsement = false;
@@ -132,6 +140,7 @@ class Project extends AbstractEntity
     public function __construct()
     {
         parent::__construct();
+        $this->organizationalAnchoring = new ArrayCollection();
         $this->strategies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
@@ -258,14 +267,35 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    public function getOrganizationalAnchoring(): ?Department
+    /** @return Collection<int, Department> */
+    public function getOrganizationalAnchoring(): Collection
     {
         return $this->organizationalAnchoring;
     }
 
-    public function setOrganizationalAnchoring(?Department $organizationalAnchoring): static
+    public function addOrganizationalAnchoring(Department $department): static
     {
-        $this->organizationalAnchoring = $organizationalAnchoring;
+        if (!$this->organizationalAnchoring->contains($department)) {
+            $this->organizationalAnchoring->add($department);
+        }
+
+        return $this;
+    }
+
+    public function removeOrganizationalAnchoring(Department $department): static
+    {
+        $this->organizationalAnchoring->removeElement($department);
+
+        return $this;
+    }
+
+    /** @param iterable<Department> $departments */
+    public function setOrganizationalAnchoring(iterable $departments): static
+    {
+        $this->organizationalAnchoring->clear();
+        foreach ($departments as $department) {
+            $this->addOrganizationalAnchoring($department);
+        }
 
         return $this;
     }
@@ -533,7 +563,8 @@ class Project extends AbstractEntity
 
     /**
      * Share of {@see COMPLETION_FIELDS} that are filled in, as a 0–100 percentage.
-     * Reads only own columns, so it is safe to call per row in a listing.
+     * Reads own columns plus the department collection (one lazy load), so it is
+     * cheap enough to call per row in a listing.
      */
     public function getCompletionPercentage(): int
     {
@@ -543,7 +574,7 @@ class Project extends AbstractEntity
             null !== $this->description && '' !== $this->description,
             null !== $this->projectType,
             null !== $this->status,
-            null !== $this->organizationalAnchoring,
+            !$this->organizationalAnchoring->isEmpty(),
             null !== $this->budget,
             [] !== $this->funding,
             null !== $this->timePeriodStart,

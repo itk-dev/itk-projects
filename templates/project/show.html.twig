@@ -125,7 +125,7 @@
                         <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>
 
                         <dt>{{ 'project.organizational_anchoring'|trans }}</dt>
-                        <dd>{{ project.organizationalAnchoring ? project.organizationalAnchoring.name : '—' }}</dd>
+                        <dd>{{ h.term_list(project.organizationalAnchoring) }}</dd>
 
                         <dt>{{ 'project.endorsement'|trans }}</dt>
                         <dd>{{ project.endorsement ? 'common.yes'|trans : 'common.no'|trans }}{% if project.endorsementAuthor %} · {{ project.endorsementAuthor.labelKey|trans }}{% endif %}</dd>

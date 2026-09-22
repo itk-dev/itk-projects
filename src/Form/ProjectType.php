@@ -92,8 +92,11 @@ class ProjectType extends AbstractType
                 'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
+                'multiple' => true,
                 'required' => false,
-                'placeholder' => 'form.choose',
+                // Departments are admin-managed, so the pool is fixed: a searchable
+                // multiselect (Tom Select, see app.js) without on-the-fly creation.
+                'attr' => ['data-department-select' => true, 'placeholder' => 'form.choose'],
                 'help' => 'project.organizational_anchoring_help',
             ])
             ->add('endorsement', CheckboxType::class, [

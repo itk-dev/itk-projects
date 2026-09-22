@@ -68,29 +68,41 @@ final class DashboardData
 
         foreach ($this->projects->dashboardRows() as $row) {
             ++$total;
-            $dept = $this->enumValue($row['organizationalAnchoring'] ?? null);
             $area = $this->enumValue($row['area'] ?? null);
             $status = $this->enumValue($row['status'] ?? null);
-            $di = null !== $dept ? ($deptIndex[$dept] ?? null) : null;
             $ai = null !== $area ? ($areaIndex[$area] ?? null) : null;
             $si = null !== $status ? ($statusIndex[$status] ?? null) : null;
 
-            if (null !== $di) {
-                $deptsSeen[$di] = true;
-            }
-            if (null !== $di && null !== $ai) {
-                ++$heatmap[$di][$ai];
-                $reachByDept[$ai][$di] = true;
-                $titlesByAreaDept[$area][$dept][] = (string) $row['title'];
-            }
-            if (null !== $si) {
-                ++$statusDistribution[$si];
-                if (null !== $di) {
-                    ++$statusByDept[$si][$di];
+            // A project is anchored in any number of departments; keep only the
+            // ids that resolve to a known department, as department index pairs.
+            $depts = [];
+            foreach (($row['organizationalAnchoring'] ?? []) as $deptId) {
+                $dept = $this->enumValue($deptId);
+                if (null !== $dept && isset($deptIndex[$dept])) {
+                    $depts[$dept] = $deptIndex[$dept];
                 }
             }
-            if (null !== $di && null !== ($row['budget'] ?? null)) {
-                $budgetByDept[$di] += (int) $row['budget'];
+
+            if (null !== $si) {
+                ++$statusDistribution[$si];
+            }
+
+            // Every per-department aggregate counts a shared project once under
+            // each of its departments: the budget shows what each department is
+            // involved in, so the bars sum to more than the plain total.
+            foreach ($depts as $dept => $di) {
+                $deptsSeen[$di] = true;
+                if (null !== $ai) {
+                    ++$heatmap[$di][$ai];
+                    $reachByDept[$ai][$di] = true;
+                    $titlesByAreaDept[$area][$dept][] = (string) $row['title'];
+                }
+                if (null !== $si) {
+                    ++$statusByDept[$si][$di];
+                }
+                if (null !== ($row['budget'] ?? null)) {
+                    $budgetByDept[$di] += (int) $row['budget'];
+                }
             }
             foreach (($row['funding'] ?? []) as $f) {
                 $fi = $fundingIndex[$f] ?? null;
@@ -100,9 +112,10 @@ final class DashboardData
             }
             if (($row['timePeriodStart'] ?? null) instanceof \DateTimeInterface
                 && ($row['timePeriodEnd'] ?? null) instanceof \DateTimeInterface) {
+                // The bar takes the colour of the first department.
                 $timeline[] = [
                     'title' => (string) $row['title'],
-                    'dept' => $dept,
+                    'dept' => array_key_first($depts),
                     'start' => $row['timePeriodStart']->format('Y-m-d'),
                     'end' => $row['timePeriodEnd']->format('Y-m-d'),
                 ];

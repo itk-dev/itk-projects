@@ -141,7 +141,6 @@ class AppFixtures extends Fixture
                 ->setArea($areas[array_rand($areas)])
                 ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
-                ->setOrganizationalAnchoring($departments[array_rand($departments)])
                 ->setDescription('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
                 ->setEndorsement(0 === $index % 3 ? false : true)
                 ->setBudget(mt_rand(1, 40) * 50000);
@@ -157,6 +156,12 @@ class AppFixtures extends Fixture
             }
 
             $project->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
+
+            // Roughly a third of the projects span two departments so the dashboard's
+            // cross-department views have something to show.
+            foreach (\array_slice($this->shuffleCopy($departments), 0, 0 === $index % 3 ? 2 : 1) as $department) {
+                $project->addOrganizationalAnchoring($department);
+            }
 
             $start = new \DateTimeImmutable(sprintf('2025-%02d-01', mt_rand(1, 12)));
             $project->setTimePeriodStart($start);
