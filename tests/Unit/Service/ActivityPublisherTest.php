@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\Initiative;
+use App\Entity\Project;
 use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use App\Service\ActivityPublisher;
 use App\Service\DashboardData;
 use PHPUnit\Framework\TestCase;
@@ -28,18 +28,18 @@ final class ActivityPublisherTest extends TestCase
         $twig->method('render')->willReturn('<turbo-stream></turbo-stream>');
 
         $urlGenerator = $this->createStub(UrlGeneratorInterface::class);
-        $urlGenerator->method('generate')->willReturn('/initiatives/1');
+        $urlGenerator->method('generate')->willReturn('/projects/1');
 
         // DashboardData is final (can't be doubled), so build a real one from stubs.
-        $initiatives = $this->createStub(InitiativeRepository::class);
-        $initiatives->method('dashboardRows')->willReturn([]);
+        $projects = $this->createStub(ProjectRepository::class);
+        $projects->method('dashboardRows')->willReturn([]);
         $departments = $this->createStub(DepartmentRepository::class);
         $departments->method('findAllOrdered')->willReturn([]);
         $areas = $this->createStub(AreaRepository::class);
         $areas->method('findAllOrdered')->willReturn([]);
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
-        $dashboardData = new DashboardData($initiatives, $departments, $areas, $translator);
+        $dashboardData = new DashboardData($projects, $departments, $areas, $translator);
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())->method('warning');
@@ -48,6 +48,6 @@ final class ActivityPublisherTest extends TestCase
 
         // An unreachable hub must be swallowed and logged, never bubbled up — the
         // underlying save (autosave) is the primary path and must still succeed.
-        $publisher->publish('created', (new Initiative())->setTitle('Broadcast me'), null);
+        $publisher->publish('created', (new Project())->setTitle('Broadcast me'), null);
     }
 }

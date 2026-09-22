@@ -10,7 +10,7 @@ use App\Enum\Funding;
 use App\Enum\Status;
 use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -22,7 +22,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 final class DashboardData
 {
     public function __construct(
-        private readonly InitiativeRepository $initiatives,
+        private readonly ProjectRepository $projects,
         private readonly DepartmentRepository $departments,
         private readonly AreaRepository $areas,
         private readonly TranslatorInterface $translator,
@@ -66,7 +66,7 @@ final class DashboardData
         $total = 0;
         $deptsSeen = [];
 
-        foreach ($this->initiatives->dashboardRows() as $row) {
+        foreach ($this->projects->dashboardRows() as $row) {
             ++$total;
             $dept = $this->enumValue($row['organizationalAnchoring'] ?? null);
             $area = $this->enumValue($row['area'] ?? null);
@@ -181,7 +181,7 @@ final class DashboardData
                 'theme' => $area['label'],
                 'themeKey' => $area['key'],
                 'departmentCount' => $distinctDepts,
-                'initiativeCount' => $total,
+                'projectCount' => $total,
                 'strength' => $strength,
                 'rank' => $strength >= 70 ? 'high' : 'med',
                 'departments' => $departmentsInvolved,

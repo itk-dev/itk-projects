@@ -17,7 +17,7 @@ use Symfony\Component\Form\DataTransformerInterface;
  * equivalent of the original "separate multiple values with commas" tagging.
  *
  * Note: new terms are persisted as a side effect of reverseTransform(), and a
- * term later removed from every initiative is not garbage-collected — the row
+ * term later removed from every project is not garbage-collected — the row
  * lingers in the vocabulary.
  *
  * @implements DataTransformerInterface<mixed, mixed>

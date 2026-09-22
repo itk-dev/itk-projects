@@ -7,7 +7,7 @@
         <twig:block name="breadcrumb">
             <div class="breadcrumb"><a href="{{ path('admin_partners') }}">{{ 'nav.partners'|trans }}</a></div>
         </twig:block>
-        {{ include('admin/partners/_delete.html.twig', {partner: partner, initiatives: initiatives}) }}
+        {{ include('admin/partners/_delete.html.twig', {partner: partner, projects: projects}) }}
     </twig:Page:Header>
     {{ include('admin/partners/_form.html.twig', {button_label: 'action.save'}) }}
 {% endblock %}

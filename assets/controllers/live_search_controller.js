@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * Live filtering for the initiative list. The form targets a Turbo Frame
+ * Live filtering for the project list. The form targets a Turbo Frame
  * (data-turbo-frame), so submitting it swaps only the results — no full page
  * load. Typing is debounced; selects submit on change. The submit button is
  * gone: this controller drives the submit, and clear() resets the fields.

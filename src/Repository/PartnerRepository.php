@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Initiative;
 use App\Entity\Partner;
+use App\Entity\Project;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Uid\Ulid;
@@ -34,22 +34,22 @@ class PartnerRepository extends ServiceEntityRepository
     }
 
     /**
-     * Which initiatives reference each partner, keyed by partner id. Answers the
+     * Which projects reference each partner, keyed by partner id. Answers the
      * whole admin list in one query so the delete confirmation can name the
-     * initiatives a partner would be pulled off.
+     * projects a partner would be pulled off.
      *
      * @return array<string, PartnerUsage>
      */
-    public function findInitiativeUsage(): array
+    public function findProjectUsage(): array
     {
-        // Initiative owns the (unidirectional) association, so usage can only be
+        // Project owns the (unidirectional) association, so usage can only be
         // asked from that side — Partner has no inverse collection to traverse.
         // Selecting the joined p.id (rather than IDENTITY()) is what makes Doctrine
         // apply the ULID type instead of handing back the raw binary FK.
         /** @var list<array{partnerId: Ulid, id: Ulid, title: string}> $rows */
         $rows = $this->getEntityManager()->createQueryBuilder()
             ->select('p.id AS partnerId', 'i.id AS id', 'i.title AS title')
-            ->from(Initiative::class, 'i')
+            ->from(Project::class, 'i')
             ->innerJoin('i.partners', 'p')
             ->orderBy('i.title', 'ASC')
             ->getQuery()
@@ -67,18 +67,18 @@ class PartnerRepository extends ServiceEntityRepository
     }
 
     /**
-     * The initiatives referencing a single partner. Read this *before* removing the
-     * partner: `initiative_partner` is cleared by the join table's ON DELETE
+     * The projects referencing a single partner. Read this *before* removing the
+     * partner: `project_partner` is cleared by the join table's ON DELETE
      * CASCADE, so after the flush there is nothing left to report.
      *
      * @return PartnerUsage
      */
-    public function findInitiativesUsing(Partner $partner): array
+    public function findProjectsUsing(Partner $partner): array
     {
         /** @var list<array{id: Ulid, title: string}> $rows */
         $rows = $this->getEntityManager()->createQueryBuilder()
             ->select('i.id AS id', 'i.title AS title')
-            ->from(Initiative::class, 'i')
+            ->from(Project::class, 'i')
             ->innerJoin('i.partners', 'p')
             ->andWhere('p.id = :partner')
             ->setParameter('partner', $partner->getId(), 'ulid')

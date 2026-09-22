@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\Initiative;
+use App\Entity\Project;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\InitiativeType;
+use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\TranslatableEnum;
-use App\Model\InitiativeFilter;
+use App\Model\ProjectFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends ServiceEntityRepository<Initiative>
+ * @extends ServiceEntityRepository<Project>
  */
-class InitiativeRepository extends ServiceEntityRepository
+class ProjectRepository extends ServiceEntityRepository
 {
     public const SORTABLE = ['title', 'budget', 'createdAt', 'timePeriodStart'];
 
     public function __construct(ManagerRegistry $registry, private readonly TranslatorInterface $translator)
     {
-        parent::__construct($registry, Initiative::class);
+        parent::__construct($registry, Project::class);
     }
 
-    public function search(InitiativeFilter $filter): QueryBuilder
+    public function search(ProjectFilter $filter): QueryBuilder
     {
         $qb = $this->createQueryBuilder('i');
 
@@ -47,23 +47,23 @@ class InitiativeRepository extends ServiceEntityRepository
                 'LOWER(i.statusAdditional) LIKE :q',
                 // Related names, matched without joining the root query so the
                 // paginator's count stays correct.
-                sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT itag.id FROM %s itag JOIN itag.tags tg WHERE LOWER(tg.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT isth.id FROM %s isth JOIN isth.stakeholders sh WHERE LOWER(sh.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Initiative::class),
+                sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT itag.id FROM %s itag JOIN itag.tags tg WHERE LOWER(tg.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT isth.id FROM %s isth JOIN isth.stakeholders sh WHERE LOWER(sh.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Project::class),
                 // Department and area are related entities searched by their stored
                 // name ("nik" should find "Teknik og Miljø").
-                sprintf('i.id IN (SELECT idep.id FROM %s idep JOIN idep.organizationalAnchoring dep WHERE LOWER(dep.name) LIKE :q)', Initiative::class),
-                sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.area ar WHERE LOWER(ar.name) LIKE :q)', Initiative::class),
+                sprintf('i.id IN (SELECT idep.id FROM %s idep JOIN idep.organizationalAnchoring dep WHERE LOWER(dep.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.area ar WHERE LOWER(ar.name) LIKE :q)', Project::class),
             ];
 
             // Enum columns store slugs, but the user searches their translated
             // labels ("nik" should find "Teknik og Miljø"); map labels to values.
             $enumFields = [
                 'status' => Status::cases(),
-                'initiativeType' => InitiativeType::cases(),
+                'projectType' => ProjectType::cases(),
                 'endorsementAuthor' => EndorsementAuthor::cases(),
             ];
             foreach ($enumFields as $field => $cases) {
@@ -92,8 +92,8 @@ class InitiativeRepository extends ServiceEntityRepository
             $qb->andWhere('i.area = :area')->setParameter('area', $filter->area);
         }
 
-        if (null !== $filter->initiativeType) {
-            $qb->andWhere('i.initiativeType = :initiativeType')->setParameter('initiativeType', $filter->initiativeType->value);
+        if (null !== $filter->projectType) {
+            $qb->andWhere('i.projectType = :projectType')->setParameter('projectType', $filter->projectType->value);
         }
 
         if (null !== $filter->organizationalAnchoring) {
@@ -130,19 +130,19 @@ class InitiativeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Returns the filtered initiatives with every to-many collection primed, so
+     * Returns the filtered projects with every to-many collection primed, so
      * a CSV export can read them without firing a query per row (N+1). Each
      * association is loaded in its own query; fetch-joining them all at once
      * would multiply rows (a cartesian product) instead of cutting queries.
      *
-     * @return Initiative[]
+     * @return Project[]
      */
-    public function findForExport(InitiativeFilter $filter): array
+    public function findForExport(ProjectFilter $filter): array
     {
-        /** @var Initiative[] $initiatives */
-        $initiatives = $this->search($filter)->getQuery()->getResult();
+        /** @var Project[] $projects */
+        $projects = $this->search($filter)->getQuery()->getResult();
 
-        if ([] === $initiatives) {
+        if ([] === $projects) {
             return [];
         }
 
@@ -150,13 +150,13 @@ class InitiativeRepository extends ServiceEntityRepository
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')
-                ->andWhere('i IN (:initiatives)')
-                ->setParameter('initiatives', $initiatives)
+                ->andWhere('i IN (:projects)')
+                ->setParameter('projects', $projects)
                 ->getQuery()
                 ->getResult();
         }
 
-        return $initiatives;
+        return $projects;
     }
 
     public function countAll(): int
@@ -181,25 +181,25 @@ class InitiativeRepository extends ServiceEntityRepository
     }
 
     /**
-     * The creator's least-complete initiative that isn't fully filled in yet, or
+     * The creator's least-complete project that isn't fully filled in yet, or
      * null if none are outstanding.
      */
-    public function findUnfinishedByCreator(User $user): ?Initiative
+    public function findUnfinishedByCreator(User $user): ?Project
     {
         return $this->findUnfinishedListByCreator($user, 1)[0] ?? null;
     }
 
     /**
-     * The creator's incomplete initiatives (completion below 100 %), least-complete
+     * The creator's incomplete projects (completion below 100 %), least-complete
      * first, capped at $limit. Completion is computed in PHP (not a stored column),
-     * so this scans only the creator's 50 most recent initiatives.
+     * so this scans only the creator's 50 most recent projects.
      *
-     * @return Initiative[]
+     * @return Project[]
      */
     public function findUnfinishedListByCreator(User $user, int $limit = 6): array
     {
         // See countByCreator: match the raw ULID FK, not the entity.
-        $initiatives = $this->createQueryBuilder('i')
+        $projects = $this->createQueryBuilder('i')
             ->andWhere('IDENTITY(i.createdBy) = :user')
             ->setParameter('user', $user->getId(), 'ulid')
             ->orderBy('i.createdAt', 'DESC')
@@ -208,20 +208,20 @@ class InitiativeRepository extends ServiceEntityRepository
             ->getResult();
 
         $unfinished = array_filter(
-            $initiatives,
-            static fn (Initiative $initiative): bool => $initiative->getCompletionPercentage() < 100,
+            $projects,
+            static fn (Project $project): bool => $project->getCompletionPercentage() < 100,
         );
 
         usort(
             $unfinished,
-            static fn (Initiative $a, Initiative $b): int => $a->getCompletionPercentage() <=> $b->getCompletionPercentage(),
+            static fn (Project $a, Project $b): int => $a->getCompletionPercentage() <=> $b->getCompletionPercentage(),
         );
 
         return \array_slice($unfinished, 0, $limit);
     }
 
     /**
-     * @return array<string, int> count keyed by status value (skips initiatives without a status)
+     * @return array<string, int> count keyed by status value (skips projects without a status)
      */
     public function countByStatus(): array
     {
@@ -245,10 +245,10 @@ class InitiativeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Most recently touched initiatives (created or edited) for the activity feed,
-     * newest first. Ordered by updatedAt so an edit resurfaces the initiative.
+     * Most recently touched projects (created or edited) for the activity feed,
+     * newest first. Ordered by updatedAt so an edit resurfaces the project.
      *
-     * @return Initiative[]
+     * @return Project[]
      */
     public function findRecent(int $limit = 5): array
     {
@@ -260,7 +260,7 @@ class InitiativeRepository extends ServiceEntityRepository
     }
 
     /**
-     * Lightweight per-initiative rows for the dashboard visualisations: just the
+     * Lightweight per-project rows for the dashboard visualisations: just the
      * columns the aggregates need, no relations, so it stays cheap to recompute
      * on every live broadcast.
      *

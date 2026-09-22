@@ -6,9 +6,9 @@ namespace App\Form;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\InitiativeType as InitiativeTypeEnum;
+use App\Enum\ProjectType as ProjectTypeEnum;
 use App\Enum\Status;
-use App\Model\InitiativeFilter;
+use App\Model\ProjectFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -18,9 +18,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @extends AbstractType<InitiativeFilter>
+ * @extends AbstractType<ProjectFilter>
  */
-class InitiativeFilterType extends AbstractType
+class ProjectFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -33,35 +33,35 @@ class InitiativeFilterType extends AbstractType
                 'attr' => ['placeholder' => 'filter.search_placeholder'],
             ])
             ->add('status', EnumType::class, [
-                'label' => 'initiative.status',
+                'label' => 'project.status',
                 'class' => Status::class,
                 'required' => false,
                 'placeholder' => 'filter.all',
                 'choice_label' => static fn (Status $value): string => $value->labelKey(),
             ])
             ->add('area', EntityType::class, [
-                'label' => 'initiative.area',
+                'label' => 'project.area',
                 'class' => Area::class,
                 'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
-            ->add('initiativeType', EnumType::class, [
-                'label' => 'initiative.initiative_type',
-                'class' => InitiativeTypeEnum::class,
+            ->add('projectType', EnumType::class, [
+                'label' => 'project.project_type',
+                'class' => ProjectTypeEnum::class,
                 'required' => false,
                 'placeholder' => 'filter.all',
-                'choice_label' => static fn (InitiativeTypeEnum $value): string => $value->labelKey(),
+                'choice_label' => static fn (ProjectTypeEnum $value): string => $value->labelKey(),
             ])
             ->add('organizationalAnchoring', EntityType::class, [
-                'label' => 'initiative.organizational_anchoring',
+                'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
             ->add('endorsement', ChoiceType::class, [
-                'label' => 'initiative.endorsement',
+                'label' => 'project.endorsement',
                 'required' => false,
                 'placeholder' => 'filter.all',
                 'choices' => ['filter.yes' => true, 'filter.no' => false],
@@ -72,7 +72,7 @@ class InitiativeFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => InitiativeFilter::class,
+            'data_class' => ProjectFilter::class,
             'method' => 'GET',
             'csrf_protection' => false,
             'required' => false,

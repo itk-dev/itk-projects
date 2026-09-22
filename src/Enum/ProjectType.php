@@ -6,9 +6,9 @@ namespace App\Enum;
 
 /**
  * New cases' backing values must stay within the column length mapped on
- * {@see \App\Entity\Initiative}, or they will be truncated when persisted.
+ * {@see \App\Entity\Project}, or they will be truncated when persisted.
  */
-enum InitiativeType: string implements TranslatableEnum
+enum ProjectType: string implements TranslatableEnum
 {
     case Project = 'project';
     case Programme = 'programme';
@@ -18,6 +18,6 @@ enum InitiativeType: string implements TranslatableEnum
 
     public function labelKey(): string
     {
-        return 'enum.initiative_type.'.$this->value;
+        return 'enum.project_type.'.$this->value;
     }
 }

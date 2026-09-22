@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\Initiative;
-use App\Entity\InitiativeAttachment;
-use App\Entity\InitiativeImage;
+use App\Entity\Project;
+use App\Entity\ProjectAttachment;
+use App\Entity\ProjectImage;
 use App\Tests\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -15,11 +15,11 @@ final class MediaControllerTest extends FunctionalTestCase
     public function testImageIsServedToAuthenticatedUsers(): void
     {
         $this->loginAsAdmin();
-        $initiative = $this->anyInitiative();
+        $project = $this->anyProject();
 
-        $image = (new InitiativeImage())->setAlt('Test image');
+        $image = (new ProjectImage())->setAlt('Test image');
         $image->setImageFile($this->upload('sample.png', 'image/png', $this->pngBytes()));
-        $initiative->addImage($image);
+        $project->addImage($image);
         $em = $this->entityManager();
         $em->flush();
 
@@ -33,11 +33,11 @@ final class MediaControllerTest extends FunctionalTestCase
     public function testAttachmentIsServedToAuthenticatedUsers(): void
     {
         $this->loginAsAdmin();
-        $initiative = $this->anyInitiative();
+        $project = $this->anyProject();
 
-        $attachment = new InitiativeAttachment();
+        $attachment = new ProjectAttachment();
         $attachment->setFile($this->upload('document.pdf', 'application/pdf', "%PDF-1.4\n%%EOF\n"));
-        $initiative->addAttachment($attachment);
+        $project->addAttachment($attachment);
         $em = $this->entityManager();
         $em->flush();
 
@@ -48,12 +48,12 @@ final class MediaControllerTest extends FunctionalTestCase
         $em->flush();
     }
 
-    private function anyInitiative(): Initiative
+    private function anyProject(): Project
     {
-        $initiative = $this->initiatives()->findOneBy([]);
-        self::assertInstanceOf(Initiative::class, $initiative, 'Fixtures should provide at least one initiative.');
+        $project = $this->projects()->findOneBy([]);
+        self::assertInstanceOf(Project::class, $project, 'Fixtures should provide at least one project.');
 
-        return $initiative;
+        return $project;
     }
 
     private function upload(string $name, string $mimeType, string $contents): UploadedFile

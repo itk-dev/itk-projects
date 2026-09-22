@@ -44,9 +44,9 @@ final class UserSettingsControllerTest extends FunctionalTestCase
         $this->loginAsEditor();
         $token = $this->mascotToggleToken();
 
-        $this->client->request('POST', '/settings/mascot/toggle', ['_token' => $token, 'return' => '/initiatives']);
+        $this->client->request('POST', '/settings/mascot/toggle', ['_token' => $token, 'return' => '/projects']);
 
-        $this->assertResponseRedirects('/initiatives');
+        $this->assertResponseRedirects('/projects');
         self::assertFalse($this->reloadEditor()->isMascotEnabled());
     }
 
@@ -67,9 +67,9 @@ final class UserSettingsControllerTest extends FunctionalTestCase
         $this->assertResponseIsSuccessful();
         $token = (string) $crawler->filter('#starsToggleForm input[name="_token"]')->attr('value');
 
-        $this->client->request('POST', '/settings/stars/toggle', ['_token' => $token, 'return' => '/initiatives']);
+        $this->client->request('POST', '/settings/stars/toggle', ['_token' => $token, 'return' => '/projects']);
 
-        $this->assertResponseRedirects('/initiatives');
+        $this->assertResponseRedirects('/projects');
         self::assertFalse($this->reloadEditor()->isStarsEnabled());
     }
 
@@ -88,9 +88,9 @@ final class UserSettingsControllerTest extends FunctionalTestCase
         $this->loginAsEditor();
         $token = $this->tourSeenToken();
 
-        $this->client->request('POST', '/settings/tour/seen', ['_token' => $token, 'return' => '/initiatives']);
+        $this->client->request('POST', '/settings/tour/seen', ['_token' => $token, 'return' => '/projects']);
 
-        $this->assertResponseRedirects('/initiatives');
+        $this->assertResponseRedirects('/projects');
         self::assertTrue($this->reloadEditor()->isTourSeen());
     }
 

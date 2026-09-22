@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project.edit.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="page" data-controller="title-mirror">
+        <twig:Page:Header :title="'project.edit.title'|trans">
+            <twig:block name="breadcrumb">
+                <div class="breadcrumb">
+                    <a href="{{ path('app_project_index') }}">{{ 'nav.projects'|trans }}</a>
+                    / <a href="{{ path('app_project_show', {id: project.id}) }}" data-title-mirror-target="crumb">{{ project.title }}</a>
+                </div>
+            </twig:block>
+            <twig:ConfirmDelete
+                :action="path('app_project_delete', {id: project.id})"
+                :token="csrf_token('delete-project-' ~ project.id)"
+                :title="'action.confirm_delete_title'|trans({'%name%': project.title})" />
+        </twig:Page:Header>
+        {{ include('project/_form.html.twig', {button_label: 'action.save', autosave: true}) }}
+    </div>
+{% endblock %}

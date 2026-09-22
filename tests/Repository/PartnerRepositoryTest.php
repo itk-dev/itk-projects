@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Repository;
 
-use App\Entity\Initiative;
 use App\Entity\Partner;
+use App\Entity\Project;
 use App\Repository\PartnerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -61,7 +61,7 @@ final class PartnerRepositoryTest extends KernelTestCase
         $em->flush();
     }
 
-    public function testFindInitiativeUsageNamesTheReferencingInitiatives(): void
+    public function testFindProjectUsageNamesTheReferencingProjects(): void
     {
         self::bootKernel();
         $repository = static::getContainer()->get(PartnerRepository::class);
@@ -70,25 +70,25 @@ final class PartnerRepositoryTest extends KernelTestCase
         \assert($em instanceof EntityManagerInterface);
 
         $partner = (new Partner())->setName('Usage Partner '.uniqid());
-        $initiative = (new Initiative())->setTitle('Usage Initiative '.uniqid());
-        $initiative->addPartner($partner);
+        $project = (new Project())->setTitle('Usage Project '.uniqid());
+        $project->addPartner($partner);
         $em->persist($partner);
-        $em->persist($initiative);
+        $em->persist($project);
         $em->flush();
 
-        $expected = [['id' => (string) $initiative->getId(), 'title' => $initiative->getTitle()]];
-        self::assertSame($expected, $repository->findInitiativesUsing($partner));
+        $expected = [['id' => (string) $project->getId(), 'title' => $project->getTitle()]];
+        self::assertSame($expected, $repository->findProjectsUsing($partner));
 
         // The bulk variant backing the admin list must agree with the single lookup.
-        $usage = $repository->findInitiativeUsage();
+        $usage = $repository->findProjectUsage();
         self::assertSame($expected, $usage[(string) $partner->getId()] ?? []);
 
-        $em->remove($initiative);
+        $em->remove($project);
         $em->remove($partner);
         $em->flush();
     }
 
-    public function testFindInitiativeUsageOmitsUnusedPartners(): void
+    public function testFindProjectUsageOmitsUnusedPartners(): void
     {
         self::bootKernel();
         $repository = static::getContainer()->get(PartnerRepository::class);
@@ -100,8 +100,8 @@ final class PartnerRepositoryTest extends KernelTestCase
         $em->persist($partner);
         $em->flush();
 
-        self::assertSame([], $repository->findInitiativesUsing($partner));
-        self::assertArrayNotHasKey((string) $partner->getId(), $repository->findInitiativeUsage());
+        self::assertSame([], $repository->findProjectsUsing($partner));
+        self::assertArrayNotHasKey((string) $partner->getId(), $repository->findProjectUsage());
 
         $em->remove($partner);
         $em->flush();

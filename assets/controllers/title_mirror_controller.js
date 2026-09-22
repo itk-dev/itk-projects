@@ -1,8 +1,8 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * Mirrors the initiative title into the page heading and breadcrumb as it is
- * typed, so a new (or freshly auto-created) initiative is identifiable before
+ * Mirrors the project title into the page heading and breadcrumb as it is
+ * typed, so a new (or freshly auto-created) project is identifiable before
  * the page is ever reloaded. Falls back to the original text when emptied.
  */
 export default class extends Controller {

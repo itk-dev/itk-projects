@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-30](https://github.com/itk-dev/itk-projects/pull/30)
+  Rename "initiative" to "project" throughout the codebase: entities, tables,
+  routes, forms, translations, templates and tests. The migration drops the
+  initiative tables and creates the project tables; no data is carried over.
 * [PR-29](https://github.com/itk-dev/itk-projects/pull/29)
   Made the department field on the contact entity relate to the department
   entity.

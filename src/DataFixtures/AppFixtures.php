@@ -7,13 +7,13 @@ namespace App\DataFixtures;
 use App\Entity\Area;
 use App\Entity\Contact;
 use App\Entity\Department;
-use App\Entity\Initiative;
 use App\Entity\Partner;
+use App\Entity\Project;
 use App\Entity\Term;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\InitiativeType;
+use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -81,7 +81,7 @@ class AppFixtures extends Fixture
         foreach (self::PARTNERS as $name) {
             $partner = (new Partner())
                 ->setName($name)
-                ->setDescription($name.' samarbejder med kommunen om udvikling, viden og afprøvning i konkrete initiativer.')
+                ->setDescription($name.' samarbejder med kommunen om udvikling, viden og afprøvning i konkrete projekter.')
                 // ascii() turns spaces into dots (it also builds e-mail addresses), which
                 // a domain does not want, so drop them again.
                 ->setWebsite('https://www.'.strtolower(str_replace('.', '', $this->ascii($name))).'.dk');
@@ -131,56 +131,56 @@ class AppFixtures extends Fixture
         ];
 
         $statuses = Status::cases();
-        $types = InitiativeType::cases();
+        $types = ProjectType::cases();
         $endorsers = EndorsementAuthor::cases();
         $fundings = Funding::cases();
 
         foreach ($titles as $index => $title) {
-            $initiative = (new Initiative())
+            $project = (new Project())
                 ->setTitle($title)
                 ->setArea($areas[array_rand($areas)])
-                ->setInitiativeType($types[array_rand($types)])
+                ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
                 ->setOrganizationalAnchoring($departments[array_rand($departments)])
-                ->setDescription('Initiativet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
+                ->setDescription('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
                 ->setEndorsement(0 === $index % 3 ? false : true)
                 ->setBudget(mt_rand(1, 40) * 50000);
-            $initiative->setCreatedBy($users[array_rand($users)]);
+            $project->setCreatedBy($users[array_rand($users)]);
 
-            // Not every initiative belongs to a wider programme.
+            // Not every project belongs to a wider programme.
             if (0 !== $index % 3) {
-                $initiative->setTopic(self::TOPICS[$index % \count(self::TOPICS)]);
+                $project->setTopic(self::TOPICS[$index % \count(self::TOPICS)]);
             }
 
             if (0 !== $index % 4) {
-                $initiative->setEndorsementAuthor($endorsers[array_rand($endorsers)]);
+                $project->setEndorsementAuthor($endorsers[array_rand($endorsers)]);
             }
 
-            $initiative->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
+            $project->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
 
             $start = new \DateTimeImmutable(sprintf('2025-%02d-01', mt_rand(1, 12)));
-            $initiative->setTimePeriodStart($start);
-            $initiative->setTimePeriodEnd($start->modify('+'.mt_rand(6, 36).' months'));
+            $project->setTimePeriodStart($start);
+            $project->setTimePeriodEnd($start->modify('+'.mt_rand(6, 36).' months'));
 
             foreach (\array_slice($this->shuffleCopy($tags), 0, mt_rand(1, 4)) as $term) {
-                $initiative->addTag($term);
+                $project->addTag($term);
             }
             foreach (\array_slice($this->shuffleCopy($stakeholders), 0, mt_rand(1, 3)) as $term) {
-                $initiative->addStakeholder($term);
+                $project->addStakeholder($term);
             }
             foreach (\array_slice($this->shuffleCopy($strategies), 0, mt_rand(0, 2)) as $term) {
-                $initiative->addStrategy($term);
+                $project->addStrategy($term);
             }
             foreach (\array_slice($this->shuffleCopy($contacts), 0, mt_rand(1, 3)) as $contact) {
-                $initiative->addContact($contact);
+                $project->addContact($contact);
             }
             foreach (\array_slice($this->shuffleCopy($partners), 0, mt_rand(1, 3)) as $partner) {
-                $initiative->addPartner($partner);
+                $project->addPartner($partner);
             }
 
-            $initiative->setLinks(['https://www.aarhus.dk']);
+            $project->setLinks(['https://www.aarhus.dk']);
 
-            $manager->persist($initiative);
+            $manager->persist($project);
         }
 
         $manager->flush();

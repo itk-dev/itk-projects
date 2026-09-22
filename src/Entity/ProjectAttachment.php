@@ -10,14 +10,14 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity]
 #[Vich\Uploadable]
-class InitiativeAttachment extends AbstractEntity
+class ProjectAttachment extends AbstractEntity
 {
-    #[ORM\ManyToOne(targetEntity: Initiative::class, inversedBy: 'attachments')]
+    #[ORM\ManyToOne(targetEntity: Project::class, inversedBy: 'attachments')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?Initiative $initiative = null;
+    private ?Project $project = null;
 
     #[Vich\UploadableField(
-        mapping: 'initiative_attachment',
+        mapping: 'project_attachment',
         fileNameProperty: 'fileName',
         originalName: 'originalName',
         mimeType: 'mimeType',
@@ -37,14 +37,14 @@ class InitiativeAttachment extends AbstractEntity
     #[ORM\Column(nullable: true)]
     private ?int $size = null;
 
-    public function getInitiative(): ?Initiative
+    public function getProject(): ?Project
     {
-        return $this->initiative;
+        return $this->project;
     }
 
-    public function setInitiative(?Initiative $initiative): static
+    public function setProject(?Project $project): static
     {
-        $this->initiative = $initiative;
+        $this->project = $project;
 
         return $this;
     }

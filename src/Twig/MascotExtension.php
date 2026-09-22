@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Twig;
 
 use App\Entity\Contact;
-use App\Entity\Initiative;
+use App\Entity\Project;
 use App\Entity\User;
 use App\Repository\ContactRepository;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 /**
- * Feeds the corner mascot the current user's own numbers: how many initiatives
+ * Feeds the corner mascot the current user's own numbers: how many projects
  * they have created (to praise them) and their least-complete one (to nudge them
  * to finish it). Returns zeros/null when no user is logged in.
  */
@@ -22,7 +22,7 @@ class MascotExtension extends AbstractExtension
 {
     public function __construct(
         private readonly Security $security,
-        private readonly InitiativeRepository $initiatives,
+        private readonly ProjectRepository $projects,
         private readonly ContactRepository $contacts,
     ) {
     }
@@ -35,7 +35,7 @@ class MascotExtension extends AbstractExtension
     }
 
     /**
-     * @return array{count: int, unfinished: Initiative|null, incompleteContact: Contact|null}
+     * @return array{count: int, unfinished: Project|null, incompleteContact: Contact|null}
      */
     public function context(): array
     {
@@ -45,8 +45,8 @@ class MascotExtension extends AbstractExtension
         }
 
         return [
-            'count' => $this->initiatives->countByCreator($user),
-            'unfinished' => $this->initiatives->findUnfinishedByCreator($user),
+            'count' => $this->projects->countByCreator($user),
+            'unfinished' => $this->projects->findUnfinishedByCreator($user),
             'incompleteContact' => $this->contacts->findIncompleteByCreator($user),
         ];
     }
