@@ -262,6 +262,7 @@ contact:
     phone_help: Phone number, if known.
     department: Department
     department_help: The department or unit the person belongs to.
+    department_placeholder: Choose department
     index:
         title: Contacts
         subtitle: People attached to projects.

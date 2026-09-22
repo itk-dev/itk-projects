@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Contact;
+use App\Entity\Department;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
@@ -34,8 +36,11 @@ class ContactType extends AbstractType
                 'required' => false,
                 'help' => 'contact.phone_help',
             ])
-            ->add('department', TextType::class, [
+            ->add('department', EntityType::class, [
+                'placeholder' => 'contact.department_placeholder',
                 'label' => 'contact.department',
+                'class' => Department::class,
+                'choice_label' => 'name',
                 'required' => false,
                 'help' => 'contact.department_help',
             ]);

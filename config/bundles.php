@@ -18,4 +18,5 @@ return [
     DH\AuditorBundle\DHAuditorBundle::class => ['all' => true],
     ITKDev\EntityBundle\ITKDevEntityBundle::class => ['all' => true],
     Symfony\UX\TwigComponent\TwigComponentBundle::class => ['all' => true],
+    Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
 ];

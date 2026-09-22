@@ -98,7 +98,7 @@ class AppFixtures extends Fixture
                 ->setName($name)
                 ->setEmail(strtolower(str_replace(' ', '.', $this->ascii($name))).'@aarhus.dk')
                 ->setPhone('+45 '.mt_rand(20, 99).' '.mt_rand(10, 99).' '.mt_rand(10, 99).' '.mt_rand(10, 99))
-                ->setDepartment(self::DEPARTMENTS[array_rand(self::DEPARTMENTS)]);
+                ->setDepartment($departments[array_rand($departments)]);
             $manager->persist($contact);
             $contacts[] = $contact;
         }

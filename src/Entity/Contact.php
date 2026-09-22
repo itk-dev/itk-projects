@@ -22,8 +22,9 @@ class Contact extends AbstractEntity
     #[ORM\Column(length: 64, nullable: true)]
     private ?string $phone = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $department = null;
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Department $department = null;
 
     public function getName(): ?string
     {
@@ -61,20 +62,20 @@ class Contact extends AbstractEntity
         return $this;
     }
 
-    public function getDepartment(): ?string
+    public function __toString(): string
+    {
+        return (string) $this->name;
+    }
+
+    public function getDepartment(): ?Department
     {
         return $this->department;
     }
 
-    public function setDepartment(?string $department): static
+    public function setDepartment(?Department $department): static
     {
         $this->department = $department;
 
         return $this;
-    }
-
-    public function __toString(): string
-    {
-        return (string) $this->name;
     }
 }
