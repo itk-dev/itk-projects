@@ -155,24 +155,8 @@ dashboard:
     collaboration_count_hint: områder på tværs af afdelinger
     by_status: Fordeling på status
     by_status_sub: Alle projekter fordelt på deres aktuelle status.
-    recent: Senest oprettede
-    no_status: Uden status
-    empty: Der er endnu ikke oprettet nogen projekter.
-    themes_heatmap: Områder på tværs af afdelinger
-    themes_heatmap_sub: Antal projekter pr. område i hver afdeling.
-    themes_heatmap_empty: Tilføj både afdelinger og områder for at se denne graf.
-    collaboration: Muligt samarbejde
-    collaboration_sub: Projekter i forskellige afdelinger med fælles område.
-    status_by_dept: Status pr. afdeling
-    status_by_dept_sub: Projekternes status fordelt på hver afdeling.
-    funding_sources: Finansieringskilder
-    funding_sources_sub: Antal projekter pr. finansieringskilde.
     budget_by_dept: Budget pr. afdeling
     budget_by_dept_sub: Samlet budget for projekterne i hver afdeling.
-    reach: Områder med flest afdelinger
-    reach_sub: Hvor mange afdelinger hvert område er repræsenteret i.
-    timeline: Tidslinje
-    timeline_sub: Hvert projekts tidsperiode på en tidslinje.
     unfinished:
         title: Dit igangværende arbejde
         sub: Dine projekter og kontaktpersoner der mangler de sidste detaljer.

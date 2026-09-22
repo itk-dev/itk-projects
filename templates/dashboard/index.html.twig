@@ -3,7 +3,7 @@
 {% block title %}{{ 'dashboard.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="page" data-controller="dashboard-live dashboard-viz" data-dashboard-viz-empty-value="{{ 'dashboard.themes_heatmap_empty'|trans }}">
+    <div class="page" data-controller="dashboard-live dashboard-viz">
         <twig:Page:Header :title="'dashboard.title'|trans">
             <a href="{{ path('app_project_new') }}" class="btn btn--primary">{{ 'action.new_project'|trans }}</a>
         </twig:Page:Header>
@@ -75,48 +75,14 @@
                 </div>
             </div>
 
-            <div class="card span-12">
-                <twig:Card:Header :title="'dashboard.themes_heatmap'|trans" :sub="'dashboard.themes_heatmap_sub'|trans" />
-                <div class="card__body">
-                    <div class="heat-scroll"><div class="heat" data-dashboard-viz-target="heatmap"></div></div>
-                </div>
-            </div>
-
-            <div class="card span-12">
-                <twig:Card:Header :title="'dashboard.collaboration'|trans" :sub="'dashboard.collaboration_sub'|trans" />
-                <div class="card__body">
-                    <div class="collab" data-dashboard-viz-target="collab"></div>
-                </div>
-            </div>
-
-            <div class="card span-7">
-                <twig:Card:Header :title="'dashboard.status_by_dept'|trans" :sub="'dashboard.status_by_dept_sub'|trans" />
-                <div class="card__body"><div class="chart-box h-320"><canvas data-dashboard-viz-target="statusByDept"></canvas></div></div>
-            </div>
-
             <div class="card span-5">
                 <twig:Card:Header :title="'dashboard.by_status'|trans" :sub="'dashboard.by_status_sub'|trans" />
                 <div class="card__body"><div class="chart-box h-300"><canvas data-dashboard-viz-target="statusDist"></canvas></div></div>
             </div>
 
-            <div class="card span-5">
-                <twig:Card:Header :title="'dashboard.funding_sources'|trans" :sub="'dashboard.funding_sources_sub'|trans" />
-                <div class="card__body"><div class="chart-box h-300"><canvas data-dashboard-viz-target="funding"></canvas></div></div>
-            </div>
-
             <div class="card span-7">
                 <twig:Card:Header :title="'dashboard.budget_by_dept'|trans" :sub="'dashboard.budget_by_dept_sub'|trans" />
                 <div class="card__body"><div class="chart-box h-300"><canvas data-dashboard-viz-target="budget"></canvas></div></div>
-            </div>
-
-            <div class="card span-7">
-                <twig:Card:Header :title="'dashboard.timeline'|trans" :sub="'dashboard.timeline_sub'|trans" />
-                <div class="card__body"><div class="chart-box h-320"><canvas data-dashboard-viz-target="timeline"></canvas></div></div>
-            </div>
-
-            <div class="card span-5">
-                <twig:Card:Header :title="'dashboard.reach'|trans" :sub="'dashboard.reach_sub'|trans" />
-                <div class="card__body"><div class="chart-box h-320"><canvas data-dashboard-viz-target="reach"></canvas></div></div>
             </div>
         </div>
         </div>

@@ -6,9 +6,7 @@ namespace App\Tests\Service;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\Funding;
 use App\Enum\Status;
-use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
 use App\Repository\ProjectRepository;
 use App\Service\DashboardData;
@@ -30,7 +28,10 @@ final class DashboardDataTest extends KernelTestCase
         // Fixtures set organizationalAnchoring on every project, so the
         // department-keyed aggregates must be populated.
         self::assertGreaterThan(0, $data['kpis']['departments'], 'deptsSeen should be > 0');
-        self::assertGreaterThan(0, array_sum(array_map('array_sum', $data['heatmap'])), 'heatmap should have entries');
+        // One budget cell per department and one status cell per status case,
+        // in the same order as the labels the chart reads.
+        self::assertCount(\count($data['departments']), $data['budgetByDept']);
+        self::assertCount(\count(Status::cases()), $data['statusDistribution']);
     }
 
     /**
@@ -46,33 +47,33 @@ final class DashboardDataTest extends KernelTestCase
 
         $departments = $this->createStub(DepartmentRepository::class);
         $departments->method('findAllOrdered')->willReturn([$deptA, $deptB]);
-        $areas = $this->createStub(AreaRepository::class);
-        $areas->method('findAllOrdered')->willReturn([$shared, $solo]);
 
-        $start = new \DateTimeImmutable('2025-01-01');
-        $end = new \DateTimeImmutable('2025-06-01');
         $projects = $this->createStub(ProjectRepository::class);
         $projects->method('dashboardRows')->willReturn([
-            // "Shared" worked on in two departments -> a collaboration opportunity;
-            // also carries budget, funding (a known and an unknown slug) and a span.
-            ['title' => 'Shared A', 'area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000, 'funding' => [Funding::MunicipalBudget->value, 'unknown'], 'timePeriodStart' => $start, 'timePeriodEnd' => $end],
-            ['title' => 'Shared B', 'area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
-            // "Solo" only in one department -> skipped by collaboration().
-            ['title' => 'Solo', 'area' => (string) $solo->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
+            // "Shared" worked on in two departments -> counts as a collaboration.
+            ['area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000],
+            ['area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000],
+            // "Solo" only in one department, and without a budget.
+            ['area' => (string) $solo->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null],
             // No area/department/status -> exercises the null guards.
-            ['title' => 'Loose', 'area' => null, 'status' => null, 'organizationalAnchoring' => null, 'budget' => null, 'funding' => [], 'timePeriodStart' => null, 'timePeriodEnd' => null],
+            ['area' => null, 'status' => null, 'organizationalAnchoring' => null, 'budget' => null],
         ]);
 
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        $data = (new DashboardData($projects, $departments, $areas, $translator))->build();
+        $data = (new DashboardData($projects, $departments, $translator))->build();
 
         self::assertSame(4, $data['kpis']['total']);
-        // Only "Shared" spans >= 2 departments; "Solo" is skipped.
+        self::assertSame(3, $data['kpis']['inProgress']);
+        self::assertSame(2, $data['kpis']['departments']);
+        self::assertSame(2, $data['kpis']['departmentsTotal']);
+        // Only "Shared" spans >= 2 departments; "Solo" does not count.
         self::assertSame(1, $data['kpis']['collaboration']);
-        self::assertCount(1, $data['collaboration']);
-        self::assertSame('Shared', $data['collaboration'][0]['theme']);
-        self::assertCount(1, $data['timeline']);
+        self::assertSame(['A', 'B'], array_column($data['departments'], 'label'));
+        self::assertSame([1000, 2000], $data['budgetByDept']);
+        self::assertSame(3, array_sum($data['statusDistribution']));
+        // The stubbed translator echoes the key, so labels are the enum label keys.
+        self::assertContains(['key' => Status::Active->value, 'label' => Status::Active->labelKey()], $data['statuses']);
     }
 }

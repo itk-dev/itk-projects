@@ -155,24 +155,8 @@ dashboard:
     collaboration_count_hint: areas across departments
     by_status: By status
     by_status_sub: All projects grouped by their current status.
-    recent: Recently created
-    no_status: No status
-    empty: No projects have been created yet.
-    themes_heatmap: Areas across departments
-    themes_heatmap_sub: Number of projects per area in each department. Darker = more; marked areas span at least three departments.
-    themes_heatmap_empty: Add both departments and areas to see this chart.
-    collaboration: Possible collaboration
-    collaboration_sub: Projects in different departments sharing an area.
-    status_by_dept: Status by department
-    status_by_dept_sub: Project statuses broken down by department.
-    funding_sources: Funding sources
-    funding_sources_sub: Number of projects per funding source.
     budget_by_dept: Budget by department
     budget_by_dept_sub: Total budget of the projects in each department.
-    reach: Areas by department reach
-    reach_sub: How many departments each area appears in.
-    timeline: Timeline
-    timeline_sub: Each project's time period on a timeline.
     unfinished:
         title: Your work
         sub: Your projects and contacts that are still missing details.
