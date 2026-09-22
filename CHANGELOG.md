@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Replace the project statuses with a set that follows a funding application:
   Idé, Mulighed, Ansøgning igangværende, Ansøgning afsendt, Bevilliget,
   Sat i bero, Afvist and Afsluttet. Existing rows are migrated.
-
 * [PR-30](https://github.com/itk-dev/itk-projects/pull/30)
   Rename "initiative" to "project" throughout the codebase: entities, tables,
   routes, forms, translations, templates and tests. The migration drops the
