@@ -110,8 +110,6 @@ action:
     reset: Nulstil
     export: Eksportér CSV
     add_link: Tilføj link
-    add_image: Tilføj billede
-    add_attachment: Tilføj fil
     remove: Fjern
     confirm_delete_title: "Slet “%name%”?"
     irreversible: Denne handling kan ikke fortrydes.
@@ -124,15 +122,11 @@ common:
     created: Oprettet
     updated: Opdateret
     optional: valgfri
-    close: Luk
 
 form:
     choose: Vælg …
     terms:
         invalid: Ugyldige værdier.
-
-media:
-    choose: Vælg fil
 
 filter:
     search: Søg
@@ -221,11 +215,6 @@ project:
     author: Udfyldt af
     terms_help: Vælg eksisterende, eller skriv en ny og tryk Enter.
     completion_field_hint: Dette felt tæller med i udfyldningsgraden.
-    images: Billeder
-    attachments: Filer
-    image_file: Billedfil
-    attachment_file: Fil
-    attachment_invalid_type: "Filtypen er ikke tilladt (tilladt: pdf, doc, docx, xls, xlsx)."
     index:
         title: Projekter
         subtitle: Søg, filtrér og opret projekter.
@@ -238,7 +227,6 @@ project:
         contacts: Kontaktpersoner
         partners: Samarbejdspartnere
         classification: Klassificering
-        media: Filer og billeder
         no_contacts: Ingen kontaktpersoner tilknyttet.
         no_partners: Ingen samarbejdspartnere tilknyttet.
     empty:
@@ -250,7 +238,6 @@ project:
         endorsement: Vedtagelse
         economy: Økonomi og tid
         relations: Interessenter, samarbejdspartnere og kontakter
-        media: Filer og billeder
         meta: Øvrigt
 
 contact:

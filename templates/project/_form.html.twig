@@ -108,69 +108,6 @@
         {{ form_row(form.contacts) }}
     </div>
 
-    <div class="form-section">
-        <div class="form-section__title">{{ 'project.section.media'|trans }}</div>
-
-        <turbo-frame id="project-media">
-            <div class="form-row">
-                <label>{{ 'project.images'|trans }}</label>
-                <div class="collection" data-collection data-remove-label="{{ 'action.remove'|trans }}"
-                     data-prototype="{{ form_widget(form.images.vars.prototype.imageFile)|e('html_attr') }}">
-                    <div class="collection" data-collection-list>
-                        {% for image in form.images %}
-                            {% set uploaded = image.vars.value and image.vars.value.id and image.vars.value.imageName %}
-                            <div class="collection__item{{ uploaded ? ' collection__item--uploaded' }}" data-collection-item>
-                                <div class="collection__fields">
-                                    {% if uploaded %}
-                                        <div class="upload-done">
-                                            <a class="upload-done__thumb" href="{{ path('app_media_image', {id: image.vars.value.id}) }}"
-                                               data-controller="lightbox" data-action="click->lightbox#open"
-                                               data-lightbox-close-label-value="{{ 'common.close'|trans }}">
-                                                <img src="{{ path('app_media_image', {id: image.vars.value.id}) }}" alt="" loading="lazy">
-                                            </a>
-                                            <span class="upload-done__name">{{ image.vars.value.originalName ?: 'image' }}</span>
-                                        </div>
-                                    {% endif %}
-                                    {{ form_widget(image.imageFile) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <button type="button" class="btn-add" data-collection-add>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                        {{ 'action.add_image'|trans }}
-                    </button>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <label>{{ 'project.attachments'|trans }}</label>
-                <div class="collection" data-collection data-remove-label="{{ 'action.remove'|trans }}"
-                     data-prototype="{{ form_widget(form.attachments.vars.prototype.file)|e('html_attr') }}">
-                    <div class="collection" data-collection-list>
-                        {% for attachment in form.attachments %}
-                            {% set uploaded = attachment.vars.value and attachment.vars.value.id and attachment.vars.value.fileName %}
-                            <div class="collection__item{{ uploaded ? ' collection__item--uploaded' }}" data-collection-item>
-                                <div class="collection__fields">
-                                    {% if uploaded %}
-                                        <div class="upload-done">
-                                            <a class="upload-done__name" href="{{ path('app_media_attachment', {id: attachment.vars.value.id}) }}">{{ attachment.vars.value.originalName ?: 'file' }}</a>
-                                        </div>
-                                    {% endif %}
-                                    {{ form_widget(attachment.file) }}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                    <button type="button" class="btn-add" data-collection-add>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                        {{ 'action.add_attachment'|trans }}
-                    </button>
-                </div>
-            </div>
-        </turbo-frame>
-    </div>
-
     {% if not (autosave|default(false)) %}
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">{{ button_label|default('action.save')|trans }}</button>
@@ -178,6 +115,4 @@
         </div>
     {% endif %}
     {% do form.links.setRendered() %}
-    {% do form.images.setRendered() %}
-    {% do form.attachments.setRendered() %}
 {{ form_end(form) }}

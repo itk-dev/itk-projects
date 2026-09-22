@@ -89,14 +89,6 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_partner')]
     private Collection $partners;
 
-    /** @var Collection<int, ProjectImage> */
-    #[ORM\OneToMany(targetEntity: ProjectImage::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $images;
-
-    /** @var Collection<int, ProjectAttachment> */
-    #[ORM\OneToMany(targetEntity: ProjectAttachment::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $attachments;
-
     /** @var Collection<int, Term> */
     #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
     #[ORM\JoinTable(name: 'project_stakeholder')]
@@ -137,8 +129,6 @@ class Project extends AbstractEntity
         $this->partners = new ArrayCollection();
         $this->stakeholders = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->images = new ArrayCollection();
-        $this->attachments = new ArrayCollection();
     }
 
     public function getTitle(): ?string
@@ -334,52 +324,6 @@ class Project extends AbstractEntity
     public function removePartner(Partner $partner): static
     {
         $this->partners->removeElement($partner);
-
-        return $this;
-    }
-
-    /** @return Collection<int, ProjectImage> */
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(ProjectImage $image): static
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(ProjectImage $image): static
-    {
-        $this->images->removeElement($image);
-
-        return $this;
-    }
-
-    /** @return Collection<int, ProjectAttachment> */
-    public function getAttachments(): Collection
-    {
-        return $this->attachments;
-    }
-
-    public function addAttachment(ProjectAttachment $attachment): static
-    {
-        if (!$this->attachments->contains($attachment)) {
-            $this->attachments->add($attachment);
-            $attachment->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAttachment(ProjectAttachment $attachment): static
-    {
-        $this->attachments->removeElement($attachment);
 
         return $this;
     }
