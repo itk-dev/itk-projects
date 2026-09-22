@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Repository;
 
+use App\Entity\Area;
+use App\Entity\Department;
 use App\Entity\Project;
 use App\Enum\ProjectType;
 use App\Enum\Status;
@@ -44,6 +46,50 @@ final class ProjectRepositoryTest extends KernelTestCase
         $filter->direction = 'ASC';
 
         self::assertIsArray($this->repository->search($filter)->getQuery()->getResult());
+    }
+
+    public function testSearchByDepartmentOrAreaMatchesOnlyProjectsWithThem(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
+
+        $department = (new Department())->setName('Filter dept '.uniqid());
+        $area = (new Area())->setName('Filter area '.uniqid());
+        $anchored = (new Project())
+            ->setTitle('Anchored '.uniqid())
+            ->addOrganizationalAnchoring($department)
+            ->setArea($area);
+        $loose = (new Project())->setTitle('Loose '.uniqid());
+        foreach ([$department, $area, $anchored, $loose] as $entity) {
+            $em->persist($entity);
+        }
+        $em->flush();
+
+        $byDepartment = new ProjectFilter();
+        $byDepartment->organizationalAnchoring = $department;
+        $byArea = new ProjectFilter();
+        $byArea->area = $area;
+
+        // Both filters must actually narrow the list: the binary ULID foreign keys
+        // only match when the id is bound with the ulid type, so an entity bound
+        // as-is would silently return nothing.
+        foreach ([$byDepartment, $byArea] as $filter) {
+            self::assertSame([$anchored->getTitle()], $this->titles($filter));
+        }
+
+        foreach ([$anchored, $loose, $department, $area] as $entity) {
+            $em->remove($entity);
+        }
+        $em->flush();
+    }
+
+    /** @return list<string> */
+    private function titles(ProjectFilter $filter): array
+    {
+        return array_map(
+            static fn (Project $project): string => (string) $project->getTitle(),
+            $this->repository->search($filter)->getQuery()->getResult(),
+        );
     }
 
     public function testSearchMatchesTranslatedFundingLabel(): void

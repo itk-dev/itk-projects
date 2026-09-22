@@ -89,7 +89,7 @@ class ProjectRepository extends ServiceEntityRepository
         }
 
         if (null !== $filter->area) {
-            $qb->andWhere('i.area = :area')->setParameter('area', $filter->area);
+            $qb->andWhere('i.area = :area')->setParameter('area', $filter->area->getId(), 'ulid');
         }
 
         if (null !== $filter->projectType) {
@@ -97,7 +97,8 @@ class ProjectRepository extends ServiceEntityRepository
         }
 
         if (null !== $filter->organizationalAnchoring) {
-            $qb->andWhere('i.organizationalAnchoring = :anchoring')->setParameter('anchoring', $filter->organizationalAnchoring);
+            $qb->andWhere(':anchoring MEMBER OF i.organizationalAnchoring')
+                ->setParameter('anchoring', $filter->organizationalAnchoring->getId(), 'ulid');
         }
 
         if (null !== $filter->endorsement) {
@@ -146,7 +147,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['strategies', 'stakeholders', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['organizationalAnchoring', 'strategies', 'stakeholders', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')
@@ -261,8 +262,9 @@ class ProjectRepository extends ServiceEntityRepository
 
     /**
      * Lightweight per-project rows for the dashboard visualisations: just the
-     * columns the aggregates need, no relations, so it stays cheap to recompute
-     * on every live broadcast.
+     * columns the aggregates need, so it stays cheap to recompute on every live
+     * broadcast. `organizationalAnchoring` is the list of department ids (as
+     * strings); the other keys are plain columns.
      *
      * @return list<array<string, mixed>>
      */
@@ -271,20 +273,39 @@ class ProjectRepository extends ServiceEntityRepository
         // Join and select the related ids (rather than IDENTITY()) so Doctrine
         // applies the ULID type: IDENTITY() returns the raw binary FK, which would
         // not match the canonical ULID strings the rest of build() keys on.
-        return $this->createQueryBuilder('i')
+        $rows = $this->createQueryBuilder('i')
             ->select(
+                'i.id',
                 'i.title',
                 'ar.id AS area',
                 'i.status',
-                'department.id AS organizationalAnchoring',
                 'i.budget',
                 'i.funding',
                 'i.timePeriodStart',
                 'i.timePeriodEnd',
             )
             ->leftJoin('i.area', 'ar')
-            ->leftJoin('i.organizationalAnchoring', 'department')
             ->getQuery()
             ->getArrayResult();
+
+        // Departments are many-to-many, so they are fetched separately and folded
+        // in: joining them above would repeat every project once per department.
+        $departmentsByProject = [];
+        $pairs = $this->createQueryBuilder('i')
+            ->select('i.id AS project', 'd.id AS department')
+            ->join('i.organizationalAnchoring', 'd')
+            ->getQuery()
+            ->getArrayResult();
+
+        foreach ($pairs as $pair) {
+            $departmentsByProject[(string) $pair['project']][] = (string) $pair['department'];
+        }
+
+        foreach ($rows as &$row) {
+            $row['organizationalAnchoring'] = $departmentsByProject[(string) $row['id']] ?? [];
+            unset($row['id']);
+        }
+
+        return $rows;
     }
 }

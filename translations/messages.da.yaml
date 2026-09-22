@@ -200,7 +200,7 @@ project:
     status_additional: Status – supplerende tekst
     status_additional_help: Uddyb status, hvis der er behov.
     organizational_anchoring: Afdeling
-    organizational_anchoring_help: Den afdeling der er ansvarlig for projektet.
+    organizational_anchoring_help: De afdelinger projektet er forankret i. Vælg flere, hvis projektet går på tværs.
     endorsement: Er projektet vedtaget
     endorsement_author: Hvor er det vedtaget
     endorsement_author_help: Hvor projektet er vedtaget.

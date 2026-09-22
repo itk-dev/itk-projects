@@ -48,7 +48,7 @@
                             {% endif %}
                         </td>
                         <td>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</td>
-                        <td>{{ project.organizationalAnchoring ? project.organizationalAnchoring.name : '—' }}</td>
+                        <td>{{ project.organizationalAnchoring|length > 0 ? project.organizationalAnchoring|map(d => d.name)|join(', ') : '—' }}</td>
                         <td>
                             {% if project.timePeriodStart %}
                                 {{ project.timePeriodStart|date('d.m.Y') }}{% if project.timePeriodEnd %} – {{ project.timePeriodEnd|date('d.m.Y') }}{% endif %}

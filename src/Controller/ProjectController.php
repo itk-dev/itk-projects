@@ -86,7 +86,7 @@ class ProjectController extends AbstractController
                     $translate($row->getStatus()),
                     $row->getArea()?->getName(),
                     $translate($row->getProjectType()),
-                    $row->getOrganizationalAnchoring()?->getName(),
+                    $names($row->getOrganizationalAnchoring()),
                     $row->isEndorsement() ? $translator->trans('filter.yes') : $translator->trans('filter.no'),
                     $translate($row->getEndorsementAuthor()),
                     $row->getBudget(),
