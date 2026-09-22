@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Initiative;
+use App\Entity\Project;
 use App\Entity\User;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 /**
- * Pushes a single Mercure payload describing an initiative change to every
+ * Pushes a single Mercure payload describing a project change to every
  * connected client: a Turbo Stream that prepends the change to the live activity
  * feed and refreshes the dashboard's KPIs and visualisations. The aggregates are
  * recomputed here so the broadcast reflects the state after flush.
@@ -34,17 +34,17 @@ final class ActivityPublisher
     ) {
     }
 
-    public function publish(string $action, Initiative $initiative, ?User $actor): void
+    public function publish(string $action, Project $project, ?User $actor): void
     {
-        // A deleted initiative has no page left to link to.
+        // A deleted project has no page left to link to.
         $url = 'deleted' === $action
             ? null
-            : $this->urlGenerator->generate('app_initiative_show', ['id' => $initiative->getId()]);
+            : $this->urlGenerator->generate('app_project_show', ['id' => $project->getId()]);
 
         $stream = $this->twig->render('activity/_broadcast.html.twig', [
             'action' => $action,
-            'initiativeId' => (string) $initiative->getId(),
-            'title' => $initiative->getTitle(),
+            'projectId' => (string) $project->getId(),
+            'title' => $project->getTitle(),
             'url' => $url,
             'actor' => $actor?->getName(),
             'at' => new \DateTimeImmutable(),

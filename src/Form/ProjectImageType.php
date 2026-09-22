@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Entity\InitiativeImage;
+use App\Entity\ProjectImage;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -13,12 +13,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @extends AbstractType<InitiativeImage>
+ * @extends AbstractType<ProjectImage>
  */
-class InitiativeImageType extends AbstractType
+class ProjectImageType extends AbstractType
 {
     public function __construct(
-        #[Autowire('%env(INITIATIVE_IMAGE_MAX_SIZE)%')]
+        #[Autowire('%env(PROJECT_IMAGE_MAX_SIZE)%')]
         private readonly string $maxImageSize,
     ) {
     }
@@ -27,7 +27,7 @@ class InitiativeImageType extends AbstractType
     {
         $builder
             ->add('imageFile', FileType::class, [
-                'label' => 'initiative.image_file',
+                'label' => 'project.image_file',
                 'required' => false,
                 'attr' => ['accept' => 'image/png,image/jpeg,image/gif'],
                 'constraints' => [
@@ -39,7 +39,7 @@ class InitiativeImageType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => InitiativeImage::class,
+            'data_class' => ProjectImage::class,
         ]);
     }
 }

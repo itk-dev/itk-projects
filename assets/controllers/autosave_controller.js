@@ -1,11 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * Debounced autosave for the initiative form.
+ * Debounced autosave for the project form.
  *
  * On the edit form it posts changes to the edit endpoint without re-rendering,
  * so focus and caret are never lost. On the new form (isNew) the first valid
- * save creates the initiative and the controller swaps to editing that record
+ * save creates the project and the controller swaps to editing that record
  * in place (URL + action). Picking a file uploads it straight away via the same
  * POST; afterwards the media turbo-frame is reloaded so the stored file shows as
  * a link and its (now redundant) input is cleared — without that the file would
@@ -151,7 +151,7 @@ export default class extends Controller {
     }
 
     // POST the whole form via XHR so file uploads can report real progress.
-    // Resolves with the status and the X-Initiative-Location header (if any);
+    // Resolves with the status and the X-Project-Location header (if any);
     // rejects with an AbortError when superseded.
     request(onProgress) {
         return new Promise((resolve, reject) => {
@@ -174,7 +174,7 @@ export default class extends Controller {
             xhr.addEventListener("load", () =>
                 resolve({
                     status: xhr.status,
-                    location: xhr.getResponseHeader("X-Initiative-Location"),
+                    location: xhr.getResponseHeader("X-Project-Location"),
                 }),
             );
             xhr.addEventListener("error", () =>
@@ -205,7 +205,7 @@ export default class extends Controller {
     // Reload just the files/images section so a freshly uploaded file shows as a
     // link and its input is reset — the rest of the form keeps its state.
     refreshMedia() {
-        const frame = document.getElementById("initiative-media");
+        const frame = document.getElementById("project-media");
         if (!frame) {
             return;
         }

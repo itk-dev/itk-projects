@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\InitiativeImage;
-use App\Repository\InitiativeRepository;
+use App\Entity\ProjectImage;
+use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -34,7 +34,7 @@ final class SmokeTest extends WebTestCase
         $this->assertResponseIsSuccessful(sprintf('GET %s should succeed', $url));
     }
 
-    public function testInitiativeShowAndEditRender(): void
+    public function testProjectShowAndEditRender(): void
     {
         $client = static::createClient();
         $container = static::getContainer();
@@ -43,13 +43,13 @@ final class SmokeTest extends WebTestCase
         self::assertNotNull($admin);
         $client->loginUser($admin);
 
-        $initiative = $container->get(InitiativeRepository::class)->findOneBy([]);
-        self::assertNotNull($initiative, 'Fixtures should create at least one initiative.');
+        $project = $container->get(ProjectRepository::class)->findOneBy([]);
+        self::assertNotNull($project, 'Fixtures should create at least one project.');
 
-        $client->request('GET', sprintf('/initiatives/%s', $initiative->getId()));
+        $client->request('GET', sprintf('/projects/%s', $project->getId()));
         $this->assertResponseIsSuccessful();
 
-        $client->request('GET', sprintf('/initiatives/%s/edit', $initiative->getId()));
+        $client->request('GET', sprintf('/projects/%s/edit', $project->getId()));
         $this->assertResponseIsSuccessful();
     }
 
@@ -59,8 +59,8 @@ final class SmokeTest extends WebTestCase
         $container = static::getContainer();
         $entityManager = $container->get(EntityManagerInterface::class);
 
-        $initiative = $container->get(InitiativeRepository::class)->findOneBy([]);
-        self::assertNotNull($initiative);
+        $project = $container->get(ProjectRepository::class)->findOneBy([]);
+        self::assertNotNull($project);
 
         $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', true);
         self::assertIsString($png);
@@ -68,9 +68,9 @@ final class SmokeTest extends WebTestCase
         file_put_contents($path, $png);
         $upload = new UploadedFile($path, 'sample.png', 'image/png', null, true);
 
-        $image = (new InitiativeImage())->setAlt('Sample');
+        $image = (new ProjectImage())->setAlt('Sample');
         $image->setImageFile($upload);
-        $initiative->addImage($image);
+        $project->addImage($image);
         $entityManager->flush();
 
         self::assertNotNull($image->getImageName(), 'Vich should persist the stored file name.');
@@ -87,11 +87,11 @@ final class SmokeTest extends WebTestCase
     public static function authenticatedPages(): iterable
     {
         yield 'dashboard' => ['/'];
-        yield 'initiatives' => ['/initiatives'];
-        yield 'initiatives filtered' => ['/initiatives?status=active&endorsement=1&sort=title&direction=ASC'];
-        yield 'initiatives freetext search' => ['/initiatives?q=teknik'];
-        yield 'initiative new' => ['/initiatives/new'];
-        yield 'csv export' => ['/initiatives/export'];
+        yield 'projects' => ['/projects'];
+        yield 'projects filtered' => ['/projects?status=active&endorsement=1&sort=title&direction=ASC'];
+        yield 'projects freetext search' => ['/projects?q=teknik'];
+        yield 'project new' => ['/projects/new'];
+        yield 'csv export' => ['/projects/export'];
         yield 'admin users' => ['/admin/users'];
         yield 'admin user new' => ['/admin/users/new'];
         yield 'admin contacts' => ['/admin/contacts'];

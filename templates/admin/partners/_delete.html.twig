@@ -1,4 +1,4 @@
-{% set count = initiatives|length %}
+{% set count = projects|length %}
 <twig:ConfirmDelete
     :action="path('admin_partner_delete', {id: partner.id})"
     :token="csrf_token('delete-partner-' ~ partner.id)"
@@ -9,8 +9,8 @@
     {% if count > 0 %}
         <p>{{ 'partner.delete.in_use'|trans({'%count%': count}) }}</p>
         <ul class="confirm__list">
-            {% for initiative in initiatives %}
-                <li><a href="{{ path('app_initiative_show', {id: initiative.id}) }}" target="_blank" rel="noopener">{{ initiative.title }}</a></li>
+            {% for project in projects %}
+                <li><a href="{{ path('app_project_show', {id: project.id}) }}" target="_blank" rel="noopener">{{ project.title }}</a></li>
             {% endfor %}
         </ul>
         <p class="confirm__warning">{{ 'partner.delete.consequence'|trans }}</p>

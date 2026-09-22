@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\InitiativeAttachment;
-use App\Entity\InitiativeImage;
+use App\Entity\ProjectAttachment;
+use App\Entity\ProjectImage;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -25,14 +25,14 @@ class MediaController extends AbstractController
     }
 
     #[Route('/media/image/{id}', name: 'app_media_image', requirements: ['id' => Requirement::ULID], methods: ['GET'])]
-    public function image(InitiativeImage $image): Response
+    public function image(ProjectImage $image): Response
     {
-        return $this->downloadHandler->downloadObject($image, 'imageFile', InitiativeImage::class, $image->getOriginalName(), false);
+        return $this->downloadHandler->downloadObject($image, 'imageFile', ProjectImage::class, $image->getOriginalName(), false);
     }
 
     #[Route('/media/attachment/{id}', name: 'app_media_attachment', requirements: ['id' => Requirement::ULID], methods: ['GET'])]
-    public function attachment(InitiativeAttachment $attachment): Response
+    public function attachment(ProjectAttachment $attachment): Response
     {
-        return $this->downloadHandler->downloadObject($attachment, 'file', InitiativeAttachment::class, $attachment->getOriginalName() ?? 'attachment', true);
+        return $this->downloadHandler->downloadObject($attachment, 'file', ProjectAttachment::class, $attachment->getOriginalName() ?? 'attachment', true);
     }
 }

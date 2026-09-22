@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'project.new.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="page" data-controller="title-mirror" data-action="autosave:created->title-mirror#linkCrumb">
+        <twig:Page:Header>
+            <twig:block name="breadcrumb">
+                <div class="breadcrumb">
+                    <a href="{{ path('app_project_index') }}">{{ 'nav.projects'|trans }}</a>
+                    / <span data-title-mirror-target="crumb">{{ 'project.new.title'|trans }}</span>
+                </div>
+            </twig:block>
+            <twig:block name="title">
+                <span data-title-mirror-target="heading">{{ 'project.new.title'|trans }}</span>
+            </twig:block>
+        </twig:Page:Header>
+        {{ include('project/_form.html.twig', {button_label: 'action.create', autosave: true}) }}
+    </div>
+{% endblock %}

@@ -18,11 +18,11 @@ class Partner extends AbstractEntity
     public const int NAME_MAX_LENGTH = 255;
 
     // UniqueEntity only guards the admin form; partners created inline from the
-    // initiative form are not cascade-validated, so duplicates there are kept out
+    // project form are not cascade-validated, so duplicates there are kept out
     // only by findOrCreate()'s lookup, which two concurrent saves can race past.
     #[Assert\NotBlank]
     #[Assert\Length(max: self::NAME_MAX_LENGTH)]
-    // Comma is the separator of the free-tagging field on the initiative form, so a
+    // Comma is the separator of the free-tagging field on the project form, so a
     // name containing one would be split into two partners on the next edit.
     #[Assert\Regex(pattern: '/,/', match: false, message: 'partner.name_comma')]
     #[ORM\Column(length: self::NAME_MAX_LENGTH)]

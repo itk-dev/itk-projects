@@ -1,6 +1,6 @@
 {
     "name": "itk-dev/itk-projects",
-    "description": "Symfony app for registering and browsing municipal initiatives.",
+    "description": "Symfony app for registering and browsing municipal projects.",
     "license": "proprietary",
     "type": "project",
     "require": {

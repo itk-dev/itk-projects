@@ -10,7 +10,7 @@ use App\Enum\Funding;
 use App\Enum\Status;
 use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use App\Service\DashboardData;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -27,7 +27,7 @@ final class DashboardDataTest extends KernelTestCase
 
         self::assertGreaterThan(0, $data['kpis']['total']);
         self::assertGreaterThan(0, $data['kpis']['departmentsTotal']);
-        // Fixtures set organizationalAnchoring on every initiative, so the
+        // Fixtures set organizationalAnchoring on every project, so the
         // department-keyed aggregates must be populated.
         self::assertGreaterThan(0, $data['kpis']['departments'], 'deptsSeen should be > 0');
         self::assertGreaterThan(0, array_sum(array_map('array_sum', $data['heatmap'])), 'heatmap should have entries');
@@ -51,8 +51,8 @@ final class DashboardDataTest extends KernelTestCase
 
         $start = new \DateTimeImmutable('2025-01-01');
         $end = new \DateTimeImmutable('2025-06-01');
-        $initiatives = $this->createStub(InitiativeRepository::class);
-        $initiatives->method('dashboardRows')->willReturn([
+        $projects = $this->createStub(ProjectRepository::class);
+        $projects->method('dashboardRows')->willReturn([
             // "Shared" worked on in two departments -> a collaboration opportunity;
             // also carries budget, funding (a known and an unknown slug) and a span.
             ['title' => 'Shared A', 'area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000, 'funding' => [Funding::MunicipalBudget->value, 'unknown'], 'timePeriodStart' => $start, 'timePeriodEnd' => $end],
@@ -66,7 +66,7 @@ final class DashboardDataTest extends KernelTestCase
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
 
-        $data = (new DashboardData($initiatives, $departments, $areas, $translator))->build();
+        $data = (new DashboardData($projects, $departments, $areas, $translator))->build();
 
         self::assertSame(4, $data['kpis']['total']);
         // Only "Shared" spans >= 2 departments; "Solo" is skipped.

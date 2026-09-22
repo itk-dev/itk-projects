@@ -6,21 +6,21 @@ namespace App\Tests\Unit\Model;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\InitiativeType;
+use App\Enum\ProjectType;
 use App\Enum\Status;
-use App\Model\InitiativeFilter;
+use App\Model\ProjectFilter;
 use PHPUnit\Framework\TestCase;
 
-final class InitiativeFilterTest extends TestCase
+final class ProjectFilterTest extends TestCase
 {
     public function testDefaults(): void
     {
-        $filter = new InitiativeFilter();
+        $filter = new ProjectFilter();
 
         self::assertNull($filter->q);
         self::assertNull($filter->status);
         self::assertNull($filter->area);
-        self::assertNull($filter->initiativeType);
+        self::assertNull($filter->projectType);
         self::assertNull($filter->organizationalAnchoring);
         self::assertNull($filter->endorsement);
         self::assertSame('createdAt', $filter->sort);
@@ -29,11 +29,11 @@ final class InitiativeFilterTest extends TestCase
 
     public function testIsMutable(): void
     {
-        $filter = new InitiativeFilter();
+        $filter = new ProjectFilter();
         $filter->q = 'klima';
         $filter->status = Status::Active;
         $filter->area = (new Area())->setName('Klima og miljø');
-        $filter->initiativeType = InitiativeType::Project;
+        $filter->projectType = ProjectType::Project;
         $filter->organizationalAnchoring = (new Department())->setName('Sundhed og Omsorg');
         $filter->endorsement = true;
         $filter->sort = 'title';

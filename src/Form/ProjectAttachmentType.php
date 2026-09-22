@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Form;
 
-use App\Entity\InitiativeAttachment;
+use App\Entity\ProjectAttachment;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -13,12 +13,12 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @extends AbstractType<InitiativeAttachment>
+ * @extends AbstractType<ProjectAttachment>
  */
-class InitiativeAttachmentType extends AbstractType
+class ProjectAttachmentType extends AbstractType
 {
     public function __construct(
-        #[Autowire('%env(INITIATIVE_ATTACHMENT_MAX_SIZE)%')]
+        #[Autowire('%env(PROJECT_ATTACHMENT_MAX_SIZE)%')]
         private readonly string $maxFileSize,
     ) {
     }
@@ -27,7 +27,7 @@ class InitiativeAttachmentType extends AbstractType
     {
         $builder
             ->add('file', FileType::class, [
-                'label' => 'initiative.attachment_file',
+                'label' => 'project.attachment_file',
                 'required' => false,
                 'attr' => ['accept' => '.pdf,.doc,.docx,.xls,.xlsx'],
                 'constraints' => [
@@ -40,7 +40,7 @@ class InitiativeAttachmentType extends AbstractType
                             'application/vnd.ms-excel',
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                         ],
-                        mimeTypesMessage: 'initiative.attachment_invalid_type',
+                        mimeTypesMessage: 'project.attachment_invalid_type',
                     ),
                 ],
             ]);
@@ -49,7 +49,7 @@ class InitiativeAttachmentType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => InitiativeAttachment::class,
+            'data_class' => ProjectAttachment::class,
         ]);
     }
 }

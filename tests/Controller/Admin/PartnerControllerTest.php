@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller\Admin;
 
-use App\Entity\Initiative;
 use App\Entity\Partner;
+use App\Entity\Project;
 use App\Tests\FunctionalTestCase;
 
 final class PartnerControllerTest extends FunctionalTestCase
@@ -18,22 +18,22 @@ final class PartnerControllerTest extends FunctionalTestCase
         $this->assertResponseIsSuccessful();
     }
 
-    public function testIndexDeleteDialogLinksTheAffectedInitiatives(): void
+    public function testIndexDeleteDialogLinksTheAffectedProjects(): void
     {
         $this->loginAsAdmin();
         $partner = $this->createPartner('Linked Partner '.uniqid());
-        $initiative = $this->createInitiativeUsing($partner, 'Linked Initiative '.uniqid());
+        $project = $this->createProjectUsing($partner, 'Linked Project '.uniqid());
 
         $crawler = $this->client->request('GET', '/admin/partners');
         $this->assertResponseIsSuccessful();
 
         // The confirmation has to name what deleting would strip the partner off, and
         // link straight to it — the count alone doesn't tell the admin what breaks.
-        $link = $crawler->filter(sprintf('dialog a[href="/initiatives/%s"]', $initiative->getId()));
+        $link = $crawler->filter(sprintf('dialog a[href="/projects/%s"]', $project->getId()));
         self::assertCount(1, $link);
-        self::assertSame($initiative->getTitle(), trim($link->text()));
+        self::assertSame($project->getTitle(), trim($link->text()));
 
-        $this->removeInitiative((string) $initiative->getId());
+        $this->removeProject((string) $project->getId());
         $this->removePartner((string) $partner->getId());
     }
 
@@ -100,7 +100,7 @@ final class PartnerControllerTest extends FunctionalTestCase
         $this->loginAsAdmin();
         $crawler = $this->client->request('GET', '/admin/partners/new');
 
-        // Comma is the separator of the free-tagging field on the initiative form,
+        // Comma is the separator of the free-tagging field on the project form,
         // so such a name would later be split into two partners.
         $name = 'Aarhus Kommune, Teknik og Miljø '.uniqid();
         $form = $crawler->filter('button.btn--primary')->form(['partner[name]' => $name]);
@@ -139,29 +139,29 @@ final class PartnerControllerTest extends FunctionalTestCase
         self::assertNull($this->partners()->find($id));
     }
 
-    public function testDeleteDetachesThePartnerButKeepsTheInitiative(): void
+    public function testDeleteDetachesThePartnerButKeepsTheProject(): void
     {
         $this->loginAsAdmin();
         $partner = $this->createPartner('Detachable Partner '.uniqid());
         $partnerId = (string) $partner->getId();
-        $initiative = $this->createInitiativeUsing($partner, 'Surviving Initiative '.uniqid());
-        $initiativeId = (string) $initiative->getId();
+        $project = $this->createProjectUsing($partner, 'Surviving Project '.uniqid());
+        $projectId = (string) $project->getId();
 
         $crawler = $this->client->request('GET', sprintf('/admin/partners/%s/edit', $partnerId));
-        self::assertStringContainsString($initiative->getTitle(), (string) $this->client->getResponse()->getContent());
+        self::assertStringContainsString($project->getTitle(), (string) $this->client->getResponse()->getContent());
 
         $this->client->submit($crawler->filter('form[action$="/delete"]')->form());
         $this->assertResponseRedirects('/admin/partners');
 
         // The join table is cleared by its ON DELETE CASCADE rather than by Doctrine,
-        // so pin both halves: the partner is gone, the initiative is not.
+        // so pin both halves: the partner is gone, the project is not.
         $this->entityManager()->clear();
         self::assertNull($this->partners()->find($partnerId));
-        $survivor = $this->initiatives()->find($initiativeId);
-        self::assertInstanceOf(Initiative::class, $survivor);
+        $survivor = $this->projects()->find($projectId);
+        self::assertInstanceOf(Project::class, $survivor);
         self::assertCount(0, $survivor->getPartners());
 
-        $this->removeInitiative($initiativeId);
+        $this->removeProject($projectId);
     }
 
     public function testDeleteIgnoresAnInvalidToken(): void
@@ -177,18 +177,18 @@ final class PartnerControllerTest extends FunctionalTestCase
         $this->removePartner($id);
     }
 
-    public function testInitiativesAreSearchableByPartnerName(): void
+    public function testProjectsAreSearchableByPartnerName(): void
     {
         $this->loginAsEditor();
         $partner = $this->createPartner('Searchable Partner '.uniqid());
-        $initiative = $this->createInitiativeUsing($partner, 'Findable Initiative '.uniqid());
+        $project = $this->createProjectUsing($partner, 'Findable Project '.uniqid());
 
-        $crawler = $this->client->request('GET', '/initiatives?q='.urlencode((string) $partner->getName()));
+        $crawler = $this->client->request('GET', '/projects?q='.urlencode((string) $partner->getName()));
 
         $this->assertResponseIsSuccessful();
-        self::assertStringContainsString((string) $initiative->getTitle(), $crawler->filter('#initiative-results')->text());
+        self::assertStringContainsString((string) $project->getTitle(), $crawler->filter('#project-results')->text());
 
-        $this->removeInitiative((string) $initiative->getId());
+        $this->removeProject((string) $project->getId());
         $this->removePartner((string) $partner->getId());
     }
 
@@ -219,15 +219,15 @@ final class PartnerControllerTest extends FunctionalTestCase
         return $partner;
     }
 
-    private function createInitiativeUsing(Partner $partner, string $title): Initiative
+    private function createProjectUsing(Partner $partner, string $title): Project
     {
-        $initiative = (new Initiative())->setTitle($title);
-        $initiative->addPartner($partner);
+        $project = (new Project())->setTitle($title);
+        $project->addPartner($partner);
         $em = $this->entityManager();
-        $em->persist($initiative);
+        $em->persist($project);
         $em->flush();
 
-        return $initiative;
+        return $project;
     }
 
     private function removePartner(string $id): void
@@ -241,13 +241,13 @@ final class PartnerControllerTest extends FunctionalTestCase
         }
     }
 
-    private function removeInitiative(string $id): void
+    private function removeProject(string $id): void
     {
         $this->entityManager()->clear();
-        $initiative = $this->initiatives()->find($id);
-        if (null !== $initiative) {
+        $project = $this->projects()->find($id);
+        if (null !== $project) {
             $em = $this->entityManager();
-            $em->remove($initiative);
+            $em->remove($project);
             $em->flush();
         }
     }

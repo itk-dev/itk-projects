@@ -4,25 +4,25 @@ declare(strict_types=1);
 
 namespace App\Tests\Repository;
 
-use App\Entity\Initiative;
-use App\Enum\InitiativeType;
+use App\Entity\Project;
+use App\Enum\ProjectType;
 use App\Enum\Status;
-use App\Model\InitiativeFilter;
+use App\Model\ProjectFilter;
 use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\InitiativeRepository;
+use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-final class InitiativeRepositoryTest extends KernelTestCase
+final class ProjectRepositoryTest extends KernelTestCase
 {
-    private InitiativeRepository $repository;
+    private ProjectRepository $repository;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $repository = static::getContainer()->get(InitiativeRepository::class);
-        \assert($repository instanceof InitiativeRepository);
+        $repository = static::getContainer()->get(ProjectRepository::class);
+        \assert($repository instanceof ProjectRepository);
         $this->repository = $repository;
     }
 
@@ -33,11 +33,11 @@ final class InitiativeRepositoryTest extends KernelTestCase
         $areas = static::getContainer()->get(AreaRepository::class);
         \assert($areas instanceof AreaRepository);
 
-        $filter = new InitiativeFilter();
+        $filter = new ProjectFilter();
         $filter->q = '100%_'; // also exercises LIKE wildcard escaping
         $filter->status = Status::Active;
         $filter->area = $areas->findAllOrdered()[0];
-        $filter->initiativeType = InitiativeType::Project;
+        $filter->projectType = ProjectType::Project;
         $filter->organizationalAnchoring = $departments->findAllOrdered()[0];
         $filter->endorsement = true;
         $filter->sort = 'title';
@@ -48,7 +48,7 @@ final class InitiativeRepositoryTest extends KernelTestCase
 
     public function testSearchMatchesTranslatedFundingLabel(): void
     {
-        $filter = new InitiativeFilter();
+        $filter = new ProjectFilter();
         // "midler" is a substring of the Danish "EU-midler" funding label, so the
         // search maps it to the eu_funds slug and matches it inside the funding JSON.
         $filter->q = 'midler';
@@ -58,8 +58,8 @@ final class InitiativeRepositoryTest extends KernelTestCase
 
     public function testSearchMatchesTranslatedEnumLabel(): void
     {
-        $filter = new InitiativeFilter();
-        // "projekt" is the Danish label for the Project initiative type, so the
+        $filter = new ProjectFilter();
+        // "projekt" is the Danish label for the Project case of the project type, so the
         // search maps it to the project slug and matches the enum column.
         $filter->q = 'projekt';
 
@@ -68,7 +68,7 @@ final class InitiativeRepositoryTest extends KernelTestCase
 
     public function testSearchFallsBackForUnknownSortAndDirection(): void
     {
-        $filter = new InitiativeFilter();
+        $filter = new ProjectFilter();
         $filter->sort = 'not-a-column';
         $filter->direction = 'sideways';
 
@@ -77,15 +77,15 @@ final class InitiativeRepositoryTest extends KernelTestCase
 
     public function testFindForExportReturnsEmptyArrayWhenNothingMatches(): void
     {
-        $filter = new InitiativeFilter();
-        $filter->q = 'no-such-initiative-'.uniqid();
+        $filter = new ProjectFilter();
+        $filter->q = 'no-such-project-'.uniqid();
 
         self::assertSame([], $this->repository->findForExport($filter));
     }
 
     public function testFindForExportPrimesCollections(): void
     {
-        $rows = $this->repository->findForExport(new InitiativeFilter());
+        $rows = $this->repository->findForExport(new ProjectFilter());
 
         self::assertNotEmpty($rows);
     }
@@ -95,21 +95,21 @@ final class InitiativeRepositoryTest extends KernelTestCase
         self::assertGreaterThan(0, $this->repository->countAll());
     }
 
-    public function testCountByStatusSkipsInitiativesWithoutStatus(): void
+    public function testCountByStatusSkipsProjectsWithoutStatus(): void
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
         \assert($em instanceof EntityManagerInterface);
 
         $before = array_sum($this->repository->countByStatus());
 
-        $initiative = (new Initiative())->setTitle('No status '.uniqid());
-        $em->persist($initiative);
+        $project = (new Project())->setTitle('No status '.uniqid());
+        $em->persist($project);
         $em->flush();
 
-        // A status-less initiative must not appear in any status bucket.
+        // A status-less project must not appear in any status bucket.
         self::assertSame($before, array_sum($this->repository->countByStatus()));
 
-        $em->remove($initiative);
+        $em->remove($project);
         $em->flush();
     }
 

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus";
 
 /*
- * Drives the initiative form's completion bar. Completion = filled / total over a
+ * Drives the project form's completion bar. Completion = filled / total over a
  * fixed set of fields (the `fields` value, shared with the server so the bar and
  * the list percentage always agree), grouped by field key so a multi-input field
  * (links, funding) counts once. Used on both the new and edit forms.
@@ -283,7 +283,7 @@ export default class extends Controller {
         return this.starsValue && !this.prefersReducedMotion;
     }
 
-    // "initiative[links][0]" -> "links", "initiative[funding][]" -> "funding".
+    // "project[links][0]" -> "links", "project[funding][]" -> "funding".
     fieldKey(el) {
         const match = el.name?.match(/\[([^\]]+)\]/);
 

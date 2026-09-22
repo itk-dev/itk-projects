@@ -6,14 +6,14 @@ namespace App\Model;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\InitiativeType;
+use App\Enum\ProjectType;
 use App\Enum\Status;
 
 /**
- * Bound to the initiative list filter form (GET) and consumed by
- * {@see \App\Repository\InitiativeRepository::search()}.
+ * Bound to the project list filter form (GET) and consumed by
+ * {@see \App\Repository\ProjectRepository::search()}.
  */
-class InitiativeFilter
+class ProjectFilter
 {
     public ?string $q = null;
 
@@ -21,7 +21,7 @@ class InitiativeFilter
 
     public ?Area $area = null;
 
-    public ?InitiativeType $initiativeType = null;
+    public ?ProjectType $projectType = null;
 
     public ?Department $organizationalAnchoring = null;
 

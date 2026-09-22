@@ -24,7 +24,7 @@
                 </a>
                 <div class="top-nav__menu">
                     <a href="{{ path('app_dashboard') }}" class="top-nav__link {{ route == 'app_dashboard' ? 'is-active' }}">{{ 'nav.dashboard'|trans }}</a>
-                    <a href="{{ path('app_initiative_index') }}" id="navInitiatives" class="top-nav__link {{ route starts with 'app_initiative' ? 'is-active' }}">{{ 'nav.initiatives'|trans }}</a>
+                    <a href="{{ path('app_project_index') }}" id="navProjects" class="top-nav__link {{ route starts with 'app_project' ? 'is-active' }}">{{ 'nav.projects'|trans }}</a>
                 </div>
                 <div class="top-nav__right">
                     <div class="top-nav__menu-anchor">
@@ -136,7 +136,7 @@
             {% set tourSteps = [
                 {text: 'tour.steps.intro'|trans, targets: [], placement: 'center'},
                 {text: 'tour.steps.dashboard'|trans, targets: ['#dashboard-content'], placement: 'right'},
-                {text: 'tour.steps.create'|trans, targets: ['#navInitiatives', '.page__actions .btn--primary'], placement: 'below'},
+                {text: 'tour.steps.create'|trans, targets: ['#navProjects', '.page__actions .btn--primary'], placement: 'below'},
                 {text: 'tour.steps.admin'|trans, targets: ['#userMenuToggle'], placement: 'left'},
                 {text: 'tour.steps.outro'|trans, targets: [], placement: 'corner'},
             ] %}
@@ -168,9 +168,9 @@
                 <div class="mascot__bubble" data-mascot-target="bubble" role="status" aria-live="polite" hidden>
                     <button type="button" class="mascot__close" data-action="mascot#close" aria-label="{{ 'mascot.close'|trans }}">×</button>
                     <p class="mascot__text" data-mascot-target="text"></p>
-                    <a class="mascot__cta" data-mascot-target="cta" href="{{ path('app_initiative_new') }}">{{ 'mascot.cta'|trans }} →</a>
+                    <a class="mascot__cta" data-mascot-target="cta" href="{{ path('app_project_new') }}">{{ 'mascot.cta'|trans }} →</a>
                     {% if ctx.unfinished %}
-                        <a class="mascot__cta" data-mascot-target="finish" href="{{ path('app_initiative_edit', {id: ctx.unfinished.id}) }}" hidden>{{ 'mascot.finish_cta'|trans }} →</a>
+                        <a class="mascot__cta" data-mascot-target="finish" href="{{ path('app_project_edit', {id: ctx.unfinished.id}) }}" hidden>{{ 'mascot.finish_cta'|trans }} →</a>
                     {% endif %}
                     {% if ctx.incompleteContact %}
                         <a class="mascot__cta" data-mascot-target="finishContact" href="{{ path('admin_contact_edit', {id: ctx.incompleteContact.id}) }}" hidden>{{ 'mascot.finish_cta'|trans }} →</a>

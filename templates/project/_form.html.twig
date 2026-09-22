@@ -2,7 +2,7 @@
     class: 'form',
     'data-controller': 'form-progress',
     'data-action': 'input->form-progress#recompute change->form-progress#recompute',
-    'data-form-progress-fields-value': constant('App\\Entity\\Initiative::COMPLETION_FIELDS')|json_encode,
+    'data-form-progress-fields-value': constant('App\\Entity\\Project::COMPLETION_FIELDS')|json_encode,
     'data-form-progress-stars-value': (app.user.starsEnabled ?? true) ? 'true' : 'false',
 } %}
 {% if autosave|default(false) %}
@@ -16,7 +16,7 @@
         'data-autosave-error-text-value': 'autosave.error'|trans,
         'data-autosave-offline-text-value': 'autosave.offline'|trans,
         'data-autosave-required-text-value': 'autosave.required'|trans,
-        'data-autosave-is-new-value': initiative.id ? 'false' : 'true',
+        'data-autosave-is-new-value': project.id ? 'false' : 'true',
     }) %}
 {% endif %}
 {{ form_start(form, {attr: form_attr}) }}
@@ -42,20 +42,20 @@
     {{ form_errors(form) }}
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.basics'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.basics'|trans }}</div>
         {% set title_attr = {'data-action': 'input->title-mirror#update', 'data-autosave-required': true} %}
-        {% if not initiative.id %}{% set title_attr = title_attr|merge({autofocus: true}) %}{% endif %}
+        {% if not project.id %}{% set title_attr = title_attr|merge({autofocus: true}) %}{% endif %}
         {{ form_row(form.title, {attr: title_attr}) }}
         {{ form_row(form.topic) }}
         <div class="form-grid">
             {{ form_row(form.area) }}
-            {{ form_row(form.initiativeType) }}
+            {{ form_row(form.projectType) }}
         </div>
         {{ form_row(form.description) }}
     </div>
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.classification'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.classification'|trans }}</div>
         <div class="form-grid">
             {{ form_row(form.status) }}
             {{ form_row(form.organizationalAnchoring) }}
@@ -66,13 +66,13 @@
     </div>
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.endorsement'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.endorsement'|trans }}</div>
         {{ form_row(form.endorsement) }}
         {{ form_row(form.endorsementAuthor) }}
     </div>
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.economy'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.economy'|trans }}</div>
         <div class="form-grid">
             {{ form_row(form.budget) }}
             {{ form_row(form.timePeriodStart) }}
@@ -81,7 +81,7 @@
         {{ form_row(form.funding) }}
 
         <div class="form-row">
-            <label>{{ 'initiative.links'|trans }}</label>
+            <label>{{ 'project.links'|trans }}</label>
             <div class="collection" data-collection data-remove-label="{{ 'action.remove'|trans }}"
                  data-prototype="{{ form_widget(form.links.vars.prototype)|e('html_attr') }}">
                 <div class="collection" data-collection-list>
@@ -100,7 +100,7 @@
     </div>
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.relations'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.relations'|trans }}</div>
         {{ form_row(form.stakeholders) }}
 
         {{ form_row(form.partners) }}
@@ -109,11 +109,11 @@
     </div>
 
     <div class="form-section">
-        <div class="form-section__title">{{ 'initiative.section.media'|trans }}</div>
+        <div class="form-section__title">{{ 'project.section.media'|trans }}</div>
 
-        <turbo-frame id="initiative-media">
+        <turbo-frame id="project-media">
             <div class="form-row">
-                <label>{{ 'initiative.images'|trans }}</label>
+                <label>{{ 'project.images'|trans }}</label>
                 <div class="collection" data-collection data-remove-label="{{ 'action.remove'|trans }}"
                      data-prototype="{{ form_widget(form.images.vars.prototype.imageFile)|e('html_attr') }}">
                     <div class="collection" data-collection-list>
@@ -144,7 +144,7 @@
             </div>
 
             <div class="form-row">
-                <label>{{ 'initiative.attachments'|trans }}</label>
+                <label>{{ 'project.attachments'|trans }}</label>
                 <div class="collection" data-collection data-remove-label="{{ 'action.remove'|trans }}"
                      data-prototype="{{ form_widget(form.attachments.vars.prototype.file)|e('html_attr') }}">
                     <div class="collection" data-collection-list>
@@ -174,7 +174,7 @@
     {% if not (autosave|default(false)) %}
         <div class="form-actions">
             <button type="submit" class="btn btn--primary">{{ button_label|default('action.save')|trans }}</button>
-            <a href="{{ initiative.id ? path('app_initiative_show', {id: initiative.id}) : path('app_initiative_index') }}" class="btn btn--ghost">{{ 'action.cancel'|trans }}</a>
+            <a href="{{ project.id ? path('app_project_show', {id: project.id}) : path('app_project_index') }}" class="btn btn--ghost">{{ 'action.cancel'|trans }}</a>
         </div>
     {% endif %}
     {% do form.links.setRendered() %}
