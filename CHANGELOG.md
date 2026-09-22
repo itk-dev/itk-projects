@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-35](https://github.com/itk-dev/itk-projects/pull/35)
+  Remove file upload (project images and attachments) and VichUploaderBundle.
+  The migration drops the project_image and project_attachment tables, so
+  existing uploads are lost; files left in var/uploads must be deleted by hand.
 * [PR-30](https://github.com/itk-dev/itk-projects/pull/30)
   Rename "initiative" to "project" throughout the codebase: entities, tables,
   routes, forms, translations, templates and tests. The migration drops the

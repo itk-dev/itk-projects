@@ -110,8 +110,6 @@ action:
     reset: Reset
     export: Export CSV
     add_link: Add link
-    add_image: Add image
-    add_attachment: Add file
     remove: Remove
     confirm_delete_title: "Delete “%name%”?"
     irreversible: This action cannot be undone.
@@ -124,15 +122,11 @@ common:
     created: Created
     updated: Updated
     optional: optional
-    close: Close
 
 form:
     choose: Choose …
     terms:
         invalid: Invalid values.
-
-media:
-    choose: Choose file
 
 filter:
     search: Search
@@ -221,11 +215,6 @@ project:
     author: Filled out by
     terms_help: Choose an existing one, or type a new and press Enter.
     completion_field_hint: This field counts towards the completion rate.
-    images: Images
-    attachments: Files
-    image_file: Image file
-    attachment_file: File
-    attachment_invalid_type: "The file type is not allowed (allowed: pdf, doc, docx, xls, xlsx)."
     index:
         title: Projects
         subtitle: Search, filter and create projects.
@@ -238,7 +227,6 @@ project:
         contacts: Contacts
         partners: Partners
         classification: Classification
-        media: Files and images
         no_contacts: No contacts attached.
         no_partners: No partners attached.
     empty:
@@ -250,7 +238,6 @@ project:
         endorsement: Endorsement
         economy: Economy and time
         relations: Stakeholders, partners and contacts
-        media: Files and images
         meta: Other
 
 contact:
