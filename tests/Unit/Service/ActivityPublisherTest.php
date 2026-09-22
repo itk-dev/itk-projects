@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Service;
 
 use App\Entity\Project;
-use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
 use App\Repository\ProjectRepository;
 use App\Service\ActivityPublisher;
@@ -35,11 +34,9 @@ final class ActivityPublisherTest extends TestCase
         $projects->method('dashboardRows')->willReturn([]);
         $departments = $this->createStub(DepartmentRepository::class);
         $departments->method('findAllOrdered')->willReturn([]);
-        $areas = $this->createStub(AreaRepository::class);
-        $areas->method('findAllOrdered')->willReturn([]);
         $translator = $this->createStub(TranslatorInterface::class);
         $translator->method('trans')->willReturnArgument(0);
-        $dashboardData = new DashboardData($projects, $departments, $areas, $translator);
+        $dashboardData = new DashboardData($projects, $departments, $translator);
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())->method('warning');

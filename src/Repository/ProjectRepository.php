@@ -260,7 +260,7 @@ class ProjectRepository extends ServiceEntityRepository
     }
 
     /**
-     * Lightweight per-project rows for the dashboard visualisations: just the
+     * Lightweight per-project rows for the dashboard numbers: just the
      * columns the aggregates need, no relations, so it stays cheap to recompute
      * on every live broadcast.
      *
@@ -273,14 +273,10 @@ class ProjectRepository extends ServiceEntityRepository
         // not match the canonical ULID strings the rest of build() keys on.
         return $this->createQueryBuilder('i')
             ->select(
-                'i.title',
                 'ar.id AS area',
                 'i.status',
                 'department.id AS organizationalAnchoring',
                 'i.budget',
-                'i.funding',
-                'i.timePeriodStart',
-                'i.timePeriodEnd',
             )
             ->leftJoin('i.area', 'ar')
             ->leftJoin('i.organizationalAnchoring', 'department')
