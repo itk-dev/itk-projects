@@ -122,12 +122,6 @@ class ProjectType extends AbstractType
                 'required' => false,
                 'choice_label' => static fn (Funding $value): string => $value->labelKey(),
             ])
-            ->add('stakeholders', TermsTextType::class, [
-                'label' => 'project.stakeholders',
-                'vocabulary' => Vocabulary::Stakeholder,
-                'required' => false,
-                'help' => 'project.terms_help',
-            ])
             ->add('tags', TermsTextType::class, [
                 'label' => 'project.tags',
                 'vocabulary' => Vocabulary::Tag,

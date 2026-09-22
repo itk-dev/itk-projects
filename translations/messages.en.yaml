@@ -207,7 +207,6 @@ project:
     budget: Budget (DKK)
     budget_help: Total budget in whole kroner.
     funding: Funding sources
-    stakeholders: Stakeholders and partners
     tags: Tags
     time_period_start: Time period – start
     time_period_start_help: When the project starts.
@@ -249,7 +248,7 @@ project:
         classification: Classification
         endorsement: Endorsement
         economy: Economy and time
-        relations: Stakeholders, partners and contacts
+        relations: Partners and contacts
         media: Files and images
         meta: Other
 
@@ -416,5 +415,4 @@ enum:
         external_partner: External partner
     vocabulary:
         tag: Tag
-        stakeholder: Stakeholder
         strategy: Strategy

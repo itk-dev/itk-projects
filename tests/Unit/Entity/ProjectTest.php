@@ -30,7 +30,6 @@ final class ProjectTest extends TestCase
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getStrategies());
-        self::assertCount(0, $project->getStakeholders());
         self::assertCount(0, $project->getTags());
         self::assertCount(0, $project->getContacts());
         self::assertCount(0, $project->getPartners());
@@ -156,24 +155,6 @@ final class ProjectTest extends TestCase
         self::assertCount(2, $project->getStrategies());
         $project->setStrategies([]);
         self::assertCount(0, $project->getStrategies());
-    }
-
-    public function testStakeholderCollection(): void
-    {
-        $project = new Project();
-        $term = new Term(Vocabulary::Stakeholder);
-
-        $project->addStakeholder($term);
-        $project->addStakeholder($term);
-        self::assertCount(1, $project->getStakeholders());
-
-        $project->removeStakeholder($term);
-        self::assertCount(0, $project->getStakeholders());
-
-        $project->setStakeholders([new Term(Vocabulary::Stakeholder)]);
-        self::assertCount(1, $project->getStakeholders());
-        $project->setStakeholders([]);
-        self::assertCount(0, $project->getStakeholders());
     }
 
     public function testTagCollection(): void
