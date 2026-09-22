@@ -11,7 +11,6 @@ namespace App\Enum;
 enum Vocabulary: string implements TranslatableEnum
 {
     case Tag = 'tag';
-    case Stakeholder = 'stakeholder';
     case Strategy = 'strategy';
 
     public function labelKey(): string

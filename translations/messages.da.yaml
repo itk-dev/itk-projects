@@ -207,7 +207,6 @@ project:
     budget: Budget (kr.)
     budget_help: Samlet budget i hele kroner.
     funding: Fundingkilder
-    stakeholders: Interessenter og samarbejdspartnere
     tags: Tags
     time_period_start: Tidshorisont – start
     time_period_start_help: Hvornår projektet starter.
@@ -249,7 +248,7 @@ project:
         classification: Klassificering
         endorsement: Vedtagelse
         economy: Økonomi og tid
-        relations: Interessenter, samarbejdspartnere og kontakter
+        relations: Samarbejdspartnere og kontakter
         media: Filer og billeder
         meta: Øvrigt
 
@@ -416,5 +415,4 @@ enum:
         external_partner: Ekstern partner
     vocabulary:
         tag: Tag
-        stakeholder: Interessent
         strategy: Strategi

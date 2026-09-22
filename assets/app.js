@@ -103,7 +103,7 @@ function initCreatableSelect(selector, poolKey, transform) {
     });
 }
 
-// Free-tagging term fields (strategies, stakeholders, tags) capitalise new
+// Free-tagging term fields (strategies, tags) capitalise new
 // entries; contacts keep the typed name as-is.
 function initTermSelect() {
     initCreatableSelect("[data-term-select]", "termPool", capitalize);
