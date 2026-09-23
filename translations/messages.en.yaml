@@ -392,11 +392,13 @@ flash:
 enum:
     status:
         idea: Idea
-        planned: Planned
-        active: Active
+        opportunity: Opportunity
+        application_in_progress: Application in progress
+        application_submitted: Application submitted
+        granted: Granted
         on_hold: On hold
+        rejected: Rejected
         completed: Completed
-        cancelled: Cancelled
     project_type:
         project: Project
         programme: Programme

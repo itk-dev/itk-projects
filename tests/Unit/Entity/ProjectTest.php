@@ -54,7 +54,7 @@ final class ProjectTest extends TestCase
             ->setArea($area)
             ->setDescription('Beskrivelse')
             ->setProjectType(ProjectType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->setStatusAdditional('Igangsat')
             ->setOrganizationalAnchoring($department)
             ->setEndorsement(false)
@@ -68,7 +68,7 @@ final class ProjectTest extends TestCase
         self::assertSame($area, $project->getArea());
         self::assertSame('Beskrivelse', $project->getDescription());
         self::assertSame(ProjectType::Project, $project->getProjectType());
-        self::assertSame(Status::Active, $project->getStatus());
+        self::assertSame(Status::Granted, $project->getStatus());
         self::assertSame('Igangsat', $project->getStatusAdditional());
         self::assertSame($department, $project->getOrganizationalAnchoring());
         self::assertFalse($project->isEndorsement());
@@ -88,7 +88,7 @@ final class ProjectTest extends TestCase
             ->setArea((new Area())->setName('Klima og miljø'))
             ->setDescription('D')
             ->setProjectType(ProjectType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->setOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
             ->setFunding([Funding::EuFunds])

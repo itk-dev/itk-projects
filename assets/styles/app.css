@@ -1101,14 +1101,24 @@ a.recent-item:hover .recent-item__cta {
     color: var(--itk-slate-700);
 }
 
-.badge--status-planned {
+.badge--status-opportunity {
     background-color: color-mix(in srgb, var(--itk-cyan) 18%, transparent);
     color: var(--itk-blue);
 }
 
-.badge--status-active {
+.badge--status-application_in_progress {
     background-color: color-mix(in srgb, var(--itk-blue) 16%, transparent);
     color: var(--itk-blue);
+}
+
+.badge--status-application_submitted {
+    background-color: color-mix(in srgb, var(--itk-aqua) 20%, transparent);
+    color: var(--itk-primary-hover);
+}
+
+.badge--status-granted {
+    background-color: color-mix(in srgb, var(--itk-green) 16%, transparent);
+    color: var(--itk-green);
 }
 
 .badge--status-on_hold {
@@ -1116,14 +1126,14 @@ a.recent-item:hover .recent-item__cta {
     color: var(--itk-warning);
 }
 
-.badge--status-completed {
-    background-color: color-mix(in srgb, var(--itk-green) 16%, transparent);
-    color: var(--itk-green);
-}
-
-.badge--status-cancelled {
+.badge--status-rejected {
     background-color: color-mix(in srgb, var(--itk-red) 16%, transparent);
     color: var(--itk-red);
+}
+
+.badge--status-completed {
+    background-color: color-mix(in srgb, var(--itk-ink-soft) 12%, transparent);
+    color: var(--itk-ink-soft);
 }
 
 .tag-list {

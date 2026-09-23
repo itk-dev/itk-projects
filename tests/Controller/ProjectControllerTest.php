@@ -16,14 +16,14 @@ final class ProjectControllerTest extends FunctionalTestCase
     public function testIndexAppliesFiltersFromTheQueryString(): void
     {
         $this->loginAsAdmin();
-        $match = $this->createProject('Deeplinked project', Status::Active);
-        $other = $this->createProject('Deeplinked other project', Status::Cancelled);
+        $match = $this->createProject('Deeplinked project', Status::Granted);
+        $other = $this->createProject('Deeplinked other project', Status::Rejected);
 
         // Opening a shared link must narrow the list, not just fill the form.
-        $crawler = $this->client->request('GET', '/projects?q=Deeplinked&status=active&sort=title&direction=ASC');
+        $crawler = $this->client->request('GET', '/projects?q=Deeplinked&status=granted&sort=title&direction=ASC');
 
         $this->assertResponseIsSuccessful();
-        self::assertSame('active', $crawler->filter('#project-filters select[name="status"] option[selected]')->attr('value'));
+        self::assertSame('granted', $crawler->filter('#project-filters select[name="status"] option[selected]')->attr('value'));
         self::assertSame('Deeplinked', $crawler->filter('#project-filters input[name="q"]')->attr('value'));
 
         $titles = $crawler->filter('#project-results .cell-title')->each(static fn ($node): string => $node->text());

@@ -35,7 +35,7 @@ final class ProjectRepositoryTest extends KernelTestCase
 
         $filter = new ProjectFilter();
         $filter->q = '100%_'; // also exercises LIKE wildcard escaping
-        $filter->status = Status::Active;
+        $filter->status = Status::Granted;
         $filter->area = $areas->findAllOrdered()[0];
         $filter->projectType = ProjectType::Project;
         $filter->organizationalAnchoring = $departments->findAllOrdered()[0];
