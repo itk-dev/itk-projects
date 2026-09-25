@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-37](https://github.com/itk-dev/itk-projects/pull/37)
+  Rename the project's "Short description" to "Summary" (Opsummering) and add
+  a separate, longer "Description" (Beskrivelse) field below it. The existing
+  column is renamed so current texts become summaries; the free-text search and
+  completion percentage cover both fields.
 * [PR-32](https://github.com/itk-dev/itk-projects/pull/32)
   Replace the project statuses with a set that follows a funding application:
   Idé, Mulighed, Ansøgning igangværende, Ansøgning afsendt, Bevilliget,

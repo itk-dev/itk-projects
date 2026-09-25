@@ -52,6 +52,7 @@ final class ProjectTest extends TestCase
             ->setTitle('Grøn omstilling')
             ->setTopic('Digital Europe Blueprint for Data Space')
             ->setArea($area)
+            ->setSummary('Opsummering')
             ->setDescription('Beskrivelse')
             ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Granted)
@@ -66,6 +67,7 @@ final class ProjectTest extends TestCase
         self::assertSame('Grøn omstilling', $project->getTitle());
         self::assertSame('Digital Europe Blueprint for Data Space', $project->getTopic());
         self::assertSame($area, $project->getArea());
+        self::assertSame('Opsummering', $project->getSummary());
         self::assertSame('Beskrivelse', $project->getDescription());
         self::assertSame(ProjectType::Project, $project->getProjectType());
         self::assertSame(Status::Granted, $project->getStatus());
@@ -86,6 +88,7 @@ final class ProjectTest extends TestCase
         $full = (new Project())
             ->setTitle('T')
             ->setArea((new Area())->setName('Klima og miljø'))
+            ->setSummary('S')
             ->setDescription('D')
             ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Granted)

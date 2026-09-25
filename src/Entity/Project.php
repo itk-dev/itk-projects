@@ -26,7 +26,7 @@ class Project extends AbstractEntity
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'area', 'description', 'projectType', 'status',
+        'title', 'area', 'summary', 'description', 'projectType', 'status',
         'organizationalAnchoring',
         'budget', 'funding', 'timePeriodStart', 'timePeriodEnd',
     ];
@@ -47,6 +47,11 @@ class Project extends AbstractEntity
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Area $area = null;
 
+    /** A few lines summing up the project's purpose and content. */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $summary = null;
+
+    /** The fuller account: why the project is done and what it is anchored in. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -173,6 +178,18 @@ class Project extends AbstractEntity
     public function setArea(?Area $area): static
     {
         $this->area = $area;
+
+        return $this;
+    }
+
+    public function getSummary(): ?string
+    {
+        return $this->summary;
+    }
+
+    public function setSummary(?string $summary): static
+    {
+        $this->summary = $summary;
 
         return $this;
     }
@@ -540,6 +557,7 @@ class Project extends AbstractEntity
         $checks = [
             null !== $this->title && '' !== $this->title,
             null !== $this->area,
+            null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
             null !== $this->projectType,
             null !== $this->status,
