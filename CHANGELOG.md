@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-38](https://github.com/itk-dev/itk-projects/pull/38)
+  Let two contacts share a name: the project form's contact picker now
+  identifies contacts by id, shows the email in parentheses to tell namesakes
+  apart, and creates a typed name at once through a new `POST /contacts`
+  endpoint.
 * [PR-32](https://github.com/itk-dev/itk-projects/pull/32)
   Replace the project statuses with a set that follows a funding application:
   Idé, Mulighed, Ansøgning igangværende, Ansøgning afsendt, Bevilliget,

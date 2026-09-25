@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Entity\Contact;
 use App\Entity\Project;
 use App\Entity\ProjectAttachment;
 use App\Entity\ProjectImage;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Ulid;
 
 final class ProjectControllerTest extends FunctionalTestCase
 {
@@ -52,7 +54,7 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertNotEmpty($search->attr('placeholder'));
     }
 
-    public function testNewPersistsProjectWithInlineContactAndDropsEmptyMedia(): void
+    public function testNewPersistsProjectWithInlinePartnerAndDropsEmptyMedia(): void
     {
         $this->loginAsAdmin();
         $crawler = $this->client->request('GET', '/projects/new');
@@ -62,9 +64,7 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->client->request('POST', '/projects/new', [
             'project' => [
                 'title' => 'Coverage project',
-                // A typed name creates a new contact on the fly and attaches it.
-                'contacts' => 'Coverage Contact',
-                // Same free-tagging behaviour for partners.
+                // A typed name creates a new partner on the fly and attaches it.
                 'partners' => 'Coverage Partner',
                 '_token' => $token,
             ],
@@ -75,19 +75,82 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em = $this->entityManager();
         $project = $this->projects()->findOneBy(['title' => 'Coverage project']);
         self::assertInstanceOf(Project::class, $project);
-        self::assertGreaterThanOrEqual(1, $project->getContacts()->count(), 'Inline contact should be merged in.');
         self::assertGreaterThanOrEqual(1, $project->getPartners()->count(), 'Inline partner should be merged in.');
 
         $em->remove($project);
         $em->flush();
 
-        foreach ($this->contacts()->findBy(['name' => 'Coverage Contact']) as $contact) {
-            $em->remove($contact);
-        }
         foreach ($this->partners()->findBy(['name' => 'Coverage Partner']) as $partner) {
             $em->remove($partner);
         }
         $em->flush();
+    }
+
+    public function testContactPickerTellsNamesakesApartAndAttachesById(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $name = 'Namesake '.uniqid();
+        $first = (new Contact())->setName($name)->setEmail('first@example.com');
+        $second = (new Contact())->setName($name)->setEmail('second@example.com');
+        $em->persist($first);
+        $em->persist($second);
+        $em->flush();
+        $firstId = (string) $first->getId();
+        $secondId = (string) $second->getId();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        $this->assertResponseIsSuccessful();
+
+        $input = $crawler->filter('[name="project[contacts]"]');
+        $pool = json_decode((string) $input->attr('data-contact-pool'), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertIsArray($pool);
+        $labels = array_column($pool, 'label', 'id');
+        // Two people sharing a name are two entries, told apart by their email.
+        self::assertSame($name.' (first@example.com)', $labels[$firstId] ?? null);
+        self::assertSame($name.' (second@example.com)', $labels[$secondId] ?? null);
+        self::assertSame('/contacts', $input->attr('data-contact-create-url'));
+
+        // Submitting an id attaches that very person, not the namesake.
+        $title = 'Namesake project '.uniqid();
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => ['title' => $title, 'contacts' => $secondId, '_token' => $token],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame(
+            [$secondId],
+            array_map(static fn (Contact $contact): string => (string) $contact->getId(), $project->getContacts()->toArray()),
+        );
+
+        $em = $this->entityManager();
+        $em->remove($project);
+        foreach ([$firstId, $secondId] as $id) {
+            $contact = $this->contacts()->find($id);
+            self::assertInstanceOf(Contact::class, $contact);
+            $em->remove($contact);
+        }
+        $em->flush();
+    }
+
+    public function testAnUnknownContactIdIsRejected(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Unknown contact project '.uniqid();
+
+        // Names are no longer accepted either: a typed name is created through
+        // the contact endpoint, so the picker only ever posts ids.
+        foreach ([(string) new Ulid(), 'Anne Jensen'] as $value) {
+            $this->client->request('POST', '/projects/new', [
+                'project' => ['title' => $title, 'contacts' => $value],
+            ], [], ['HTTP_X_AUTOSAVE' => '1']);
+
+            $this->assertResponseStatusCodeSame(422);
+        }
+        self::assertNull($this->projects()->findOneBy(['title' => $title]));
     }
 
     public function testTopicIsSavedShownSearchableAndExported(): void
