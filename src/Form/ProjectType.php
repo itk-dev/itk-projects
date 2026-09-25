@@ -54,10 +54,16 @@ class ProjectType extends AbstractType
                 'placeholder' => 'form.choose',
                 'help' => 'project.area_help',
             ])
+            ->add('summary', TextareaType::class, [
+                'label' => 'project.summary',
+                'required' => false,
+                'attr' => ['rows' => 4],
+                'help' => 'project.summary_help',
+            ])
             ->add('description', TextareaType::class, [
                 'label' => 'project.description',
                 'required' => false,
-                'attr' => ['rows' => 4],
+                'attr' => ['rows' => 8],
                 'help' => 'project.description_help',
             ])
             ->add('strategies', TermsTextType::class, [

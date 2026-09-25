@@ -142,7 +142,8 @@ class AppFixtures extends Fixture
                 ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
                 ->setOrganizationalAnchoring($departments[array_rand($departments)])
-                ->setDescription('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
+                ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
+                ->setDescription('Projektet er sat i gang, fordi kommunen har brug for at styrke indsatsen omkring '.mb_strtolower($title).".\n\nDet har ophæng i byrådets vedtagne strategier og i afdelingens handleplaner og gennemføres i samarbejde med relevante fagområder og eksterne partnere.")
                 ->setEndorsement(0 === $index % 3 ? false : true)
                 ->setBudget(mt_rand(1, 40) * 50000);
             $project->setCreatedBy($users[array_rand($users)]);
