@@ -22,6 +22,7 @@ final class ContactTest extends TestCase
         // are still null on a freshly constructed (unpersisted) entity.
         self::assertNull($contact->getCreatedAt());
         self::assertSame('', (string) $contact);
+        self::assertSame('', $contact->getLabel());
     }
 
     public function testAccessors(): void
@@ -40,5 +41,18 @@ final class ContactTest extends TestCase
         self::assertSame('+45 12 34 56 78', $contact->getPhone());
         self::assertSame($department, $contact->getDepartment());
         self::assertSame('Anne Jensen', (string) $contact);
+    }
+
+    public function testLabelAddsTheEmailInParenthesesWhenThereIsOne(): void
+    {
+        $contact = (new Contact())->setName('Anne Jensen');
+        self::assertSame('Anne Jensen', $contact->getLabel());
+
+        $contact->setEmail('anne@example.com');
+        self::assertSame('Anne Jensen (anne@example.com)', $contact->getLabel());
+
+        // A blank email is not worth a pair of parentheses.
+        $contact->setEmail('   ');
+        self::assertSame('Anne Jensen', $contact->getLabel());
     }
 }
