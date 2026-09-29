@@ -28,7 +28,11 @@
                 <div class="card">
                     <twig:Card:Header :title="'project.show.details'|trans" />
                     <div class="card__body">
-                        {% if project.description %}<p class="prose">{{ project.description }}</p>{% else %}<p class="muted">—</p>{% endif %}
+                        {% if project.summary %}<p class="prose">{{ project.summary }}</p>{% else %}<p class="muted">—</p>{% endif %}
+                        {% if project.description %}
+                            <h3 class="detail-subhead">{{ 'project.description'|trans }}</h3>
+                            <p class="prose">{{ project.description }}</p>
+                        {% endif %}
                         {% if project.topic %}
                             <h3 class="detail-subhead">{{ 'project.topic'|trans }}</h3>
                             <p class="prose">{{ project.topic }}</p>
