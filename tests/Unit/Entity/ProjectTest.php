@@ -9,8 +9,6 @@ use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Partner;
 use App\Entity\Project;
-use App\Entity\ProjectAttachment;
-use App\Entity\ProjectImage;
 use App\Entity\Term;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
@@ -31,12 +29,9 @@ final class ProjectTest extends TestCase
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getOrganizationalAnchoring());
         self::assertCount(0, $project->getStrategies());
-        self::assertCount(0, $project->getStakeholders());
         self::assertCount(0, $project->getTags());
         self::assertCount(0, $project->getContacts());
         self::assertCount(0, $project->getPartners());
-        self::assertCount(0, $project->getImages());
-        self::assertCount(0, $project->getAttachments());
         self::assertNull($project->getCreatedAt());
         self::assertNull($project->getUpdatedAt());
         self::assertSame('', (string) $project);
@@ -52,9 +47,10 @@ final class ProjectTest extends TestCase
             ->setTitle('Grøn omstilling')
             ->setTopic('Digital Europe Blueprint for Data Space')
             ->setArea($area)
+            ->setSummary('Opsummering')
             ->setDescription('Beskrivelse')
             ->setProjectType(ProjectType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->setStatusAdditional('Igangsat')
             ->setEndorsement(false)
             ->setEndorsementAuthor(EndorsementAuthor::CityCouncil)
@@ -65,9 +61,10 @@ final class ProjectTest extends TestCase
         self::assertSame('Grøn omstilling', $project->getTitle());
         self::assertSame('Digital Europe Blueprint for Data Space', $project->getTopic());
         self::assertSame($area, $project->getArea());
+        self::assertSame('Opsummering', $project->getSummary());
         self::assertSame('Beskrivelse', $project->getDescription());
         self::assertSame(ProjectType::Project, $project->getProjectType());
-        self::assertSame(Status::Active, $project->getStatus());
+        self::assertSame(Status::Granted, $project->getStatus());
         self::assertSame('Igangsat', $project->getStatusAdditional());
         self::assertFalse($project->isEndorsement());
         self::assertSame(EndorsementAuthor::CityCouncil, $project->getEndorsementAuthor());
@@ -84,9 +81,10 @@ final class ProjectTest extends TestCase
         $full = (new Project())
             ->setTitle('T')
             ->setArea((new Area())->setName('Klima og miljø'))
+            ->setSummary('S')
             ->setDescription('D')
             ->setProjectType(ProjectType::Project)
-            ->setStatus(Status::Active)
+            ->setStatus(Status::Granted)
             ->addOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
             ->setFunding([Funding::EuFunds])
@@ -177,24 +175,6 @@ final class ProjectTest extends TestCase
         self::assertCount(0, $project->getStrategies());
     }
 
-    public function testStakeholderCollection(): void
-    {
-        $project = new Project();
-        $term = new Term(Vocabulary::Stakeholder);
-
-        $project->addStakeholder($term);
-        $project->addStakeholder($term);
-        self::assertCount(1, $project->getStakeholders());
-
-        $project->removeStakeholder($term);
-        self::assertCount(0, $project->getStakeholders());
-
-        $project->setStakeholders([new Term(Vocabulary::Stakeholder)]);
-        self::assertCount(1, $project->getStakeholders());
-        $project->setStakeholders([]);
-        self::assertCount(0, $project->getStakeholders());
-    }
-
     public function testTagCollection(): void
     {
         $project = new Project();
@@ -237,33 +217,5 @@ final class ProjectTest extends TestCase
 
         $project->removePartner($partner);
         self::assertCount(0, $project->getPartners());
-    }
-
-    public function testImageCollectionLinksBackToProject(): void
-    {
-        $project = new Project();
-        $image = new ProjectImage();
-
-        $project->addImage($image);
-        $project->addImage($image);
-        self::assertCount(1, $project->getImages());
-        self::assertSame($project, $image->getProject());
-
-        $project->removeImage($image);
-        self::assertCount(0, $project->getImages());
-    }
-
-    public function testAttachmentCollectionLinksBackToProject(): void
-    {
-        $project = new Project();
-        $attachment = new ProjectAttachment();
-
-        $project->addAttachment($attachment);
-        $project->addAttachment($attachment);
-        self::assertCount(1, $project->getAttachments());
-        self::assertSame($project, $attachment->getProject());
-
-        $project->removeAttachment($attachment);
-        self::assertCount(0, $project->getAttachments());
     }
 }

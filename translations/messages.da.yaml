@@ -110,8 +110,6 @@ action:
     reset: Nulstil
     export: Eksportér CSV
     add_link: Tilføj link
-    add_image: Tilføj billede
-    add_attachment: Tilføj fil
     remove: Fjern
     confirm_delete_title: "Slet “%name%”?"
     irreversible: Denne handling kan ikke fortrydes.
@@ -124,15 +122,11 @@ common:
     created: Oprettet
     updated: Opdateret
     optional: valgfri
-    close: Luk
 
 form:
     choose: Vælg …
     terms:
         invalid: Ugyldige værdier.
-
-media:
-    choose: Vælg fil
 
 filter:
     search: Søg
@@ -155,24 +149,8 @@ dashboard:
     collaboration_count_hint: områder på tværs af afdelinger
     by_status: Fordeling på status
     by_status_sub: Alle projekter fordelt på deres aktuelle status.
-    recent: Senest oprettede
-    no_status: Uden status
-    empty: Der er endnu ikke oprettet nogen projekter.
-    themes_heatmap: Områder på tværs af afdelinger
-    themes_heatmap_sub: Antal projekter pr. område i hver afdeling.
-    themes_heatmap_empty: Tilføj både afdelinger og områder for at se denne graf.
-    collaboration: Muligt samarbejde
-    collaboration_sub: Projekter i forskellige afdelinger med fælles område.
-    status_by_dept: Status pr. afdeling
-    status_by_dept_sub: Projekternes status fordelt på hver afdeling.
-    funding_sources: Finansieringskilder
-    funding_sources_sub: Antal projekter pr. finansieringskilde.
     budget_by_dept: Budget pr. afdeling
     budget_by_dept_sub: Samlet budget for projekterne i hver afdeling.
-    reach: Områder med flest afdelinger
-    reach_sub: Hvor mange afdelinger hvert område er repræsenteret i.
-    timeline: Tidslinje
-    timeline_sub: Hvert projekts tidsperiode på en tidslinje.
     unfinished:
         title: Dit igangværende arbejde
         sub: Dine projekter og kontaktpersoner der mangler de sidste detaljer.
@@ -190,8 +168,10 @@ project:
     topic_help: Det overordnede program, projektet er en del af.
     area: Område
     area_help: Det tematiske område projektet hører under.
-    description: Kort beskrivelse
-    description_help: Kort opsummering af formål og indhold.
+    summary: Opsummering
+    summary_help: Kort opsummering af formål og indhold.
+    description: Beskrivelse
+    description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
     strategies: Strategier og planer
     project_type: Projektets karakter
     project_type_help: Projektets karakter, fx projekt eller drift.
@@ -207,7 +187,6 @@ project:
     budget: Budget (kr.)
     budget_help: Samlet budget i hele kroner.
     funding: Fundingkilder
-    stakeholders: Interessenter og samarbejdspartnere
     tags: Tags
     time_period_start: Tidshorisont – start
     time_period_start_help: Hvornår projektet starter.
@@ -221,11 +200,6 @@ project:
     author: Udfyldt af
     terms_help: Vælg eksisterende, eller skriv en ny og tryk Enter.
     completion_field_hint: Dette felt tæller med i udfyldningsgraden.
-    images: Billeder
-    attachments: Filer
-    image_file: Billedfil
-    attachment_file: Fil
-    attachment_invalid_type: "Filtypen er ikke tilladt (tilladt: pdf, doc, docx, xls, xlsx)."
     index:
         title: Projekter
         subtitle: Søg, filtrér og opret projekter.
@@ -238,7 +212,6 @@ project:
         contacts: Kontaktpersoner
         partners: Samarbejdspartnere
         classification: Klassificering
-        media: Filer og billeder
         no_contacts: Ingen kontaktpersoner tilknyttet.
         no_partners: Ingen samarbejdspartnere tilknyttet.
     empty:
@@ -249,8 +222,7 @@ project:
         classification: Klassificering
         endorsement: Vedtagelse
         economy: Økonomi og tid
-        relations: Interessenter, samarbejdspartnere og kontakter
-        media: Filer og billeder
+        relations: Samarbejdspartnere og kontakter
         meta: Øvrigt
 
 contact:
@@ -392,11 +364,13 @@ flash:
 enum:
     status:
         idea: Idé
-        planned: Planlagt
-        active: Igangværende
+        opportunity: Mulighed
+        application_in_progress: Ansøgning igangværende
+        application_submitted: Ansøgning afsendt
+        granted: Bevilliget
         on_hold: Sat i bero
+        rejected: Afvist
         completed: Afsluttet
-        cancelled: Annulleret
     project_type:
         project: Projekt
         programme: Program
@@ -416,5 +390,4 @@ enum:
         external_partner: Ekstern partner
     vocabulary:
         tag: Tag
-        stakeholder: Interessent
         strategy: Strategi

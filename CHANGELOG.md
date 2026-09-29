@@ -12,6 +12,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a many-to-many relation edited with a searchable multiselect, and shown as a
   list on the project page, in the list and in the CSV export. The dashboard
   counts a shared project under each of its departments.
+* [PR-36](https://github.com/itk-dev/itk-projects/pull/36)
+  Remove the "Stakeholders and partners" free-tagging field from projects, which
+  duplicated the Partners field: form, project page, filter, CSV export, entity
+  and vocabulary. The migration drops the join table and the stakeholder terms.
+* [PR-34](https://github.com/itk-dev/itk-projects/pull/34)
+  Trim the dashboard to the stats row, "Your work", the activity feed, the
+  status distribution and the budget-by-department chart. The heatmap,
+  collaboration, status-by-department, funding, timeline and reach
+  visualisations are removed along with their data aggregation, translations
+  and styles.
+* [PR-38](https://github.com/itk-dev/itk-projects/pull/38)
+  Let two contacts share a name: the project form's contact picker now
+  identifies contacts by id, shows the email in parentheses to tell namesakes
+  apart, and creates a typed name at once through a new `POST /contacts`
+  endpoint.
+* [PR-37](https://github.com/itk-dev/itk-projects/pull/37)
+  Rename the project's "Short description" to "Summary" (Opsummering) and add
+  a separate, longer "Description" (Beskrivelse) field below it. The existing
+  column is renamed so current texts become summaries; the free-text search and
+  completion percentage cover both fields.
+* [PR-35](https://github.com/itk-dev/itk-projects/pull/35)
+  Remove file upload (project images and attachments) and VichUploaderBundle.
+  The migration drops the project_image and project_attachment tables, so
+  existing uploads are lost; files left in var/uploads must be deleted by hand.
+* [PR-32](https://github.com/itk-dev/itk-projects/pull/32)
+  Replace the project statuses with a set that follows a funding application:
+  Idé, Mulighed, Ansøgning igangværende, Ansøgning afsendt, Bevilliget,
+  Sat i bero, Afvist and Afsluttet. Existing rows are migrated.
 * [PR-30](https://github.com/itk-dev/itk-projects/pull/30)
   Rename "initiative" to "project" throughout the codebase: entities, tables,
   routes, forms, translations, templates and tests. The migration drops the

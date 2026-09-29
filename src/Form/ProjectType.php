@@ -54,10 +54,16 @@ class ProjectType extends AbstractType
                 'placeholder' => 'form.choose',
                 'help' => 'project.area_help',
             ])
+            ->add('summary', TextareaType::class, [
+                'label' => 'project.summary',
+                'required' => false,
+                'attr' => ['rows' => 4],
+                'help' => 'project.summary_help',
+            ])
             ->add('description', TextareaType::class, [
                 'label' => 'project.description',
                 'required' => false,
-                'attr' => ['rows' => 4],
+                'attr' => ['rows' => 8],
                 'help' => 'project.description_help',
             ])
             ->add('strategies', TermsTextType::class, [
@@ -125,12 +131,6 @@ class ProjectType extends AbstractType
                 'required' => false,
                 'choice_label' => static fn (Funding $value): string => $value->labelKey(),
             ])
-            ->add('stakeholders', TermsTextType::class, [
-                'label' => 'project.stakeholders',
-                'vocabulary' => Vocabulary::Stakeholder,
-                'required' => false,
-                'help' => 'project.terms_help',
-            ])
             ->add('tags', TermsTextType::class, [
                 'label' => 'project.tags',
                 'vocabulary' => Vocabulary::Tag,
@@ -177,24 +177,6 @@ class ProjectType extends AbstractType
                 'label' => 'project.partners',
                 'required' => false,
                 'help' => 'project.partners_help',
-            ])
-            ->add('images', CollectionType::class, [
-                'label' => 'project.images',
-                'entry_type' => ProjectImageType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'required' => false,
-                'prototype' => true,
-            ])
-            ->add('attachments', CollectionType::class, [
-                'label' => 'project.attachments',
-                'entry_type' => ProjectAttachmentType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'required' => false,
-                'prototype' => true,
             ]);
     }
 

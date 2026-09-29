@@ -27,7 +27,7 @@ function initCollections() {
             remove.addEventListener("click", () => {
                 item.remove();
                 // Autosave is the only save path now — tell it the form changed so
-                // the removed row is persisted (and the media frame re-renders).
+                // the removed row is persisted.
                 collection.dispatchEvent(
                     new Event("change", { bubbles: true }),
                 );
@@ -103,18 +103,73 @@ function initCreatableSelect(selector, poolKey, transform) {
     });
 }
 
-// Free-tagging term fields (strategies, stakeholders, tags) capitalise new
-// entries; contacts keep the typed name as-is.
+// Free-tagging term fields (strategies, tags) capitalise new
+// entries; partners keep the typed name as-is.
 function initTermSelect() {
     initCreatableSelect("[data-term-select]", "termPool", capitalize);
 }
 
+// Contacts differ from the other pools: people share names, so a contact is
+// keyed on its id and shown by label ("Anne Jensen (anne@aarhus.dk)") to tell
+// namesakes apart. A typed name is created straight away through the JSON
+// endpoint so the chip carries the new id before the next autosave — created
+// on save instead, a name-only chip would create the person again on every
+// later autosave. Typing an existing name still offers "Add …": a second
+// person with the same name is allowed, that is the point.
 function initContactSelect() {
-    initCreatableSelect(
-        "[data-contact-select]",
-        "contactPool",
-        (value) => value,
-    );
+    document.querySelectorAll("[data-contact-select]").forEach((input) => {
+        if (input.dataset.bound) {
+            return;
+        }
+        input.dataset.bound = "1";
+
+        let pool = [];
+        try {
+            pool = JSON.parse(input.dataset.contactPool || "[]");
+        } catch {
+            pool = [];
+        }
+
+        const current = input.value
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean);
+        const createUrl = input.dataset.contactCreateUrl;
+
+        new TomSelect(input, {
+            plugins: ["remove_button"],
+            options: pool.map(({ id, label }) => ({ value: id, text: label })),
+            items: current,
+            create: (typed, callback) => {
+                const name = typed.trim();
+                if (!name || !createUrl) {
+                    callback();
+                    return;
+                }
+                fetch(createUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: JSON.stringify({ name }),
+                })
+                    .then((response) => (response.ok ? response.json() : null))
+                    .then((contact) =>
+                        callback(
+                            contact
+                                ? { value: contact.id, text: contact.label }
+                                : null,
+                        ),
+                    )
+                    .catch(() => callback());
+            },
+            createOnBlur: true,
+            persist: false,
+            hideSelected: true,
+            maxOptions: null,
+        });
+    });
 }
 
 function initPartnerSelect() {
@@ -172,12 +227,6 @@ document.addEventListener("turbo:load", () => {
     initPartnerSelect();
     initDepartmentSelect();
     initTermSelect();
-});
-
-// A turbo-frame swap (the media section reloading after a file upload) replaces
-// its collections, so re-bind the add/remove buttons on the fresh markup.
-document.addEventListener("turbo:frame-load", () => {
-    initCollections();
 });
 
 // Submitting from inside a confirm dialog caches the page with the dialog still

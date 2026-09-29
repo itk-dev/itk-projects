@@ -31,33 +31,6 @@ class ContactRepository extends ServiceEntityRepository
     }
 
     /**
-     * Return an existing contact matched on name (case-insensitive) or a new,
-     * unflushed one. Lets people be picked from the shared pool or typed in on
-     * the fly; the extra fields (email, phone, department) are filled in later
-     * under the contacts admin.
-     */
-    public function findOrCreate(string $name): Contact
-    {
-        $name = trim($name);
-
-        $existing = $this->createQueryBuilder('c')
-            ->andWhere('LOWER(c.name) = :name')
-            ->setParameter('name', mb_strtolower($name))
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getOneOrNullResult();
-
-        if ($existing instanceof Contact) {
-            return $existing;
-        }
-
-        $contact = (new Contact())->setName($name);
-        $this->getEntityManager()->persist($contact);
-
-        return $contact;
-    }
-
-    /**
      * The user's most recent contact that still lacks an email — typically one
      * they created on the fly from a project's contact picker (name only).
      * Used by the mascot to nudge them to fill in the rest.

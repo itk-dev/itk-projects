@@ -43,6 +43,7 @@ class ProjectRepository extends ServiceEntityRepository
             $ors = [
                 'LOWER(i.title) LIKE :q',
                 'LOWER(i.topic) LIKE :q',
+                'LOWER(i.summary) LIKE :q',
                 'LOWER(i.description) LIKE :q',
                 'LOWER(i.statusAdditional) LIKE :q',
                 // Related names, matched without joining the root query so the
@@ -50,7 +51,6 @@ class ProjectRepository extends ServiceEntityRepository
                 sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT itag.id FROM %s itag JOIN itag.tags tg WHERE LOWER(tg.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Project::class),
-                sprintf('i.id IN (SELECT isth.id FROM %s isth JOIN isth.stakeholders sh WHERE LOWER(sh.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Project::class),
                 // Department and area are related entities searched by their stored
@@ -147,7 +147,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['organizationalAnchoring', 'strategies', 'stakeholders', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['organizationalAnchoring', 'strategies', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')
@@ -261,7 +261,7 @@ class ProjectRepository extends ServiceEntityRepository
     }
 
     /**
-     * Lightweight per-project rows for the dashboard visualisations: just the
+     * Lightweight per-project rows for the dashboard numbers: just the
      * columns the aggregates need, so it stays cheap to recompute on every live
      * broadcast. `organizationalAnchoring` is the list of department ids (as
      * strings); the other keys are plain columns.
@@ -276,13 +276,9 @@ class ProjectRepository extends ServiceEntityRepository
         $rows = $this->createQueryBuilder('i')
             ->select(
                 'i.id',
-                'i.title',
                 'ar.id AS area',
                 'i.status',
                 'i.budget',
-                'i.funding',
-                'i.timePeriodStart',
-                'i.timePeriodEnd',
             )
             ->leftJoin('i.area', 'ar')
             ->getQuery()

@@ -64,15 +64,23 @@ class ProjectController extends AbstractController
         $response = new StreamedResponse(function () use ($rows, $translator, $translate): void {
             $csv = Writer::createFromStream(fopen('php://output', 'w'));
             $csv->insertOne([
-                'id', $translator->trans('project.title'), $translator->trans('project.topic'),
+                'id',
+                $translator->trans('project.title'),
+                $translator->trans('project.topic'),
                 $translator->trans('project.status'),
-                $translator->trans('project.area'), $translator->trans('project.project_type'),
-                $translator->trans('project.organizational_anchoring'), $translator->trans('project.endorsement'),
-                $translator->trans('project.endorsement_author'), $translator->trans('project.budget'),
-                $translator->trans('project.funding'), $translator->trans('project.stakeholders'),
-                $translator->trans('project.strategies'), $translator->trans('project.tags'),
-                $translator->trans('project.time_period_start'), $translator->trans('project.time_period_end'),
-                $translator->trans('project.contacts'), $translator->trans('project.partners'),
+                $translator->trans('project.area'),
+                $translator->trans('project.project_type'),
+                $translator->trans('project.organizational_anchoring'),
+                $translator->trans('project.endorsement'),
+                $translator->trans('project.endorsement_author'),
+                $translator->trans('project.budget'),
+                $translator->trans('project.funding'),
+                $translator->trans('project.strategies'),
+                $translator->trans('project.tags'),
+                $translator->trans('project.time_period_start'),
+                $translator->trans('project.time_period_end'),
+                $translator->trans('project.contacts'),
+                $translator->trans('project.partners'),
                 $translator->trans('project.author'),
             ]);
 
@@ -91,7 +99,6 @@ class ProjectController extends AbstractController
                     $translate($row->getEndorsementAuthor()),
                     $row->getBudget(),
                     implode(', ', array_map($translate, $row->getFunding())),
-                    $names($row->getStakeholders()),
                     $names($row->getStrategies()),
                     $names($row->getTags()),
                     $row->getTimePeriodStart()?->format('Y-m-d'),
@@ -126,7 +133,6 @@ class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->removeEmptyMedia($project);
             $entityManager->persist($project);
             $entityManager->flush();
 
@@ -181,7 +187,6 @@ class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->removeEmptyMedia($project);
             $entityManager->flush();
 
             // Autosave is now the only save path on this form (the Save button is
@@ -234,23 +239,5 @@ class ProjectController extends AbstractController
         $user = $this->getUser();
 
         return $user instanceof User ? $user : null;
-    }
-
-    /**
-     * Drop media rows the user added but left empty (no uploaded file).
-     */
-    private function removeEmptyMedia(Project $project): void
-    {
-        foreach ($project->getImages() as $image) {
-            if (!$image->hasFile()) {
-                $project->removeImage($image);
-            }
-        }
-
-        foreach ($project->getAttachments() as $attachment) {
-            if (!$attachment->hasFile()) {
-                $project->removeAttachment($attachment);
-            }
-        }
     }
 }

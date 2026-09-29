@@ -23,7 +23,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private const array TAGS = ['Bæredygtighed', 'Borgerinddragelse', 'Innovation', 'Sundhed', 'Klima', 'Mobilitet', 'Data', 'Tryghed', 'Læring', 'Fællesskab'];
-    private const array STAKEHOLDERS = ['Aarhus Kommune', 'Region Midtjylland', 'Aarhus Universitet', 'Erhverv Aarhus', 'Lokale foreninger', 'Boligforeninger', 'VIA University College', 'Business Region Aarhus'];
     private const array STRATEGIES = ['Klimaplan 2030', 'Erhvervsplan', 'Børn- og ungepolitik', 'Mobilitetsplan', 'Digitaliseringsstrategi', 'Sundhedspolitik'];
     private const array DEPARTMENTS = ['ITK Development', 'CFIA', 'Aarhus CityLab', 'Stab', 'OS2', 'AI Lab', 'IOT Lab', 'GTM', 'Fut Lab'];
     private const array PARTNERS = ['Aarhus Universitet', 'VIA University College', 'Alexandra Instituttet', 'Teknologisk Institut', 'Region Midtjylland', 'Erhverv Aarhus', 'Danmarks Tekniske Universitet', 'Aarhus Vand', 'AffaldVarme Aarhus', 'Dansk Industri'];
@@ -60,7 +59,6 @@ class AppFixtures extends Fixture
         $users = [$admin, $editor];
 
         $tags = $this->makeTerms($manager, self::TAGS, Vocabulary::Tag);
-        $stakeholders = $this->makeTerms($manager, self::STAKEHOLDERS, Vocabulary::Stakeholder);
         $strategies = $this->makeTerms($manager, self::STRATEGIES, Vocabulary::Strategy);
 
         $departments = [];
@@ -141,7 +139,8 @@ class AppFixtures extends Fixture
                 ->setArea($areas[array_rand($areas)])
                 ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
-                ->setDescription('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
+                ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
+                ->setDescription('Projektet er sat i gang, fordi kommunen har brug for at styrke indsatsen omkring '.mb_strtolower($title).".\n\nDet har ophæng i byrådets vedtagne strategier og i afdelingens handleplaner og gennemføres i samarbejde med relevante fagområder og eksterne partnere.")
                 ->setEndorsement(0 === $index % 3 ? false : true)
                 ->setBudget(mt_rand(1, 40) * 50000);
             $project->setCreatedBy($users[array_rand($users)]);
@@ -169,9 +168,6 @@ class AppFixtures extends Fixture
 
             foreach (\array_slice($this->shuffleCopy($tags), 0, mt_rand(1, 4)) as $term) {
                 $project->addTag($term);
-            }
-            foreach (\array_slice($this->shuffleCopy($stakeholders), 0, mt_rand(1, 3)) as $term) {
-                $project->addStakeholder($term);
             }
             foreach (\array_slice($this->shuffleCopy($strategies), 0, mt_rand(0, 2)) as $term) {
                 $project->addStrategy($term);
