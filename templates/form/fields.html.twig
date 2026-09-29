@@ -54,20 +54,3 @@
         </ul>
     {%- endif -%}
 {% endblock %}
-
-{% block file_widget %}
-    <div class="upload-field" data-controller="file-field" data-action="change->file-field#picked">
-        <label class="upload-field__drop" data-file-field-target="drop">
-            <svg class="upload-field__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M12 16V4m0 0L7 9m5-5l5 5"/>
-                <path d="M5 20h14"/>
-            </svg>
-            <span class="upload-field__cta">{{ 'media.choose'|trans }}</span>
-            <span class="upload-field__filename" data-file-field-target="filename"></span>
-            {{- block('form_widget_simple') -}}
-        </label>
-        <div class="upload-field__progress" data-file-field-target="progress" hidden>
-            <div class="upload-field__bar" data-file-field-target="bar"></div>
-        </div>
-    </div>
-{% endblock %}

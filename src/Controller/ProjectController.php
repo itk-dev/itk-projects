@@ -133,7 +133,6 @@ class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->removeEmptyMedia($project);
             $entityManager->persist($project);
             $entityManager->flush();
 
@@ -188,7 +187,6 @@ class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->removeEmptyMedia($project);
             $entityManager->flush();
 
             // Autosave is now the only save path on this form (the Save button is
@@ -241,23 +239,5 @@ class ProjectController extends AbstractController
         $user = $this->getUser();
 
         return $user instanceof User ? $user : null;
-    }
-
-    /**
-     * Drop media rows the user added but left empty (no uploaded file).
-     */
-    private function removeEmptyMedia(Project $project): void
-    {
-        foreach ($project->getImages() as $image) {
-            if (!$image->hasFile()) {
-                $project->removeImage($image);
-            }
-        }
-
-        foreach ($project->getAttachments() as $attachment) {
-            if (!$attachment->hasFile()) {
-                $project->removeAttachment($attachment);
-            }
-        }
     }
 }

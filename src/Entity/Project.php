@@ -26,7 +26,7 @@ class Project extends AbstractEntity
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'area', 'description', 'projectType', 'status',
+        'title', 'area', 'summary', 'description', 'projectType', 'status',
         'organizationalAnchoring',
         'budget', 'funding', 'timePeriodStart', 'timePeriodEnd',
     ];
@@ -47,6 +47,11 @@ class Project extends AbstractEntity
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Area $area = null;
 
+    /** A few lines summing up the project's purpose and content. */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $summary = null;
+
+    /** The fuller account: why the project is done and what it is anchored in. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -89,14 +94,6 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_partner')]
     private Collection $partners;
 
-    /** @var Collection<int, ProjectImage> */
-    #[ORM\OneToMany(targetEntity: ProjectImage::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $images;
-
-    /** @var Collection<int, ProjectAttachment> */
-    #[ORM\OneToMany(targetEntity: ProjectAttachment::class, mappedBy: 'project', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    private Collection $attachments;
-
     #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true)]
     private ?int $budget = null;
@@ -131,8 +128,6 @@ class Project extends AbstractEntity
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
         $this->tags = new ArrayCollection();
-        $this->images = new ArrayCollection();
-        $this->attachments = new ArrayCollection();
     }
 
     public function getTitle(): ?string
@@ -167,6 +162,18 @@ class Project extends AbstractEntity
     public function setArea(?Area $area): static
     {
         $this->area = $area;
+
+        return $this;
+    }
+
+    public function getSummary(): ?string
+    {
+        return $this->summary;
+    }
+
+    public function setSummary(?string $summary): static
+    {
+        $this->summary = $summary;
 
         return $this;
     }
@@ -332,52 +339,6 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    /** @return Collection<int, ProjectImage> */
-    public function getImages(): Collection
-    {
-        return $this->images;
-    }
-
-    public function addImage(ProjectImage $image): static
-    {
-        if (!$this->images->contains($image)) {
-            $this->images->add($image);
-            $image->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeImage(ProjectImage $image): static
-    {
-        $this->images->removeElement($image);
-
-        return $this;
-    }
-
-    /** @return Collection<int, ProjectAttachment> */
-    public function getAttachments(): Collection
-    {
-        return $this->attachments;
-    }
-
-    public function addAttachment(ProjectAttachment $attachment): static
-    {
-        if (!$this->attachments->contains($attachment)) {
-            $this->attachments->add($attachment);
-            $attachment->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeAttachment(ProjectAttachment $attachment): static
-    {
-        $this->attachments->removeElement($attachment);
-
-        return $this;
-    }
-
     public function getBudget(): ?int
     {
         return $this->budget;
@@ -501,6 +462,7 @@ class Project extends AbstractEntity
         $checks = [
             null !== $this->title && '' !== $this->title,
             null !== $this->area,
+            null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
             null !== $this->projectType,
             null !== $this->status,
