@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
+use App\Entity\Contact;
 use App\Entity\Project;
-use App\Entity\ProjectAttachment;
-use App\Entity\ProjectImage;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Uid\Ulid;
 
 final class ProjectControllerTest extends FunctionalTestCase
 {
     public function testIndexAppliesFiltersFromTheQueryString(): void
     {
         $this->loginAsAdmin();
-        $match = $this->createProject('Deeplinked project', Status::Active);
-        $other = $this->createProject('Deeplinked other project', Status::Cancelled);
+        $match = $this->createProject('Deeplinked project', Status::Granted);
+        $other = $this->createProject('Deeplinked other project', Status::Rejected);
 
         // Opening a shared link must narrow the list, not just fill the form.
-        $crawler = $this->client->request('GET', '/projects?q=Deeplinked&status=active&sort=title&direction=ASC');
+        $crawler = $this->client->request('GET', '/projects?q=Deeplinked&status=granted&sort=title&direction=ASC');
 
         $this->assertResponseIsSuccessful();
-        self::assertSame('active', $crawler->filter('#project-filters select[name="status"] option[selected]')->attr('value'));
+        self::assertSame('granted', $crawler->filter('#project-filters select[name="status"] option[selected]')->attr('value'));
         self::assertSame('Deeplinked', $crawler->filter('#project-filters input[name="q"]')->attr('value'));
 
         $titles = $crawler->filter('#project-results .cell-title')->each(static fn ($node): string => $node->text());
@@ -52,7 +53,7 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertNotEmpty($search->attr('placeholder'));
     }
 
-    public function testNewPersistsProjectWithInlineContactAndDropsEmptyMedia(): void
+    public function testNewPersistsProjectWithInlineContactAndPartner(): void
     {
         $this->loginAsAdmin();
         $crawler = $this->client->request('GET', '/projects/new');
@@ -62,9 +63,7 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->client->request('POST', '/projects/new', [
             'project' => [
                 'title' => 'Coverage project',
-                // A typed name creates a new contact on the fly and attaches it.
-                'contacts' => 'Coverage Contact',
-                // Same free-tagging behaviour for partners.
+                // A typed name creates a new partner on the fly and attaches it.
                 'partners' => 'Coverage Partner',
                 '_token' => $token,
             ],
@@ -75,19 +74,82 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em = $this->entityManager();
         $project = $this->projects()->findOneBy(['title' => 'Coverage project']);
         self::assertInstanceOf(Project::class, $project);
-        self::assertGreaterThanOrEqual(1, $project->getContacts()->count(), 'Inline contact should be merged in.');
         self::assertGreaterThanOrEqual(1, $project->getPartners()->count(), 'Inline partner should be merged in.');
 
         $em->remove($project);
         $em->flush();
 
-        foreach ($this->contacts()->findBy(['name' => 'Coverage Contact']) as $contact) {
-            $em->remove($contact);
-        }
         foreach ($this->partners()->findBy(['name' => 'Coverage Partner']) as $partner) {
             $em->remove($partner);
         }
         $em->flush();
+    }
+
+    public function testContactPickerTellsNamesakesApartAndAttachesById(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $name = 'Namesake '.uniqid();
+        $first = (new Contact())->setName($name)->setEmail('first@example.com');
+        $second = (new Contact())->setName($name)->setEmail('second@example.com');
+        $em->persist($first);
+        $em->persist($second);
+        $em->flush();
+        $firstId = (string) $first->getId();
+        $secondId = (string) $second->getId();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        $this->assertResponseIsSuccessful();
+
+        $input = $crawler->filter('[name="project[contacts]"]');
+        $pool = json_decode((string) $input->attr('data-contact-pool'), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertIsArray($pool);
+        $labels = array_column($pool, 'label', 'id');
+        // Two people sharing a name are two entries, told apart by their email.
+        self::assertSame($name.' (first@example.com)', $labels[$firstId] ?? null);
+        self::assertSame($name.' (second@example.com)', $labels[$secondId] ?? null);
+        self::assertSame('/contacts', $input->attr('data-contact-create-url'));
+
+        // Submitting an id attaches that very person, not the namesake.
+        $title = 'Namesake project '.uniqid();
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => ['title' => $title, 'contacts' => $secondId, '_token' => $token],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame(
+            [$secondId],
+            array_map(static fn (Contact $contact): string => (string) $contact->getId(), $project->getContacts()->toArray()),
+        );
+
+        $em = $this->entityManager();
+        $em->remove($project);
+        foreach ([$firstId, $secondId] as $id) {
+            $contact = $this->contacts()->find($id);
+            self::assertInstanceOf(Contact::class, $contact);
+            $em->remove($contact);
+        }
+        $em->flush();
+    }
+
+    public function testAnUnknownContactIdIsRejected(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Unknown contact project '.uniqid();
+
+        // Names are no longer accepted either: a typed name is created through
+        // the contact endpoint, so the picker only ever posts ids.
+        foreach ([(string) new Ulid(), 'Anne Jensen'] as $value) {
+            $this->client->request('POST', '/projects/new', [
+                'project' => ['title' => $title, 'contacts' => $value],
+            ], [], ['HTTP_X_AUTOSAVE' => '1']);
+
+            $this->assertResponseStatusCodeSame(422);
+        }
+        self::assertNull($this->projects()->findOneBy(['title' => $title]));
     }
 
     public function testTopicIsSavedShownSearchableAndExported(): void
@@ -121,6 +183,53 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->removeProject($id);
     }
 
+    public function testSummaryAndDescriptionAreSavedShownAndSearchable(): void
+    {
+        $this->loginAsAdmin();
+        $summary = 'Opsummering '.uniqid();
+        $description = 'Ophæng i klimaplanen '.uniqid();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertStringContainsString('Opsummering', $crawler->filter('label[for="project_summary"]')->text());
+        self::assertStringContainsString('Beskrivelse', $crawler->filter('label[for="project_description"]')->text());
+
+        // The fuller description sits directly under the summary.
+        $names = $crawler->filter('form textarea')->each(static fn (Crawler $node): string => (string) $node->attr('name'));
+        $summaryAt = array_search('project[summary]', $names, true);
+        self::assertIsInt($summaryAt);
+        self::assertSame('project[description]', $names[$summaryAt + 1] ?? null);
+
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => 'Described project',
+                'summary' => $summary,
+                'description' => $description,
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => 'Described project']);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame($summary, $project->getSummary());
+        self::assertSame($description, $project->getDescription());
+        $id = (string) $project->getId();
+
+        $crawler = $this->client->request('GET', '/projects/'.$id);
+        $details = $crawler->filter('.card__body')->first()->text();
+        self::assertStringContainsString($summary, $details);
+        self::assertStringContainsString($description, $details);
+
+        // Both texts are covered by the free-text filter.
+        foreach ([$summary, $description] as $needle) {
+            $crawler = $this->client->request('GET', '/projects?q='.urlencode($needle));
+            self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
+        }
+
+        $this->removeProject($id);
+    }
+
     public function testEditUpdatesProject(): void
     {
         $this->loginAsAdmin();
@@ -134,8 +243,6 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
             'project' => [
                 'title' => 'Edited project',
-                'images' => [['imageFile' => '']],
-                'attachments' => [['file' => '']],
                 '_token' => $token,
             ],
         ]);
@@ -172,68 +279,6 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->assertResponseRedirects('/projects');
         $this->entityManager()->clear();
         self::assertNotNull($this->projects()->find($id));
-
-        $this->removeProject($id);
-    }
-
-    public function testEditDropsAttachmentsLeftWithoutAFile(): void
-    {
-        $this->loginAsAdmin();
-        $project = $this->createProject('Has empty attachment');
-        $project->addAttachment(new ProjectAttachment());
-        $em = $this->entityManager();
-        $em->flush();
-        $id = (string) $project->getId();
-
-        $crawler = $this->client->request('GET', sprintf('/projects/%s/edit', $id));
-        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
-        $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
-            'project' => [
-                'title' => 'Has empty attachment',
-                // Re-submit the file-less attachment (empty file, no upload) so the
-                // form keeps it; the controller's removeEmptyMedia() then drops it.
-                'attachments' => [['file' => '']],
-                '_token' => $token,
-            ],
-        ]);
-
-        $this->assertResponseRedirects(sprintf('/projects/%s', $id));
-
-        $this->entityManager()->clear();
-        $reloaded = $this->projects()->find($id);
-        self::assertNotNull($reloaded);
-        self::assertCount(0, $reloaded->getAttachments(), 'A file-less attachment should be dropped.');
-
-        $this->removeProject($id);
-    }
-
-    public function testEditDropsImagesLeftWithoutAFile(): void
-    {
-        $this->loginAsAdmin();
-        $project = $this->createProject('Has empty image');
-        $project->addImage(new ProjectImage());
-        $em = $this->entityManager();
-        $em->flush();
-        $id = (string) $project->getId();
-
-        $crawler = $this->client->request('GET', sprintf('/projects/%s/edit', $id));
-        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
-        $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
-            'project' => [
-                'title' => 'Has empty image',
-                // Re-submit the file-less image so the form keeps it; the
-                // controller's removeEmptyMedia() then drops it.
-                'images' => [['imageFile' => '']],
-                '_token' => $token,
-            ],
-        ]);
-
-        $this->assertResponseRedirects(sprintf('/projects/%s', $id));
-
-        $this->entityManager()->clear();
-        $reloaded = $this->projects()->find($id);
-        self::assertNotNull($reloaded);
-        self::assertCount(0, $reloaded->getImages(), 'A file-less image should be dropped.');
 
         $this->removeProject($id);
     }

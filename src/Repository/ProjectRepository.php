@@ -43,6 +43,7 @@ class ProjectRepository extends ServiceEntityRepository
             $ors = [
                 'LOWER(i.title) LIKE :q',
                 'LOWER(i.topic) LIKE :q',
+                'LOWER(i.summary) LIKE :q',
                 'LOWER(i.description) LIKE :q',
                 'LOWER(i.statusAdditional) LIKE :q',
                 // Related names, matched without joining the root query so the

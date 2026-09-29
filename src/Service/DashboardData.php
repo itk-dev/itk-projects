@@ -80,10 +80,14 @@ final class DashboardData
             static fn (array $depts): bool => \count($depts) >= 2,
         ));
 
+        // "In progress" on the dashboard means funded and running, i.e. granted;
+        // applications still being written or awaiting an answer are not counted.
+        $inProgress = $statusDistribution[$statusIndex[Status::Granted->value]] ?? 0;
+
         return [
             'kpis' => [
                 'total' => $total,
-                'inProgress' => $statusDistribution[$statusIndex[Status::Active->value]] ?? 0,
+                'inProgress' => $inProgress,
                 'departments' => \count($deptsSeen),
                 'departmentsTotal' => \count($departments),
                 'collaboration' => $collaborationCount,

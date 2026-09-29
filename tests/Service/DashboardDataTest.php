@@ -51,10 +51,10 @@ final class DashboardDataTest extends KernelTestCase
         $projects = $this->createStub(ProjectRepository::class);
         $projects->method('dashboardRows')->willReturn([
             // "Shared" worked on in two departments -> counts as a collaboration.
-            ['area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000],
-            ['area' => (string) $shared->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000],
+            ['area' => (string) $shared->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => 1000],
+            ['area' => (string) $shared->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptB->getId(), 'budget' => 2000],
             // "Solo" only in one department, and without a budget.
-            ['area' => (string) $solo->getId(), 'status' => Status::Active, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null],
+            ['area' => (string) $solo->getId(), 'status' => Status::Granted, 'organizationalAnchoring' => (string) $deptA->getId(), 'budget' => null],
             // No area/department/status -> exercises the null guards.
             ['area' => null, 'status' => null, 'organizationalAnchoring' => null, 'budget' => null],
         ]);
@@ -74,6 +74,6 @@ final class DashboardDataTest extends KernelTestCase
         self::assertSame([1000, 2000], $data['budgetByDept']);
         self::assertSame(3, array_sum($data['statusDistribution']));
         // The stubbed translator echoes the key, so labels are the enum label keys.
-        self::assertContains(['key' => Status::Active->value, 'label' => Status::Active->labelKey()], $data['statuses']);
+        self::assertContains(['key' => Status::Granted->value, 'label' => Status::Granted->labelKey()], $data['statuses']);
     }
 }
