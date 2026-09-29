@@ -46,12 +46,15 @@ class ProjectType extends AbstractType
                 'attr' => ['rows' => 4],
                 'help' => 'project.topic_help',
             ])
-            ->add('area', EntityType::class, [
+            ->add('areas', EntityType::class, [
                 'label' => 'project.area',
                 'class' => Area::class,
                 'choice_label' => 'name',
+                'multiple' => true,
                 'required' => false,
-                'placeholder' => 'form.choose',
+                // Areas are admin-managed like departments: a searchable multiselect
+                // (Tom Select, see app.js) without on-the-fly creation.
+                'attr' => ['data-area-select' => true, 'placeholder' => 'form.choose'],
                 'help' => 'project.area_help',
             ])
             ->add('summary', TextareaType::class, [

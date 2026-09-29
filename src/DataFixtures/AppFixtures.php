@@ -136,7 +136,6 @@ class AppFixtures extends Fixture
         foreach ($titles as $index => $title) {
             $project = (new Project())
                 ->setTitle($title)
-                ->setArea($areas[array_rand($areas)])
                 ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
                 ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
@@ -157,9 +156,13 @@ class AppFixtures extends Fixture
             $project->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
 
             // Roughly a third of the projects span two departments so the dashboard's
-            // cross-department views have something to show.
+            // cross-department views have something to show; likewise every fourth
+            // project sits in two areas.
             foreach (\array_slice($this->shuffleCopy($departments), 0, 0 === $index % 3 ? 2 : 1) as $department) {
                 $project->addOrganizationalAnchoring($department);
+            }
+            foreach (\array_slice($this->shuffleCopy($areas), 0, 0 === $index % 4 ? 2 : 1) as $area) {
+                $project->addArea($area);
             }
 
             $start = new \DateTimeImmutable(sprintf('2025-%02d-01', mt_rand(1, 12)));
