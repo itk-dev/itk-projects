@@ -19,13 +19,16 @@ const DEPT_COLORS = [
     "#00a5cd",
     "#73bc99",
 ];
+// One entry per App\Enum\Status case, in the enum's order.
 const STATUS_COLORS = [
-    "#adb5bd",
-    "#00a5cd",
-    "#008d3d",
-    "#f5b800",
-    "#005876",
-    "#e44930",
+    "#adb5bd", // idea
+    "#00a5cd", // opportunity
+    "#007ba6", // application_in_progress
+    "#89bd23", // application_submitted
+    "#008d3d", // granted
+    "#f5b800", // on_hold
+    "#e44930", // rejected
+    "#005876", // completed
 ];
 const FUNDING_COLORS = ["#007ba6", "#008d3d", "#f5b800", "#ee0043", "#adb5bd"];
 const TEAL = "#007ba6";
