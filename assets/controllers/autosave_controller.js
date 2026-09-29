@@ -6,10 +6,7 @@ import { Controller } from "@hotwired/stimulus";
  * On the edit form it posts changes to the edit endpoint without re-rendering,
  * so focus and caret are never lost. On the new form (isNew) the first valid
  * save creates the project and the controller swaps to editing that record
- * in place (URL + action). Picking a file uploads it straight away via the same
- * POST; afterwards the media turbo-frame is reloaded so the stored file shows as
- * a link and its (now redundant) input is cleared — without that the file would
- * linger in the input and re-upload on every later keystroke.
+ * in place (URL + action).
  */
 export default class extends Controller {
     static targets = ["status", "statusText"];
@@ -42,13 +39,7 @@ export default class extends Controller {
         this.xhr?.abort();
     }
 
-    schedule(event) {
-        // A picked file uploads on its own — save right away, no debounce.
-        if (event?.target?.type === "file") {
-            window.clearTimeout(this.timer);
-            this.save();
-            return;
-        }
+    schedule() {
         // No "unsaved" text — the animated pen icon carries that state.
         this.setStatus("", "unsaved");
         window.clearTimeout(this.timer);
@@ -64,16 +55,15 @@ export default class extends Controller {
             return;
         }
 
-        // A create or a file upload must run to completion; don't start a second
-        // save on top of one (it would double-create the draft or cut the upload).
+        // A create must run to completion; don't start a second save on top of
+        // one (it would double-create the draft).
         if (this.busy) {
             return;
         }
 
-        const withFiles = this.hasPendingFile();
         // Supersede any in-flight plain edit; the new POST carries the whole form.
         this.xhr?.abort();
-        this.busy = this.isNewValue || withFiles;
+        this.busy = this.isNewValue;
 
         // Reveal the saving spinner only for slow saves (> 2s); a quick save jumps
         // straight to "Gemt" with no flicker.
@@ -82,25 +72,10 @@ export default class extends Controller {
             2000,
         );
 
-        // Picking a file drives a progress bar in the upload field via these events.
-        if (withFiles) {
-            this.dispatch("uploadstart", { target: document });
-        }
-        let ok = false;
-
         try {
-            const { status, location } = await this.request(
-                withFiles
-                    ? (percent) =>
-                          this.dispatch("uploadprogress", {
-                              target: document,
-                              detail: { percent },
-                          })
-                    : null,
-            );
+            const { status, location } = await this.request();
 
             if (201 === status) {
-                ok = true;
                 // The draft now exists — edit it in place from here on.
                 if (location) {
                     this.element.action = location;
@@ -116,18 +91,11 @@ export default class extends Controller {
                     `${this.savedTextValue} · ${this.timestamp()}`,
                     "saved",
                 );
-                if (withFiles) {
-                    this.refreshMedia();
-                }
             } else if (204 === status) {
-                ok = true;
                 this.setStatus(
                     `${this.savedTextValue} · ${this.timestamp()}`,
                     "saved",
                 );
-                if (withFiles) {
-                    this.refreshMedia();
-                }
             } else if (422 === status) {
                 this.setStatus(this.errorTextValue, "error");
             } else {
@@ -141,35 +109,20 @@ export default class extends Controller {
             window.clearTimeout(savingTimer);
             this.busy = false;
             this.xhr = null;
-            if (withFiles) {
-                this.dispatch("uploadend", {
-                    target: document,
-                    detail: { ok },
-                });
-            }
         }
     }
 
-    // POST the whole form via XHR so file uploads can report real progress.
-    // Resolves with the status and the X-Project-Location header (if any);
-    // rejects with an AbortError when superseded.
-    request(onProgress) {
+    // POST the whole form via XHR so an in-flight save can be aborted when a
+    // newer one supersedes it. Resolves with the status and the
+    // X-Project-Location header (if any); rejects with an AbortError when
+    // superseded.
+    request() {
         return new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
             this.xhr = xhr;
             xhr.open("POST", this.element.action, true);
             xhr.setRequestHeader("X-Autosave", "1");
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-
-            if (onProgress && xhr.upload) {
-                xhr.upload.addEventListener("progress", (event) => {
-                    if (event.lengthComputable) {
-                        onProgress(
-                            Math.round((event.loaded / event.total) * 100),
-                        );
-                    }
-                });
-            }
 
             xhr.addEventListener("load", () =>
                 resolve({
@@ -190,31 +143,10 @@ export default class extends Controller {
         });
     }
 
-    hasPendingFile() {
-        return Array.from(
-            this.element.querySelectorAll('input[type="file"]'),
-        ).some((input) => input.files && input.files.length > 0);
-    }
-
     hasEmptyRequiredField() {
         return Array.from(
             this.element.querySelectorAll("[data-autosave-required]"),
         ).some((field) => "" === field.value.trim());
-    }
-
-    // Reload just the files/images section so a freshly uploaded file shows as a
-    // link and its input is reset — the rest of the form keeps its state.
-    refreshMedia() {
-        const frame = document.getElementById("project-media");
-        if (!frame) {
-            return;
-        }
-        if (frame.src) {
-            frame.reload();
-        } else {
-            // First reload also gives the frame its source (the edit URL).
-            frame.src = this.element.action;
-        }
     }
 
     setStatus(text, state) {

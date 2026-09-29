@@ -4,13 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Controller;
 
-use App\Entity\ProjectImage;
 use App\Repository\ProjectRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class SmokeTest extends WebTestCase
 {
@@ -51,34 +48,6 @@ final class SmokeTest extends WebTestCase
 
         $client->request('GET', sprintf('/projects/%s/edit', $project->getId()));
         $this->assertResponseIsSuccessful();
-    }
-
-    public function testImageUploadIsStored(): void
-    {
-        static::createClient();
-        $container = static::getContainer();
-        $entityManager = $container->get(EntityManagerInterface::class);
-
-        $project = $container->get(ProjectRepository::class)->findOneBy([]);
-        self::assertNotNull($project);
-
-        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==', true);
-        self::assertIsString($png);
-        $path = tempnam(sys_get_temp_dir(), 'itk').'.png';
-        file_put_contents($path, $png);
-        $upload = new UploadedFile($path, 'sample.png', 'image/png', null, true);
-
-        $image = (new ProjectImage())->setAlt('Sample');
-        $image->setImageFile($upload);
-        $project->addImage($image);
-        $entityManager->flush();
-
-        self::assertNotNull($image->getImageName(), 'Vich should persist the stored file name.');
-        self::assertSame('sample.png', $image->getOriginalName());
-
-        // Keep the suite idempotent (and let Vich delete the stored file).
-        $entityManager->remove($image);
-        $entityManager->flush();
     }
 
     /**
