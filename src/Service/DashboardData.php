@@ -53,13 +53,28 @@ final class DashboardData
 
         foreach ($this->projects->dashboardRows() as $row) {
             ++$total;
-            $dept = $this->enumValue($row['organizationalAnchoring'] ?? null);
             $area = $this->enumValue($row['area'] ?? null);
             $status = $this->enumValue($row['status'] ?? null);
-            $di = null !== $dept ? ($deptIndex[$dept] ?? null) : null;
             $si = null !== $status ? ($statusIndex[$status] ?? null) : null;
 
-            if (null !== $di) {
+            // A project is anchored in any number of departments; keep only the
+            // ids that resolve to a known department, as department indexes.
+            $depts = [];
+            foreach (($row['organizationalAnchoring'] ?? []) as $deptId) {
+                $dept = $this->enumValue($deptId);
+                if (null !== $dept && isset($deptIndex[$dept])) {
+                    $depts[$dept] = $deptIndex[$dept];
+                }
+            }
+
+            if (null !== $si) {
+                ++$statusDistribution[$si];
+            }
+
+            // Every per-department aggregate counts a shared project once under
+            // each of its departments: the budget shows what each department is
+            // involved in, so the bars sum to more than the plain total.
+            foreach ($depts as $di) {
                 $deptsSeen[$di] = true;
                 if (null !== $area) {
                     $deptsByArea[$area][$di] = true;
@@ -67,9 +82,6 @@ final class DashboardData
                 if (null !== ($row['budget'] ?? null)) {
                     $budgetByDept[$di] += (int) $row['budget'];
                 }
-            }
-            if (null !== $si) {
-                ++$statusDistribution[$si];
             }
         }
 

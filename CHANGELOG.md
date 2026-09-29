@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-33](https://github.com/itk-dev/itk-projects/pull/33)
+  Let a project be anchored in several departments: the department field is now
+  a many-to-many relation edited with a searchable multiselect, and shown as a
+  list on the project page, in the list and in the CSV export. The dashboard
+  counts a shared project under each of its departments.
 * [PR-36](https://github.com/itk-dev/itk-projects/pull/36)
   Remove the "Stakeholders and partners" free-tagging field from projects, which
   duplicated the Partners field: form, project page, filter, CSV export, entity
