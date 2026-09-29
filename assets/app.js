@@ -104,17 +104,72 @@ function initCreatableSelect(selector, poolKey, transform) {
 }
 
 // Free-tagging term fields (strategies, stakeholders, tags) capitalise new
-// entries; contacts keep the typed name as-is.
+// entries; partners keep the typed name as-is.
 function initTermSelect() {
     initCreatableSelect("[data-term-select]", "termPool", capitalize);
 }
 
+// Contacts differ from the other pools: people share names, so a contact is
+// keyed on its id and shown by label ("Anne Jensen (anne@aarhus.dk)") to tell
+// namesakes apart. A typed name is created straight away through the JSON
+// endpoint so the chip carries the new id before the next autosave — created
+// on save instead, a name-only chip would create the person again on every
+// later autosave. Typing an existing name still offers "Add …": a second
+// person with the same name is allowed, that is the point.
 function initContactSelect() {
-    initCreatableSelect(
-        "[data-contact-select]",
-        "contactPool",
-        (value) => value,
-    );
+    document.querySelectorAll("[data-contact-select]").forEach((input) => {
+        if (input.dataset.bound) {
+            return;
+        }
+        input.dataset.bound = "1";
+
+        let pool = [];
+        try {
+            pool = JSON.parse(input.dataset.contactPool || "[]");
+        } catch {
+            pool = [];
+        }
+
+        const current = input.value
+            .split(",")
+            .map((value) => value.trim())
+            .filter(Boolean);
+        const createUrl = input.dataset.contactCreateUrl;
+
+        new TomSelect(input, {
+            plugins: ["remove_button"],
+            options: pool.map(({ id, label }) => ({ value: id, text: label })),
+            items: current,
+            create: (typed, callback) => {
+                const name = typed.trim();
+                if (!name || !createUrl) {
+                    callback();
+                    return;
+                }
+                fetch(createUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: JSON.stringify({ name }),
+                })
+                    .then((response) => (response.ok ? response.json() : null))
+                    .then((contact) =>
+                        callback(
+                            contact
+                                ? { value: contact.id, text: contact.label }
+                                : null,
+                        ),
+                    )
+                    .catch(() => callback());
+            },
+            createOnBlur: true,
+            persist: false,
+            hideSelected: true,
+            maxOptions: null,
+        });
+    });
 }
 
 function initPartnerSelect() {

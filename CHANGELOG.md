@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-38](https://github.com/itk-dev/itk-projects/pull/38)
+  Let two contacts share a name: the project form's contact picker now
+  identifies contacts by id, shows the email in parentheses to tell namesakes
+  apart, and creates a typed name at once through a new `POST /contacts`
+  endpoint.
 * [PR-37](https://github.com/itk-dev/itk-projects/pull/37)
   Rename the project's "Short description" to "Summary" (Opsummering) and add
   a separate, longer "Description" (Beskrivelse) field below it. The existing
