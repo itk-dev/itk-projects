@@ -6,6 +6,7 @@ namespace App\Tests\Repository;
 
 use App\Repository\AreaRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Uid\Ulid;
 
 final class AreaRepositoryTest extends KernelTestCase
 {
@@ -20,6 +21,6 @@ final class AreaRepositoryTest extends KernelTestCase
         // Ordering is delegated to the database collation, so we only assert the
         // method returns the persisted areas.
         self::assertNotEmpty($areas);
-        self::assertNotNull($areas[0]->getId());
+        self::assertInstanceOf(Ulid::class, $areas[0]->getId());
     }
 }

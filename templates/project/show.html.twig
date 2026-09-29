@@ -95,7 +95,7 @@
                 <div class="card__body">
                     <dl class="detail-list">
                         <dt>{{ 'project.area'|trans }}</dt>
-                        <dd>{{ project.area ? project.area.name : '—' }}</dd>
+                        <dd>{{ h.term_list(project.areas) }}</dd>
 
                         <dt>{{ 'project.project_type'|trans }}</dt>
                         <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>

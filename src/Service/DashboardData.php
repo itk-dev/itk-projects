@@ -53,9 +53,17 @@ final class DashboardData
 
         foreach ($this->projects->dashboardRows() as $row) {
             ++$total;
-            $area = $this->enumValue($row['area'] ?? null);
             $status = $this->enumValue($row['status'] ?? null);
             $si = null !== $status ? ($statusIndex[$status] ?? null) : null;
+
+            // A project belongs to any number of areas, keyed by id.
+            $areas = [];
+            foreach (($row['areas'] ?? []) as $areaId) {
+                $area = $this->enumValue($areaId);
+                if (null !== $area) {
+                    $areas[$area] = true;
+                }
+            }
 
             // A project is anchored in any number of departments; keep only the
             // ids that resolve to a known department, as department indexes.
@@ -73,10 +81,11 @@ final class DashboardData
 
             // Every per-department aggregate counts a shared project once under
             // each of its departments: the budget shows what each department is
-            // involved in, so the bars sum to more than the plain total.
+            // involved in, so the bars sum to more than the plain total. Each of
+            // the project's areas is marked as worked on in each department.
             foreach ($depts as $di) {
                 $deptsSeen[$di] = true;
-                if (null !== $area) {
+                foreach (array_keys($areas) as $area) {
                     $deptsByArea[$area][$di] = true;
                 }
                 if (null !== ($row['budget'] ?? null)) {

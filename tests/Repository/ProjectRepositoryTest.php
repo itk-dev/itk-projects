@@ -58,7 +58,7 @@ final class ProjectRepositoryTest extends KernelTestCase
         $anchored = (new Project())
             ->setTitle('Anchored '.uniqid())
             ->addOrganizationalAnchoring($department)
-            ->setArea($area);
+            ->addArea($area);
         $loose = (new Project())->setTitle('Loose '.uniqid());
         foreach ([$department, $area, $anchored, $loose] as $entity) {
             $em->persist($entity);
@@ -78,6 +78,46 @@ final class ProjectRepositoryTest extends KernelTestCase
         }
 
         foreach ([$anchored, $loose, $department, $area] as $entity) {
+            $em->remove($entity);
+        }
+        $em->flush();
+    }
+
+    public function testDashboardRowsListAProjectOnceWithAllItsAreasAndDepartments(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
+
+        $areas = [(new Area())->setName('Row area A '.uniqid()), (new Area())->setName('Row area B '.uniqid())];
+        $departments = [(new Department())->setName('Row dept A '.uniqid()), (new Department())->setName('Row dept B '.uniqid())];
+        $project = (new Project())->setTitle('Dashboard rows '.uniqid());
+        foreach ($areas as $area) {
+            $project->addArea($area);
+        }
+        foreach ($departments as $department) {
+            $project->addOrganizationalAnchoring($department);
+        }
+        foreach ([...$areas, ...$departments, $project] as $entity) {
+            $em->persist($entity);
+        }
+        $em->flush();
+
+        $areaIds = array_map(static fn (Area $area): string => (string) $area->getId(), $areas);
+        $departmentIds = array_map(static fn (Department $department): string => (string) $department->getId(), $departments);
+
+        // The rows carry no project id, but these areas are unique to this project,
+        // so exactly one row lists both — and it must list both departments too,
+        // rather than being repeated once per area × department.
+        $rows = $this->repository->dashboardRows();
+        self::assertCount($this->repository->countAll(), $rows);
+        $matching = array_values(array_filter(
+            $rows,
+            static fn (array $row): bool => [] === array_diff($areaIds, $row['areas']),
+        ));
+        self::assertCount(1, $matching);
+        self::assertSame([], array_diff($departmentIds, $matching[0]['organizationalAnchoring']));
+
+        foreach ([$project, ...$areas, ...$departments] as $entity) {
             $em->remove($entity);
         }
         $em->flush();

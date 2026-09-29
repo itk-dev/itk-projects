@@ -180,23 +180,25 @@ function initPartnerSelect() {
     );
 }
 
-// Departments are a fixed, admin-managed pool, so the project form's
+// Departments and areas are fixed, admin-managed pools, so the project form's
 // <select multiple> becomes a searchable chip multiselect without `create`.
 // Tom Select reads the options and the selection from the select itself and
 // fires input/change on it, which is what autosave and the progress bar listen for.
-function initDepartmentSelect() {
-    document.querySelectorAll("[data-department-select]").forEach((select) => {
-        if (select.dataset.bound) {
-            return;
-        }
-        select.dataset.bound = "1";
+function initPoolSelect() {
+    document
+        .querySelectorAll("[data-department-select], [data-area-select]")
+        .forEach((select) => {
+            if (select.dataset.bound) {
+                return;
+            }
+            select.dataset.bound = "1";
 
-        new TomSelect(select, {
-            plugins: ["remove_button"],
-            hideSelected: true,
-            maxOptions: null,
+            new TomSelect(select, {
+                plugins: ["remove_button"],
+                hideSelected: true,
+                maxOptions: null,
+            });
         });
-    });
 }
 
 // One delegated handler on the document (which survives Turbo navigations and
@@ -225,7 +227,7 @@ document.addEventListener("turbo:load", () => {
     initCollections();
     initContactSelect();
     initPartnerSelect();
-    initDepartmentSelect();
+    initPoolSelect();
     initTermSelect();
 });
 
