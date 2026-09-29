@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-34](https://github.com/itk-dev/itk-projects/pull/34)
+  Trim the dashboard to the stats row, "Your work", the activity feed, the
+  status distribution and the budget-by-department chart. The heatmap,
+  collaboration, status-by-department, funding, timeline and reach
+  visualisations are removed along with their data aggregation, translations
+  and styles.
 * [PR-38](https://github.com/itk-dev/itk-projects/pull/38)
   Let two contacts share a name: the project form's contact picker now
   identifies contacts by id, shows the email in parentheses to tell namesakes
