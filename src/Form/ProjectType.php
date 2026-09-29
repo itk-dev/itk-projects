@@ -174,24 +174,6 @@ class ProjectType extends AbstractType
                 'label' => 'project.partners',
                 'required' => false,
                 'help' => 'project.partners_help',
-            ])
-            ->add('images', CollectionType::class, [
-                'label' => 'project.images',
-                'entry_type' => ProjectImageType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'required' => false,
-                'prototype' => true,
-            ])
-            ->add('attachments', CollectionType::class, [
-                'label' => 'project.attachments',
-                'entry_type' => ProjectAttachmentType::class,
-                'allow_add' => true,
-                'allow_delete' => true,
-                'by_reference' => false,
-                'required' => false,
-                'prototype' => true,
             ]);
     }
 

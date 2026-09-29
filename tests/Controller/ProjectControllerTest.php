@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Controller;
 
 use App\Entity\Project;
-use App\Entity\ProjectAttachment;
-use App\Entity\ProjectImage;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,7 +50,7 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertNotEmpty($search->attr('placeholder'));
     }
 
-    public function testNewPersistsProjectWithInlineContactAndDropsEmptyMedia(): void
+    public function testNewPersistsProjectWithInlineContactAndPartner(): void
     {
         $this->loginAsAdmin();
         $crawler = $this->client->request('GET', '/projects/new');
@@ -134,8 +132,6 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
             'project' => [
                 'title' => 'Edited project',
-                'images' => [['imageFile' => '']],
-                'attachments' => [['file' => '']],
                 '_token' => $token,
             ],
         ]);
@@ -172,68 +168,6 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->assertResponseRedirects('/projects');
         $this->entityManager()->clear();
         self::assertNotNull($this->projects()->find($id));
-
-        $this->removeProject($id);
-    }
-
-    public function testEditDropsAttachmentsLeftWithoutAFile(): void
-    {
-        $this->loginAsAdmin();
-        $project = $this->createProject('Has empty attachment');
-        $project->addAttachment(new ProjectAttachment());
-        $em = $this->entityManager();
-        $em->flush();
-        $id = (string) $project->getId();
-
-        $crawler = $this->client->request('GET', sprintf('/projects/%s/edit', $id));
-        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
-        $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
-            'project' => [
-                'title' => 'Has empty attachment',
-                // Re-submit the file-less attachment (empty file, no upload) so the
-                // form keeps it; the controller's removeEmptyMedia() then drops it.
-                'attachments' => [['file' => '']],
-                '_token' => $token,
-            ],
-        ]);
-
-        $this->assertResponseRedirects(sprintf('/projects/%s', $id));
-
-        $this->entityManager()->clear();
-        $reloaded = $this->projects()->find($id);
-        self::assertNotNull($reloaded);
-        self::assertCount(0, $reloaded->getAttachments(), 'A file-less attachment should be dropped.');
-
-        $this->removeProject($id);
-    }
-
-    public function testEditDropsImagesLeftWithoutAFile(): void
-    {
-        $this->loginAsAdmin();
-        $project = $this->createProject('Has empty image');
-        $project->addImage(new ProjectImage());
-        $em = $this->entityManager();
-        $em->flush();
-        $id = (string) $project->getId();
-
-        $crawler = $this->client->request('GET', sprintf('/projects/%s/edit', $id));
-        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
-        $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
-            'project' => [
-                'title' => 'Has empty image',
-                // Re-submit the file-less image so the form keeps it; the
-                // controller's removeEmptyMedia() then drops it.
-                'images' => [['imageFile' => '']],
-                '_token' => $token,
-            ],
-        ]);
-
-        $this->assertResponseRedirects(sprintf('/projects/%s', $id));
-
-        $this->entityManager()->clear();
-        $reloaded = $this->projects()->find($id);
-        self::assertNotNull($reloaded);
-        self::assertCount(0, $reloaded->getImages(), 'A file-less image should be dropped.');
 
         $this->removeProject($id);
     }

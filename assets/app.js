@@ -27,7 +27,7 @@ function initCollections() {
             remove.addEventListener("click", () => {
                 item.remove();
                 // Autosave is the only save path now — tell it the form changed so
-                // the removed row is persisted (and the media frame re-renders).
+                // the removed row is persisted.
                 collection.dispatchEvent(
                     new Event("change", { bubbles: true }),
                 );
@@ -152,12 +152,6 @@ document.addEventListener("turbo:load", () => {
     initContactSelect();
     initPartnerSelect();
     initTermSelect();
-});
-
-// A turbo-frame swap (the media section reloading after a file upload) replaces
-// its collections, so re-bind the add/remove buttons on the fresh markup.
-document.addEventListener("turbo:frame-load", () => {
-    initCollections();
 });
 
 // Submitting from inside a confirm dialog caches the page with the dialog still

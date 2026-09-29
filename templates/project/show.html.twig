@@ -84,34 +84,6 @@
                         {% endif %}
                     </div>
                 </div>
-
-                {% if project.images|length > 0 or project.attachments|length > 0 %}
-                    <div class="card">
-                        <twig:Card:Header :title="'project.show.media'|trans" />
-                        <div class="card__body">
-                            {% if project.images|length > 0 %}
-                                <div class="image-grid">
-                                    {% for image in project.images %}
-                                        <a href="{{ path('app_media_image', {id: image.id}) }}" class="image-thumb"
-                                           data-controller="lightbox" data-action="click->lightbox#open"
-                                           data-lightbox-close-label-value="{{ 'common.close'|trans }}">
-                                            <img src="{{ path('app_media_image', {id: image.id}) }}" alt="{{ image.alt }}">
-                                        </a>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            {% if project.attachments|length > 0 %}
-                                <ul class="file-list">
-                                    {% for attachment in project.attachments %}
-                                        <li>
-                                            <a href="{{ path('app_media_attachment', {id: attachment.id}) }}">{{ attachment.originalName ?: 'file' }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
             </div>
 
             <div class="card">
