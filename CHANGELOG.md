@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-36](https://github.com/itk-dev/itk-projects/pull/36)
+  Remove the "Stakeholders and partners" free-tagging field from projects, which
+  duplicated the Partners field: form, project page, filter, CSV export, entity
+  and vocabulary. The migration drops the join table and the stakeholder terms.
 * [PR-34](https://github.com/itk-dev/itk-projects/pull/34)
   Trim the dashboard to the stats row, "Your work", the activity feed, the
   status distribution and the budget-by-department chart. The heatmap,

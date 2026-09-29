@@ -94,11 +94,6 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_partner')]
     private Collection $partners;
 
-    /** @var Collection<int, Term> */
-    #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_stakeholder')]
-    private Collection $stakeholders;
-
     #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true)]
     private ?int $budget = null;
@@ -132,7 +127,6 @@ class Project extends AbstractEntity
         $this->strategies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
-        $this->stakeholders = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
@@ -341,39 +335,6 @@ class Project extends AbstractEntity
     public function removePartner(Partner $partner): static
     {
         $this->partners->removeElement($partner);
-
-        return $this;
-    }
-
-    /** @return Collection<int, Term> */
-    public function getStakeholders(): Collection
-    {
-        return $this->stakeholders;
-    }
-
-    public function addStakeholder(Term $term): static
-    {
-        if (!$this->stakeholders->contains($term)) {
-            $this->stakeholders->add($term);
-        }
-
-        return $this;
-    }
-
-    public function removeStakeholder(Term $term): static
-    {
-        $this->stakeholders->removeElement($term);
-
-        return $this;
-    }
-
-    /** @param iterable<Term> $terms */
-    public function setStakeholders(iterable $terms): static
-    {
-        $this->stakeholders->clear();
-        foreach ($terms as $term) {
-            $this->addStakeholder($term);
-        }
 
         return $this;
     }
