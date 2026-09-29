@@ -19,10 +19,6 @@ use ITKDev\EntityBundle\Entity\Trait\TimestampableTrait;
  * application applies uniformly to its domain entities: created/updated
  * timestamps and created-by/modified-by blame, both populated on flush by the
  * bundle's listeners.
- *
- * The Vich-backed media entities ({@see ProjectImage}, {@see ProjectAttachment})
- * extend this base too; they reuse the timestampable "updatedAt" column as the
- * field Vich touches on upload rather than declaring their own.
  */
 #[ORM\MappedSuperclass]
 abstract class AbstractEntity extends AbstractITKDevEntity implements TimestampableInterface, BlameableInterface
