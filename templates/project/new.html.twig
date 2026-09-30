@@ -15,6 +15,14 @@
                 <span data-title-mirror-target="heading">{{ 'project.new.title'|trans }}</span>
             </twig:block>
         </twig:Page:Header>
+
+        {# Collapsed by default; one click away for anyone unsure whether what
+           they are about to register counts as a project. #}
+        <details class="definition-callout">
+            <summary class="definition-callout__summary">{{ 'project.definition.title'|trans }}</summary>
+            <twig:ProjectDefinition />
+        </details>
+
         {{ include('project/_form.html.twig', {button_label: 'action.create', autosave: true}) }}
     </div>
 {% endblock %}
