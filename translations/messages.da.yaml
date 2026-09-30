@@ -184,9 +184,18 @@ project:
     endorsement: Er projektet vedtaget
     endorsement_author: Hvor er det vedtaget
     endorsement_author_help: Hvor projektet er vedtaget.
-    budget: Budget (kr.)
-    budget_help: Samlet budget i hele kroner.
+    amount_applied: Ansøgt beløb (kr.)
+    amount_applied_help: Hvor mange penge der er søgt om, i hele kroner.
+    budget: Samlet budget (kr.)
+    budget_help: Projektets samlede budget i hele kroner.
+    budget_itk: Budget til ITK (kr.)
+    budget_itk_help: Den del af det samlede budget der ligger hos ITK.
+    funding_rate: Fundingrate
+    funding_rate_help: Hvor stor en andel af budgettet fundingkilden dækker.
+    co_financing: Er der medfinansiering/egenfinansiering
     funding: Fundingkilder
+    remaining_funding: Hvad består resten af
+    remaining_funding_help: Hvad resten af finansieringen består af, fx egenfinansiering eller medfinansiering fra partnere. Valgfrit.
     tags: Tags
     time_period_start: Tidshorisont – start
     time_period_start_help: Hvornår projektet starter.
@@ -194,6 +203,8 @@ project:
     time_period_end_help: Hvornår projektet forventes afsluttet.
     time_period: Tidshorisont
     links: Relevante links
+    link_url_placeholder: https://…
+    link_note_placeholder: Note – hvad viser linket?
     contacts: Kontaktpersoner
     partners: Samarbejdspartnere
     partners_help: Vælg en eksisterende samarbejdspartner, eller skriv en ny og tryk Enter.
@@ -388,6 +399,11 @@ enum:
         eu_funds: EU-midler
         foundation: Fond
         external_partner: Ekstern partner
+    funding_rate:
+        "25": 25 %
+        "50": 50 %
+        "75": 75 %
+        "100": 100 %
     vocabulary:
         tag: Tag
         strategy: Strategi

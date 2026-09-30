@@ -45,6 +45,17 @@
     </div>
 {% endblock %}
 
+{# One relevant-link row: url and note side by side, with no per-row labels.
+   Rendering it here keeps the collection's prototype and its saved rows identical. #}
+{% block project_link_widget %}
+    <div class="link-fields">
+        {{ form_widget(form.url) }}
+        {{ form_widget(form.note) }}
+    </div>
+    {{ form_errors(form.url) }}
+    {{ form_errors(form.note) }}
+{% endblock %}
+
 {% block form_errors %}
     {%- if errors|length > 0 -%}
         <ul class="form-errors">
