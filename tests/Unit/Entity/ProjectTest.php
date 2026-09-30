@@ -12,6 +12,7 @@ use App\Entity\Project;
 use App\Entity\Term;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
+use App\Enum\FundingRate;
 use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
@@ -25,6 +26,12 @@ final class ProjectTest extends TestCase
 
         self::assertNull($project->getTitle());
         self::assertFalse($project->isEndorsement());
+        self::assertNull($project->getAmountApplied());
+        self::assertNull($project->getBudget());
+        self::assertNull($project->getBudgetItk());
+        self::assertFalse($project->isCoFinancing());
+        self::assertNull($project->getFundingRate());
+        self::assertNull($project->getRemainingFunding());
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getOrganizationalAnchoring());
@@ -54,7 +61,12 @@ final class ProjectTest extends TestCase
             ->setStatusAdditional('Igangsat')
             ->setEndorsement(false)
             ->setEndorsementAuthor(EndorsementAuthor::CityCouncil)
+            ->setAmountApplied(400000)
             ->setBudget(500000)
+            ->setBudgetItk(125000)
+            ->setCoFinancing(true)
+            ->setFundingRate(FundingRate::ThreeQuarters)
+            ->setRemainingFunding('Egenfinansiering')
             ->setTimePeriodStart($start)
             ->setTimePeriodEnd($end);
 
@@ -68,7 +80,12 @@ final class ProjectTest extends TestCase
         self::assertSame('Igangsat', $project->getStatusAdditional());
         self::assertFalse($project->isEndorsement());
         self::assertSame(EndorsementAuthor::CityCouncil, $project->getEndorsementAuthor());
+        self::assertSame(400000, $project->getAmountApplied());
         self::assertSame(500000, $project->getBudget());
+        self::assertSame(125000, $project->getBudgetItk());
+        self::assertTrue($project->isCoFinancing());
+        self::assertSame(FundingRate::ThreeQuarters, $project->getFundingRate());
+        self::assertSame('Egenfinansiering', $project->getRemainingFunding());
         self::assertSame($start, $project->getTimePeriodStart());
         self::assertSame($end, $project->getTimePeriodEnd());
         self::assertSame('Grøn omstilling', (string) $project);
@@ -86,13 +103,17 @@ final class ProjectTest extends TestCase
             ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Granted)
             ->addOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
+            ->setAmountApplied(800)
             ->setBudget(1000)
+            ->setBudgetItk(250)
+            ->setFundingRate(FundingRate::Half)
             ->setFunding([Funding::EuFunds])
             ->setTimePeriodStart(new \DateTimeImmutable())
             ->setTimePeriodEnd(new \DateTimeImmutable());
 
-        // The Vedtagelse (endorsement) fields are intentionally excluded, so this
-        // reaches 100% without setting an endorsement author.
+        // The Vedtagelse (endorsement) fields, co-financing and the optional
+        // remaining-funding text are intentionally excluded, so this reaches 100%
+        // without them.
         self::assertSame(100, $full->getCompletionPercentage());
     }
 
@@ -123,17 +144,21 @@ final class ProjectTest extends TestCase
         self::assertSame([Funding::MunicipalBudget, Funding::EuFunds], $project->getFunding());
     }
 
-    public function testLinksKeepOnlyHttpUrls(): void
+    public function testLinksKeepOnlyHttpUrlsAndTrimNotes(): void
     {
         $project = (new Project())->setLinks([
-            '',
-            'https://ok.example',
-            'javascript:alert(1)',
-            '   ',
-            'http://plain.example',
+            ['url' => '', 'note' => 'A note is not a link'],
+            ['url' => 'https://ok.example', 'note' => '  Project site  '],
+            ['url' => 'javascript:alert(1)', 'note' => null],
+            ['url' => '   ', 'note' => null],
+            ['url' => ' http://plain.example ', 'note' => ''],
+            ['note' => 'No url key at all'],
         ]);
 
-        self::assertSame(['https://ok.example', 'http://plain.example'], $project->getLinks());
+        self::assertSame([
+            ['url' => 'https://ok.example', 'note' => 'Project site'],
+            ['url' => 'http://plain.example', 'note' => null],
+        ], $project->getLinks());
     }
 
     public function testOrganizationalAnchoringCollection(): void

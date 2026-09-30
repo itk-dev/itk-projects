@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Project;
+use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
 use Symfony\Component\DomCrawler\Crawler;
@@ -286,6 +287,82 @@ final class ProjectControllerTest extends FunctionalTestCase
             $crawler = $this->client->request('GET', '/projects?q='.urlencode($needle));
             self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
         }
+
+        $this->removeProject($id);
+    }
+
+    public function testEconomyFieldsAndLinkNotesAreSavedShownSearchableAndExported(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Economy project '.uniqid();
+        $remainder = 'Egenfinansiering fra driftsbudgettet '.uniqid();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertCount(1, $crawler->filter('select[name="project[fundingRate]"]'));
+        // A link row is a url plus a note.
+        $prototype = (string) $crawler->filter('[data-collection]')->attr('data-prototype');
+        self::assertStringContainsString('project[links][__name__][url]', $prototype);
+        self::assertStringContainsString('project[links][__name__][note]', $prototype);
+
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'amountApplied' => '800000',
+                'budget' => '1000000',
+                'budgetItk' => '250000',
+                'fundingRate' => '75',
+                'coFinancing' => '1',
+                'remainingFunding' => $remainder,
+                'links' => [
+                    ['url' => 'https://www.aarhus.dk', 'note' => 'Aarhus Kommune'],
+                    ['url' => 'https://example.com/plain', 'note' => ''],
+                    // A note without a url is not a link and is dropped.
+                    ['url' => '', 'note' => 'Just a note'],
+                ],
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame(800000, $project->getAmountApplied());
+        self::assertSame(1000000, $project->getBudget());
+        self::assertSame(250000, $project->getBudgetItk());
+        self::assertSame(FundingRate::ThreeQuarters, $project->getFundingRate());
+        self::assertTrue($project->isCoFinancing());
+        self::assertSame($remainder, $project->getRemainingFunding());
+        self::assertSame([
+            ['url' => 'https://www.aarhus.dk', 'note' => 'Aarhus Kommune'],
+            ['url' => 'https://example.com/plain', 'note' => null],
+        ], $project->getLinks());
+        $id = (string) $project->getId();
+
+        // The project page shows the amounts and the rate, and names a link by its note.
+        $crawler = $this->client->request('GET', '/projects/'.$id);
+        $details = $crawler->filter('.detail-list')->text();
+        self::assertStringContainsString('800.000 kr.', $details);
+        self::assertStringContainsString('1.000.000 kr.', $details);
+        self::assertStringContainsString('250.000 kr.', $details);
+        self::assertStringContainsString('75 %', $details);
+        self::assertStringContainsString($remainder, $crawler->filter('.card__body')->first()->text());
+        $links = $crawler->filter('.link-list a');
+        self::assertSame('Aarhus Kommune', $links->first()->text());
+        self::assertSame('https://www.aarhus.dk', $links->first()->attr('href'));
+        self::assertSame('https://example.com/plain', $links->last()->text());
+
+        // The free-text filter covers the remainder text and the funding rate label.
+        foreach ([$remainder, '75 %'] as $needle) {
+            $crawler = $this->client->request('GET', '/projects?q='.urlencode($needle));
+            self::assertStringContainsString($title, $crawler->filter('#project-results')->text());
+        }
+
+        $this->client->request('GET', '/projects/export?q='.urlencode($remainder));
+        $csv = (string) $this->client->getInternalResponse()->getContent();
+        // fputcsv encloses a field that contains a space, hence the quoted rate.
+        self::assertStringContainsString('800000,1000000,250000,"75 %",Ja,', $csv);
+        self::assertStringContainsString($remainder, $csv);
 
         $this->removeProject($id);
     }

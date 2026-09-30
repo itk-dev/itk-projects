@@ -8,6 +8,7 @@ use App\Entity\Project;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
+use App\Enum\FundingRate;
 use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\TranslatableEnum;
@@ -46,6 +47,7 @@ class ProjectRepository extends ServiceEntityRepository
                 'LOWER(i.summary) LIKE :q',
                 'LOWER(i.description) LIKE :q',
                 'LOWER(i.statusAdditional) LIKE :q',
+                'LOWER(i.remainingFunding) LIKE :q',
                 // Related names, matched without joining the root query so the
                 // paginator's count stays correct.
                 sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Project::class),
@@ -65,6 +67,7 @@ class ProjectRepository extends ServiceEntityRepository
                 'status' => Status::cases(),
                 'projectType' => ProjectType::cases(),
                 'endorsementAuthor' => EndorsementAuthor::cases(),
+                'fundingRate' => FundingRate::cases(),
             ];
             foreach ($enumFields as $field => $cases) {
                 $values = $this->matchEnumLabels($cases, $term);

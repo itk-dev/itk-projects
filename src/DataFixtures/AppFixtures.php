@@ -13,6 +13,7 @@ use App\Entity\Term;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
+use App\Enum\FundingRate;
 use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
@@ -132,8 +133,10 @@ class AppFixtures extends Fixture
         $types = ProjectType::cases();
         $endorsers = EndorsementAuthor::cases();
         $fundings = Funding::cases();
+        $rates = FundingRate::cases();
 
         foreach ($titles as $index => $title) {
+            $budget = mt_rand(1, 40) * 50000;
             $project = (new Project())
                 ->setTitle($title)
                 ->setArea($areas[array_rand($areas)])
@@ -142,7 +145,11 @@ class AppFixtures extends Fixture
                 ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
                 ->setDescription('Projektet er sat i gang, fordi kommunen har brug for at styrke indsatsen omkring '.mb_strtolower($title).".\n\nDet har ophæng i byrådets vedtagne strategier og i afdelingens handleplaner og gennemføres i samarbejde med relevante fagområder og eksterne partnere.")
                 ->setEndorsement(0 === $index % 3 ? false : true)
-                ->setBudget(mt_rand(1, 40) * 50000);
+                ->setAmountApplied((int) round($budget * 0.8))
+                ->setBudget($budget)
+                ->setBudgetItk((int) ($budget / 4))
+                ->setFundingRate($rates[array_rand($rates)])
+                ->setCoFinancing(0 === $index % 2);
             $project->setCreatedBy($users[array_rand($users)]);
 
             // Not every project belongs to a wider programme.
@@ -155,6 +162,9 @@ class AppFixtures extends Fixture
             }
 
             $project->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
+            if (0 === $index % 2) {
+                $project->setRemainingFunding('Egenfinansiering fra afdelingens driftsbudget og medfinansiering fra samarbejdspartnerne.');
+            }
 
             // Roughly a third of the projects span two departments so the dashboard's
             // cross-department views have something to show.
@@ -179,7 +189,7 @@ class AppFixtures extends Fixture
                 $project->addPartner($partner);
             }
 
-            $project->setLinks(['https://www.aarhus.dk']);
+            $project->setLinks([['url' => 'https://www.aarhus.dk', 'note' => 'Aarhus Kommune']]);
 
             $manager->persist($project);
         }
