@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Model;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\ProjectType;
+use App\Entity\ProjectCharacter;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,7 @@ final class ProjectFilterTest extends TestCase
         self::assertNull($filter->q);
         self::assertNull($filter->status);
         self::assertNull($filter->area);
-        self::assertNull($filter->projectType);
+        self::assertNull($filter->character);
         self::assertNull($filter->organizationalAnchoring);
         self::assertNull($filter->endorsement);
         self::assertSame('createdAt', $filter->sort);
@@ -33,7 +33,7 @@ final class ProjectFilterTest extends TestCase
         $filter->q = 'klima';
         $filter->status = Status::Granted;
         $filter->area = (new Area())->setName('Klima og miljø');
-        $filter->projectType = ProjectType::Project;
+        $filter->character = (new ProjectCharacter())->setName('Drift');
         $filter->organizationalAnchoring = (new Department())->setName('Sundhed og Omsorg');
         $filter->endorsement = true;
         $filter->sort = 'title';

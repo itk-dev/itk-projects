@@ -1,0 +1,43 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'project_character.index.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% block admin_content %}
+    <twig:Page:Header :title="'project_character.index.title'|trans" :subtitle="'project_character.index.subtitle'|trans" style="margin-bottom: var(--itk-space-5);">
+        <a href="{{ path('admin_project_character_new') }}" class="btn btn--primary">{{ 'action.new'|trans }}</a>
+    </twig:Page:Header>
+
+    <div class="card">
+        {% if characters is empty %}
+            <twig:EmptyState :title="'project_character.empty.title'|trans" :hint="'project_character.empty.hint'|trans" />
+        {% else %}
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'project_character.name'|trans }}</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for character in characters %}
+                            <tr>
+                                <td class="cell-title">{{ character.name }}</td>
+                                <td>
+                                    <div class="cell-actions">
+                                        <a href="{{ path('admin_project_character_edit', {id: character.id}) }}" class="btn btn--ghost btn--sm">{{ 'action.edit'|trans }}</a>
+                                        <twig:ConfirmDelete
+                                            :action="path('admin_project_character_delete', {id: character.id})"
+                                            :token="csrf_token('delete-project-character-' ~ character.id)"
+                                            :title="'action.confirm_delete_title'|trans({'%name%': character.name})"
+                                            triggerClass="btn btn--danger btn--sm" />
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
