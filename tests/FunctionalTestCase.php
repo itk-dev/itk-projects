@@ -9,6 +9,7 @@ use App\Repository\AreaRepository;
 use App\Repository\ContactRepository;
 use App\Repository\DepartmentRepository;
 use App\Repository\PartnerRepository;
+use App\Repository\ProjectCharacterRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\TermRepository;
 use App\Repository\UserRepository;
@@ -83,6 +84,14 @@ abstract class FunctionalTestCase extends WebTestCase
     {
         $repository = static::getContainer()->get(AreaRepository::class);
         \assert($repository instanceof AreaRepository);
+
+        return $repository;
+    }
+
+    protected function projectCharacters(): ProjectCharacterRepository
+    {
+        $repository = static::getContainer()->get(ProjectCharacterRepository::class);
+        \assert($repository instanceof ProjectCharacterRepository);
 
         return $repository;
     }

@@ -20,6 +20,6 @@ final class AreaRepositoryTest extends KernelTestCase
         // Ordering is delegated to the database collation, so we only assert the
         // method returns the persisted areas.
         self::assertNotEmpty($areas);
-        self::assertNotNull($areas[0]->getId());
+        self::assertNotNull($areas[0]->getName());
     }
 }

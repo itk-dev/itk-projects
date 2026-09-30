@@ -86,6 +86,7 @@ nav:
     partners: Samarbejdspartnere
     departments: Afdelinger
     areas: Områder
+    project_characters: Projektkarakterer
     users: Brugere
     admin: Administration
     preferences: Indstillinger
@@ -173,8 +174,8 @@ project:
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
     strategies: Strategier og planer
-    project_type: Projektets karakter
-    project_type_help: Projektets karakter, fx projekt eller drift.
+    characters: Projektets karakter
+    characters_help: Fx projekt eller drift.
     status: Status
     status_help: Hvor langt projektet er.
     status_additional: Status – supplerende tekst
@@ -304,6 +305,21 @@ area:
         title: Ingen områder endnu
         hint: Opret et område, så det kan vælges på projekter.
 
+project_character:
+    name: Navn
+    name_help: Karakterens navn, som det vises på projekter.
+    name_duplicate: Der findes allerede en projektkarakter med dette navn.
+    index:
+        title: Projektkarakterer
+        subtitle: Projektets karakter, fx projekt eller drift, der kan vælges på projekter.
+    new:
+        title: Ny projektkarakter
+    edit:
+        title: Rediger projektkarakter
+    empty:
+        title: Ingen projektkarakterer endnu
+        hint: Opret en projektkarakter, så den kan vælges på projekter.
+
 user:
     email: E-mail
     email_help: Bruges som login og til notifikationer.
@@ -355,6 +371,10 @@ flash:
         created: Området blev oprettet.
         updated: Området blev opdateret.
         deleted: Området blev slettet.
+    project_character:
+        created: Projektkarakteren blev oprettet.
+        updated: Projektkarakteren blev opdateret.
+        deleted: Projektkarakteren blev slettet.
     user:
         created: Brugeren blev oprettet.
         updated: Brugeren blev opdateret.
@@ -371,12 +391,6 @@ enum:
         on_hold: Sat i bero
         rejected: Afvist
         completed: Afsluttet
-    project_type:
-        project: Projekt
-        programme: Program
-        policy: Politik
-        pilot: Pilot
-        operation: Drift
     endorsement_author:
         city_council: Byrådet
         magistrate: Magistraten

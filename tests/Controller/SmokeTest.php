@@ -69,5 +69,7 @@ final class SmokeTest extends WebTestCase
         yield 'admin partner new' => ['/admin/partners/new'];
         yield 'admin departments' => ['/admin/departments'];
         yield 'admin department new' => ['/admin/departments/new'];
+        yield 'admin project characters' => ['/admin/project-characters'];
+        yield 'admin project character new' => ['/admin/project-characters/new'];
     }
 }
