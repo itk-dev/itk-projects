@@ -50,7 +50,6 @@ class ProjectRepository extends ServiceEntityRepository
                 // paginator's count stays correct.
                 sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT itag.id FROM %s itag JOIN itag.tags tg WHERE LOWER(tg.name) LIKE :q)', Project::class),
-                sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Project::class),
                 // Department and area are related entities searched by their stored
@@ -147,7 +146,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['organizationalAnchoring', 'strategies', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['organizationalAnchoring', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')

@@ -169,10 +169,9 @@ project:
     area: Område
     area_help: Det tematiske område projektet hører under.
     summary: Opsummering
-    summary_help: Kort opsummering af formål og indhold.
+    summary_help: Kort opsummering af formål, indhold, strategi og planer.
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
-    strategies: Strategier og planer
     project_type: Projektets karakter
     project_type_help: Projektets karakter, fx projekt eller drift.
     status: Status
@@ -390,4 +389,3 @@ enum:
         external_partner: Ekstern partner
     vocabulary:
         tag: Tag
-        strategy: Strategi

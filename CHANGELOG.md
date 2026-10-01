@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-45](https://github.com/itk-dev/itk-projects/pull/45)
+  Remove the "Strategies and plans" field. Update Summary help text to now ask
+  for strategy and plans.
 * [PR-33](https://github.com/itk-dev/itk-projects/pull/33)
   Let a project be anchored in several departments, picked with a searchable
   multiselect.
