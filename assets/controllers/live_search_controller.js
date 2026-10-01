@@ -46,7 +46,18 @@ export default class extends Controller {
             }
         }
         for (const select of this.formTarget.querySelectorAll("select")) {
-            select.selectedIndex = 0;
+            // A Tom Select multiselect owns its chips: clear it silently so the
+            // single requestSubmit() below is the only request. selectedIndex = 0
+            // would pick the first option of a plain <select multiple>.
+            if (select.tomselect) {
+                select.tomselect.clear(true);
+            } else if (select.multiple) {
+                for (const option of select.options) {
+                    option.selected = false;
+                }
+            } else {
+                select.selectedIndex = 0;
+            }
         }
         window.clearTimeout(this.timer);
         this.formTarget.requestSubmit();
