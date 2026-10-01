@@ -96,9 +96,16 @@ class ProjectRepository extends ServiceEntityRepository
             $qb->andWhere('i.projectType = :projectType')->setParameter('projectType', $filter->projectType->value);
         }
 
-        if (null !== $filter->organizationalAnchoring) {
-            $qb->andWhere(':anchoring MEMBER OF i.organizationalAnchoring')
-                ->setParameter('anchoring', $filter->organizationalAnchoring->getId(), 'ulid');
+        if (!$filter->organizationalAnchoring->isEmpty()) {
+            // Any of the chosen departments matches. One MEMBER OF per department,
+            // each bound with the ulid type, because the ORM cannot expand an IN ()
+            // list of binary ULIDs from a single typed parameter.
+            $ors = [];
+            foreach ($filter->organizationalAnchoring->getValues() as $i => $department) {
+                $ors[] = sprintf(':anchoring%d MEMBER OF i.organizationalAnchoring', $i);
+                $qb->setParameter('anchoring'.$i, $department->getId(), 'ulid');
+            }
+            $qb->andWhere('('.implode(' OR ', $ors).')');
         }
 
         if (null !== $filter->endorsement) {

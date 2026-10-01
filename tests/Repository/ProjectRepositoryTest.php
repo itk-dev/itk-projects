@@ -40,7 +40,7 @@ final class ProjectRepositoryTest extends KernelTestCase
         $filter->status = Status::Granted;
         $filter->area = $areas->findAllOrdered()[0];
         $filter->projectType = ProjectType::Project;
-        $filter->organizationalAnchoring = $departments->findAllOrdered()[0];
+        $filter->organizationalAnchoring->add($departments->findAllOrdered()[0]);
         $filter->endorsement = true;
         $filter->sort = 'title';
         $filter->direction = 'ASC';
@@ -66,7 +66,7 @@ final class ProjectRepositoryTest extends KernelTestCase
         $em->flush();
 
         $byDepartment = new ProjectFilter();
-        $byDepartment->organizationalAnchoring = $department;
+        $byDepartment->organizationalAnchoring->add($department);
         $byArea = new ProjectFilter();
         $byArea->area = $area;
 
@@ -78,6 +78,36 @@ final class ProjectRepositoryTest extends KernelTestCase
         }
 
         foreach ([$anchored, $loose, $department, $area] as $entity) {
+            $em->remove($entity);
+        }
+        $em->flush();
+    }
+
+    public function testSearchBySeveralDepartmentsMatchesProjectsAnchoredInAnyOfThem(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        \assert($em instanceof EntityManagerInterface);
+
+        $first = (new Department())->setName('Filter dept A '.uniqid());
+        $second = (new Department())->setName('Filter dept B '.uniqid());
+        $inFirst = (new Project())->setTitle('A anchored '.uniqid())->addOrganizationalAnchoring($first);
+        $inSecond = (new Project())->setTitle('B anchored '.uniqid())->addOrganizationalAnchoring($second);
+        $loose = (new Project())->setTitle('Loose '.uniqid());
+        foreach ([$first, $second, $inFirst, $inSecond, $loose] as $entity) {
+            $em->persist($entity);
+        }
+        $em->flush();
+
+        $filter = new ProjectFilter();
+        $filter->organizationalAnchoring->add($first);
+        $filter->organizationalAnchoring->add($second);
+        $filter->sort = 'title';
+        $filter->direction = 'ASC';
+
+        // The chosen departments combine with OR: anchored in either is enough.
+        self::assertSame([$inFirst->getTitle(), $inSecond->getTitle()], $this->titles($filter));
+
+        foreach ([$inFirst, $inSecond, $loose, $first, $second] as $entity) {
             $em->remove($entity);
         }
         $em->flush();
