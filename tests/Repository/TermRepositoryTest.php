@@ -42,16 +42,16 @@ final class TermRepositoryTest extends KernelTestCase
     {
         $name = 'BrandNewTag-'.uniqid();
 
-        $term = $this->repository->findOrCreate($name, Vocabulary::Strategy);
+        $term = $this->repository->findOrCreate($name, Vocabulary::Tag);
 
         self::assertSame($name, $term->getName());
-        self::assertSame(Vocabulary::Strategy, $term->getVocabulary());
+        self::assertSame(Vocabulary::Tag, $term->getVocabulary());
         self::assertCount(0, $this->repository->findBy(['name' => $name]), 'A freshly created term is not yet flushed to the database.');
     }
 
     public function testFindOrCreateCapitalisesANewTerm(): void
     {
-        $term = $this->repository->findOrCreate('grøn omstilling '.uniqid(), Vocabulary::Strategy);
+        $term = $this->repository->findOrCreate('grøn omstilling '.uniqid(), Vocabulary::Tag);
 
         self::assertSame('G', mb_substr((string) $term->getName(), 0, 1));
     }

@@ -66,12 +66,6 @@ class ProjectType extends AbstractType
                 'attr' => ['rows' => 8],
                 'help' => 'project.description_help',
             ])
-            ->add('strategies', TermsTextType::class, [
-                'label' => 'project.strategies',
-                'vocabulary' => Vocabulary::Strategy,
-                'required' => false,
-                'help' => 'project.terms_help',
-            ])
             ->add('projectType', EnumType::class, [
                 'label' => 'project.project_type',
                 'class' => ProjectTypeEnum::class,

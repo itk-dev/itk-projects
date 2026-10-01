@@ -28,7 +28,6 @@ final class ProjectTest extends TestCase
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getOrganizationalAnchoring());
-        self::assertCount(0, $project->getStrategies());
         self::assertCount(0, $project->getTags());
         self::assertCount(0, $project->getContacts());
         self::assertCount(0, $project->getPartners());
@@ -155,24 +154,6 @@ final class ProjectTest extends TestCase
         self::assertCount(2, $project->getOrganizationalAnchoring());
         $project->setOrganizationalAnchoring([]);
         self::assertCount(0, $project->getOrganizationalAnchoring());
-    }
-
-    public function testStrategyCollection(): void
-    {
-        $project = new Project();
-        $term = new Term(Vocabulary::Strategy);
-
-        $project->addStrategy($term);
-        $project->addStrategy($term);
-        self::assertCount(1, $project->getStrategies());
-
-        $project->removeStrategy($term);
-        self::assertCount(0, $project->getStrategies());
-
-        $project->setStrategies([new Term(Vocabulary::Strategy), new Term(Vocabulary::Strategy)]);
-        self::assertCount(2, $project->getStrategies());
-        $project->setStrategies([]);
-        self::assertCount(0, $project->getStrategies());
     }
 
     public function testTagCollection(): void

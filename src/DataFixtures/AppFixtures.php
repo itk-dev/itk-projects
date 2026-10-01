@@ -23,7 +23,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private const array TAGS = ['Bæredygtighed', 'Borgerinddragelse', 'Innovation', 'Sundhed', 'Klima', 'Mobilitet', 'Data', 'Tryghed', 'Læring', 'Fællesskab'];
-    private const array STRATEGIES = ['Klimaplan 2030', 'Erhvervsplan', 'Børn- og ungepolitik', 'Mobilitetsplan', 'Digitaliseringsstrategi', 'Sundhedspolitik'];
     private const array DEPARTMENTS = ['ITK Development', 'CFIA', 'Aarhus CityLab', 'Stab', 'OS2', 'AI Lab', 'IOT Lab', 'GTM', 'Fut Lab'];
     private const array PARTNERS = ['Aarhus Universitet', 'VIA University College', 'Alexandra Instituttet', 'Teknologisk Institut', 'Region Midtjylland', 'Erhverv Aarhus', 'Danmarks Tekniske Universitet', 'Aarhus Vand', 'AffaldVarme Aarhus', 'Dansk Industri'];
     private const array AREAS = ['Klima og miljø', 'Mobilitet', 'Velfærd', 'Kultur og fritid', 'Uddannelse', 'Erhverv', 'Digitalisering', 'Byudvikling'];
@@ -59,7 +58,6 @@ class AppFixtures extends Fixture
         $users = [$admin, $editor];
 
         $tags = $this->makeTerms($manager, self::TAGS, Vocabulary::Tag);
-        $strategies = $this->makeTerms($manager, self::STRATEGIES, Vocabulary::Strategy);
 
         $departments = [];
         foreach (self::DEPARTMENTS as $name) {
@@ -168,9 +166,6 @@ class AppFixtures extends Fixture
 
             foreach (\array_slice($this->shuffleCopy($tags), 0, mt_rand(1, 4)) as $term) {
                 $project->addTag($term);
-            }
-            foreach (\array_slice($this->shuffleCopy($strategies), 0, mt_rand(0, 2)) as $term) {
-                $project->addStrategy($term);
             }
             foreach (\array_slice($this->shuffleCopy($contacts), 0, mt_rand(1, 3)) as $contact) {
                 $project->addContact($contact);

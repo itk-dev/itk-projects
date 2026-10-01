@@ -49,18 +49,13 @@ class Project extends AbstractEntity
     #[ORM\JoinColumn(onDelete: 'SET NULL')]
     private ?Area $area = null;
 
-    /** A few lines summing up the project's purpose and content. */
+    /** A few lines summing up the project's purpose, content, strategy and plans. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $summary = null;
 
     /** The fuller account: why the project is done and what it is anchored in. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
-
-    /** @var Collection<int, Term> */
-    #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_strategy')]
-    private Collection $strategies;
 
     #[ORM\Column(length: 32, nullable: true, enumType: ProjectType::class)]
     private ?ProjectType $projectType = null;
@@ -133,7 +128,6 @@ class Project extends AbstractEntity
     {
         parent::__construct();
         $this->organizationalAnchoring = new ArrayCollection();
-        $this->strategies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
         $this->tags = new ArrayCollection();
@@ -195,39 +189,6 @@ class Project extends AbstractEntity
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /** @return Collection<int, Term> */
-    public function getStrategies(): Collection
-    {
-        return $this->strategies;
-    }
-
-    public function addStrategy(Term $term): static
-    {
-        if (!$this->strategies->contains($term)) {
-            $this->strategies->add($term);
-        }
-
-        return $this;
-    }
-
-    public function removeStrategy(Term $term): static
-    {
-        $this->strategies->removeElement($term);
-
-        return $this;
-    }
-
-    /** @param iterable<Term> $terms */
-    public function setStrategies(iterable $terms): static
-    {
-        $this->strategies->clear();
-        foreach ($terms as $term) {
-            $this->addStrategy($term);
-        }
 
         return $this;
     }
