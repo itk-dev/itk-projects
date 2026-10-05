@@ -1,0 +1,18 @@
+{# ITK's definition of a project: the criteria and a few examples. Rendered as a
+   callout on the create page and inside the "what counts as a project?" dialog
+   on the project list. The wording lives in translations/messages.*.yaml. #}
+<div{{ attributes.defaults({class: 'definition'}) }}>
+    <p class="definition__intro">{{ 'project.definition.intro'|trans }}</p>
+    <ul class="definition__criteria">
+        <li>{{ 'project.definition.criteria.end'|trans }}</li>
+        <li>{{ 'project.definition.criteria.economy'|trans }}</li>
+        <li>{{ 'project.definition.criteria.governance'|trans }}</li>
+        <li>{{ 'project.definition.criteria.paid'|trans }}</li>
+    </ul>
+    <p class="definition__examples-title">{{ 'project.definition.examples_title'|trans }}</p>
+    <ul class="definition__examples">
+        <li>{{ 'project.definition.examples.first'|trans }}</li>
+        <li>{{ 'project.definition.examples.second'|trans }}</li>
+        <li>{{ 'project.definition.examples.third'|trans }}</li>
+    </ul>
+</div>
