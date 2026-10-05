@@ -6,7 +6,7 @@ namespace App\Model;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 
 /**
@@ -21,7 +21,7 @@ class ProjectFilter
 
     public ?Area $area = null;
 
-    public ?ProjectCharacter $character = null;
+    public ?ProjectType $type = null;
 
     public ?Department $organizationalAnchoring = null;
 

@@ -21,14 +21,14 @@ class Project extends AbstractEntity
      * Fields that count toward {@see getCompletionPercentage()} and the client-side
      * progress bar. Limited to the project's own columns so list rendering stays
      * query-free; the booleans and the free-tagging lists are intentionally excluded.
-     * Characters and departments are the two collections counted: both are fixed,
+     * Types and departments are the two collections counted: both are fixed,
      * admin-managed pools, and what a project is and where it is anchored are
      * core to describing it.
      *
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'area', 'summary', 'description', 'characters', 'status',
+        'title', 'area', 'summary', 'description', 'types', 'status',
         'organizationalAnchoring',
         'budget', 'funding', 'timePeriodStart', 'timePeriodEnd',
     ];
@@ -66,11 +66,11 @@ class Project extends AbstractEntity
      * What kind of thing the project is ("Projekt", "Drift", …). A project can be
      * several at once, e.g. a pilot that is also operations.
      *
-     * @var Collection<int, ProjectCharacter>
+     * @var Collection<int, ProjectType>
      */
-    #[ORM\ManyToMany(targetEntity: ProjectCharacter::class)]
-    #[ORM\JoinTable(name: 'project_project_character')]
-    private Collection $characters;
+    #[ORM\ManyToMany(targetEntity: ProjectType::class)]
+    #[ORM\JoinTable(name: 'project_project_type')]
+    private Collection $types;
 
     #[ORM\Column(length: 32, nullable: true, enumType: Status::class)]
     private ?Status $status = null;
@@ -140,7 +140,7 @@ class Project extends AbstractEntity
     {
         parent::__construct();
         $this->organizationalAnchoring = new ArrayCollection();
-        $this->characters = new ArrayCollection();
+        $this->types = new ArrayCollection();
         $this->strategies = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
@@ -240,34 +240,34 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    /** @return Collection<int, ProjectCharacter> */
-    public function getCharacters(): Collection
+    /** @return Collection<int, ProjectType> */
+    public function getTypes(): Collection
     {
-        return $this->characters;
+        return $this->types;
     }
 
-    public function addCharacter(ProjectCharacter $character): static
+    public function addType(ProjectType $type): static
     {
-        if (!$this->characters->contains($character)) {
-            $this->characters->add($character);
+        if (!$this->types->contains($type)) {
+            $this->types->add($type);
         }
 
         return $this;
     }
 
-    public function removeCharacter(ProjectCharacter $character): static
+    public function removeType(ProjectType $type): static
     {
-        $this->characters->removeElement($character);
+        $this->types->removeElement($type);
 
         return $this;
     }
 
-    /** @param iterable<ProjectCharacter> $characters */
-    public function setCharacters(iterable $characters): static
+    /** @param iterable<ProjectType> $types */
+    public function setTypes(iterable $types): static
     {
-        $this->characters->clear();
-        foreach ($characters as $character) {
-            $this->addCharacter($character);
+        $this->types->clear();
+        foreach ($types as $type) {
+            $this->addType($type);
         }
 
         return $this;
@@ -514,7 +514,7 @@ class Project extends AbstractEntity
 
     /**
      * Share of {@see COMPLETION_FIELDS} that are filled in, as a 0–100 percentage.
-     * Reads own columns plus the character and department collections (one lazy
+     * Reads own columns plus the type and department collections (one lazy
      * load each), so it is cheap enough to call per row in a listing.
      */
     public function getCompletionPercentage(): int
@@ -524,7 +524,7 @@ class Project extends AbstractEntity
             null !== $this->area,
             null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
-            !$this->characters->isEmpty(),
+            !$this->types->isEmpty(),
             null !== $this->status,
             !$this->organizationalAnchoring->isEmpty(),
             null !== $this->budget,

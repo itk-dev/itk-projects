@@ -7,7 +7,7 @@ namespace App\Tests\Controller;
 use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Project;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
 use Symfony\Component\DomCrawler\Crawler;
@@ -244,25 +244,25 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->flush();
     }
 
-    public function testCharactersAreSavedShownFilteredAndExported(): void
+    public function testTypesAreSavedShownFilteredAndExported(): void
     {
         $this->loginAsAdmin();
         $em = $this->entityManager();
-        $first = (new ProjectCharacter())->setName('Character first '.uniqid());
-        $second = (new ProjectCharacter())->setName('Character second '.uniqid());
+        $first = (new ProjectType())->setName('Type first '.uniqid());
+        $second = (new ProjectType())->setName('Type second '.uniqid());
         $em->persist($first);
         $em->persist($second);
         $em->flush();
         $plain = $this->createProject('Plain project '.uniqid());
-        $title = 'Characterised project '.uniqid();
+        $title = 'Typed project '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
-        self::assertCount(1, $crawler->filter('select[name="project[characters][]"][multiple][data-character-select]'));
+        self::assertCount(1, $crawler->filter('select[name="project[types][]"][multiple][data-type-select]'));
         $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
         $this->client->request('POST', '/projects/new', [
             'project' => [
                 'title' => $title,
-                'characters' => [(string) $first->getId(), (string) $second->getId()],
+                'types' => [(string) $first->getId(), (string) $second->getId()],
                 '_token' => $token,
             ],
         ]);
@@ -270,34 +270,34 @@ final class ProjectControllerTest extends FunctionalTestCase
 
         $project = $this->projects()->findOneBy(['title' => $title]);
         self::assertInstanceOf(Project::class, $project);
-        self::assertCount(2, $project->getCharacters());
+        self::assertCount(2, $project->getTypes());
         $id = (string) $project->getId();
 
-        // Both characters are listed on the project page …
+        // Both types are listed on the project page …
         $crawler = $this->client->request('GET', '/projects/'.$id);
         $details = $crawler->filter('.detail-list')->text();
         self::assertStringContainsString((string) $first->getName(), $details);
         self::assertStringContainsString((string) $second->getName(), $details);
 
-        // … the character filter narrows the list to projects of that character …
-        $crawler = $this->client->request('GET', '/projects?character='.$first->getId());
+        // … the type filter narrows the list to projects of that type …
+        $crawler = $this->client->request('GET', '/projects?type='.$first->getId());
         $results = $crawler->filter('#project-results')->text();
         self::assertStringContainsString($title, $results);
         self::assertStringContainsString($first->getName().', '.$second->getName(), $results);
         self::assertStringNotContainsString((string) $plain->getTitle(), $results);
 
-        // … and the export lists every character of the project.
-        $this->client->request('GET', '/projects/export?character='.$first->getId());
+        // … and the export lists every type of the project.
+        $this->client->request('GET', '/projects/export?type='.$first->getId());
         $csv = (string) $this->client->getInternalResponse()->getContent();
         self::assertStringContainsString($first->getName().', '.$second->getName(), $csv);
 
         $this->removeProject($id);
         $this->removeProject((string) $plain->getId());
         $em = $this->entityManager();
-        foreach ([$first->getId(), $second->getId()] as $characterId) {
-            $character = $this->projectCharacters()->find($characterId);
-            if (null !== $character) {
-                $em->remove($character);
+        foreach ([$first->getId(), $second->getId()] as $typeId) {
+            $type = $this->projectTypes()->find($typeId);
+            if (null !== $type) {
+                $em->remove($type);
             }
         }
         $em->flush();

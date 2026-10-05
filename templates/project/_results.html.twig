@@ -27,7 +27,7 @@
                 <tr>
                     <th>{{ h.sortlink('title', 'project.title', sort, direction) }}</th>
                     <th>{{ 'project.status'|trans }}</th>
-                    <th>{{ 'project.characters'|trans }}</th>
+                    <th>{{ 'project.types'|trans }}</th>
                     <th>{{ 'project.organizational_anchoring'|trans }}</th>
                     <th>{{ h.sortlink('timePeriodStart', 'project.time_period', sort, direction) }}</th>
                     <th>{{ 'project.author'|trans }}</th>
@@ -47,7 +47,7 @@
                                 <span class="muted">—</span>
                             {% endif %}
                         </td>
-                        <td>{{ project.characters|length > 0 ? project.characters|map(c => c.name)|join(', ') : '—' }}</td>
+                        <td>{{ project.types|length > 0 ? project.types|map(t => t.name)|join(', ') : '—' }}</td>
                         <td>{{ project.organizationalAnchoring|length > 0 ? project.organizationalAnchoring|map(d => d.name)|join(', ') : '—' }}</td>
                         <td>
                             {% if project.timePeriodStart %}

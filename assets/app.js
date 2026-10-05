@@ -180,14 +180,14 @@ function initPartnerSelect() {
     );
 }
 
-// Departments and project characters are fixed, admin-managed pools, so the
+// Departments and project types are fixed, admin-managed pools, so the
 // project form's <select multiple> becomes a searchable chip multiselect
 // without `create`.
 // Tom Select reads the options and the selection from the select itself and
 // fires input/change on it, which is what autosave and the progress bar listen for.
 function initPoolSelect() {
     document
-        .querySelectorAll("[data-department-select], [data-character-select]")
+        .querySelectorAll("[data-department-select], [data-type-select]")
         .forEach((select) => {
             if (select.dataset.bound) {
                 return;

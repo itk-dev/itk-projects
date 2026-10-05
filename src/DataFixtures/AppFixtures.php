@@ -9,7 +9,7 @@ use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Partner;
 use App\Entity\Project;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Entity\Term;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
@@ -27,7 +27,7 @@ class AppFixtures extends Fixture
     private const array DEPARTMENTS = ['ITK Development', 'CFIA', 'Aarhus CityLab', 'Stab', 'OS2', 'AI Lab', 'IOT Lab', 'GTM', 'Fut Lab'];
     private const array PARTNERS = ['Aarhus Universitet', 'VIA University College', 'Alexandra Instituttet', 'Teknologisk Institut', 'Region Midtjylland', 'Erhverv Aarhus', 'Danmarks Tekniske Universitet', 'Aarhus Vand', 'AffaldVarme Aarhus', 'Dansk Industri'];
     private const array AREAS = ['Klima og miljø', 'Mobilitet', 'Velfærd', 'Kultur og fritid', 'Uddannelse', 'Erhverv', 'Digitalisering', 'Byudvikling'];
-    private const array CHARACTERS = ['Projekt', 'Program', 'Politik', 'Pilot', 'Drift'];
+    private const array TYPES = ['Projekt', 'Program', 'Politik', 'Pilot', 'Drift'];
     private const array TOPICS = [
         'Digital Europe Blueprint for Data Space for smart and sustainable cities and communities.',
         'Horizon Europe — Climate-neutral and smart cities mission.',
@@ -76,11 +76,11 @@ class AppFixtures extends Fixture
             $areas[] = $area;
         }
 
-        $characters = [];
-        foreach (self::CHARACTERS as $name) {
-            $character = (new ProjectCharacter())->setName($name);
-            $manager->persist($character);
-            $characters[] = $character;
+        $types = [];
+        foreach (self::TYPES as $name) {
+            $type = (new ProjectType())->setName($name);
+            $manager->persist($type);
+            $types[] = $type;
         }
 
         $partners = [];
@@ -164,8 +164,8 @@ class AppFixtures extends Fixture
 
             // Most projects are one thing; every fourth is two, e.g. a pilot that is
             // also operations, so the multiselect has something to show.
-            foreach (\array_slice($this->shuffleCopy($characters), 0, 0 === $index % 4 ? 2 : 1) as $character) {
-                $project->addCharacter($character);
+            foreach (\array_slice($this->shuffleCopy($types), 0, 0 === $index % 4 ? 2 : 1) as $type) {
+                $project->addType($type);
             }
 
             // Roughly a third of the projects span two departments so the dashboard's

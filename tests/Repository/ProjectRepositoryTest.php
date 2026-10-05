@@ -7,13 +7,13 @@ namespace App\Tests\Repository;
 use App\Entity\Area;
 use App\Entity\Department;
 use App\Entity\Project;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
 use App\Repository\AreaRepository;
 use App\Repository\DepartmentRepository;
-use App\Repository\ProjectCharacterRepository;
 use App\Repository\ProjectRepository;
+use App\Repository\ProjectTypeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -35,14 +35,14 @@ final class ProjectRepositoryTest extends KernelTestCase
         \assert($departments instanceof DepartmentRepository);
         $areas = static::getContainer()->get(AreaRepository::class);
         \assert($areas instanceof AreaRepository);
-        $characters = static::getContainer()->get(ProjectCharacterRepository::class);
-        \assert($characters instanceof ProjectCharacterRepository);
+        $types = static::getContainer()->get(ProjectTypeRepository::class);
+        \assert($types instanceof ProjectTypeRepository);
 
         $filter = new ProjectFilter();
         $filter->q = '100%_'; // also exercises LIKE wildcard escaping
         $filter->status = Status::Granted;
         $filter->area = $areas->findAllOrdered()[0];
-        $filter->character = $characters->findAllOrdered()[0];
+        $filter->type = $types->findAllOrdered()[0];
         $filter->organizationalAnchoring = $departments->findAllOrdered()[0];
         $filter->endorsement = true;
         $filter->sort = 'title';
@@ -51,21 +51,21 @@ final class ProjectRepositoryTest extends KernelTestCase
         self::assertIsArray($this->repository->search($filter)->getQuery()->getResult());
     }
 
-    public function testSearchByDepartmentAreaOrCharacterMatchesOnlyProjectsWithThem(): void
+    public function testSearchByDepartmentAreaOrTypeMatchesOnlyProjectsWithThem(): void
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
         \assert($em instanceof EntityManagerInterface);
 
         $department = (new Department())->setName('Filter dept '.uniqid());
         $area = (new Area())->setName('Filter area '.uniqid());
-        $character = (new ProjectCharacter())->setName('Filter character '.uniqid());
+        $type = (new ProjectType())->setName('Filter type '.uniqid());
         $anchored = (new Project())
             ->setTitle('Anchored '.uniqid())
             ->addOrganizationalAnchoring($department)
-            ->addCharacter($character)
+            ->addType($type)
             ->setArea($area);
         $loose = (new Project())->setTitle('Loose '.uniqid());
-        foreach ([$department, $area, $character, $anchored, $loose] as $entity) {
+        foreach ([$department, $area, $type, $anchored, $loose] as $entity) {
             $em->persist($entity);
         }
         $em->flush();
@@ -74,20 +74,20 @@ final class ProjectRepositoryTest extends KernelTestCase
         $byDepartment->organizationalAnchoring = $department;
         $byArea = new ProjectFilter();
         $byArea->area = $area;
-        $byCharacter = new ProjectFilter();
-        $byCharacter->character = $character;
-        // The free-text search matches the character by its stored name.
-        $byCharacterName = new ProjectFilter();
-        $byCharacterName->q = (string) $character->getName();
+        $byType = new ProjectFilter();
+        $byType->type = $type;
+        // The free-text search matches the type by its stored name.
+        $byTypeName = new ProjectFilter();
+        $byTypeName->q = (string) $type->getName();
 
         // Every filter must actually narrow the list: the binary ULID foreign keys
         // only match when the id is bound with the ulid type, so an entity bound
         // as-is would silently return nothing.
-        foreach ([$byDepartment, $byArea, $byCharacter, $byCharacterName] as $filter) {
+        foreach ([$byDepartment, $byArea, $byType, $byTypeName] as $filter) {
             self::assertSame([$anchored->getTitle()], $this->titles($filter));
         }
 
-        foreach ([$anchored, $loose, $department, $area, $character] as $entity) {
+        foreach ([$anchored, $loose, $department, $area, $type] as $entity) {
             $em->remove($entity);
         }
         $em->flush();

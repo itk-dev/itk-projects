@@ -52,11 +52,11 @@ class ProjectRepository extends ServiceEntityRepository
                 sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Project::class),
-                // Department, area and character are related entities searched by
+                // Department, area and type are related entities searched by
                 // their stored name ("nik" should find "Teknik og Miljø").
                 sprintf('i.id IN (SELECT idep.id FROM %s idep JOIN idep.organizationalAnchoring dep WHERE LOWER(dep.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.area ar WHERE LOWER(ar.name) LIKE :q)', Project::class),
-                sprintf('i.id IN (SELECT ichr.id FROM %s ichr JOIN ichr.characters ch WHERE LOWER(ch.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT ityp.id FROM %s ityp JOIN ityp.types ty WHERE LOWER(ty.name) LIKE :q)', Project::class),
             ];
 
             // Enum columns store slugs, but the user searches their translated
@@ -91,9 +91,9 @@ class ProjectRepository extends ServiceEntityRepository
             $qb->andWhere('i.area = :area')->setParameter('area', $filter->area->getId(), 'ulid');
         }
 
-        if (null !== $filter->character) {
-            $qb->andWhere(':character MEMBER OF i.characters')
-                ->setParameter('character', $filter->character->getId(), 'ulid');
+        if (null !== $filter->type) {
+            $qb->andWhere(':type MEMBER OF i.types')
+                ->setParameter('type', $filter->type->getId(), 'ulid');
         }
 
         if (null !== $filter->organizationalAnchoring) {
@@ -147,7 +147,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['characters', 'organizationalAnchoring', 'strategies', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['types', 'organizationalAnchoring', 'strategies', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')

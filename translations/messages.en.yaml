@@ -86,7 +86,7 @@ nav:
     partners: Partners
     departments: Departments
     areas: Areas
-    project_characters: Project characters
+    project_types: Project types
     users: Users
     admin: Administration
     preferences: Preferences
@@ -174,8 +174,8 @@ project:
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
     strategies: Strategies and plans
-    characters: Project character
-    characters_help: E.g. project or operation.
+    types: Type
+    types_help: E.g. project or operation.
     status: Status
     status_help: How far along the project is.
     status_additional: Status – additional text
@@ -305,20 +305,20 @@ area:
         title: No areas yet
         hint: Create an area so it can be chosen on projects.
 
-project_character:
+project_type:
     name: Name
-    name_help: The character name as shown on projects.
-    name_duplicate: A project character with this name already exists.
+    name_help: The type name as shown on projects.
+    name_duplicate: A project type with this name already exists.
     index:
-        title: Project characters
-        subtitle: The nature of a project, e.g. project or operation, that can be chosen on projects.
+        title: Project types
+        subtitle: The type of a project, e.g. project or operation, that can be chosen on projects.
     new:
-        title: New project character
+        title: New project type
     edit:
-        title: Edit project character
+        title: Edit project type
     empty:
-        title: No project characters yet
-        hint: Create a project character so it can be chosen on projects.
+        title: No project types yet
+        hint: Create a project type so it can be chosen on projects.
 
 user:
     email: Email
@@ -371,10 +371,10 @@ flash:
         created: The area was created.
         updated: The area was updated.
         deleted: The area was deleted.
-    project_character:
-        created: The project character was created.
-        updated: The project character was updated.
-        deleted: The project character was deleted.
+    project_type:
+        created: The project type was created.
+        updated: The project type was updated.
+        deleted: The project type was deleted.
     user:
         created: The user was created.
         updated: The user was updated.

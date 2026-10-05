@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Repository;
 
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ProjectCharacter>
+ * @extends ServiceEntityRepository<ProjectType>
  */
-class ProjectCharacterRepository extends ServiceEntityRepository
+class ProjectTypeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ProjectCharacter::class);
+        parent::__construct($registry, ProjectType::class);
     }
 
     /**
-     * @return ProjectCharacter[]
+     * @return ProjectType[]
      */
     public function findAllOrdered(): array
     {

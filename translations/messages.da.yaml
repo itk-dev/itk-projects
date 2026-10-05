@@ -86,7 +86,7 @@ nav:
     partners: Samarbejdspartnere
     departments: Afdelinger
     areas: Områder
-    project_characters: Projektkarakterer
+    project_types: Projekttyper
     users: Brugere
     admin: Administration
     preferences: Indstillinger
@@ -174,8 +174,8 @@ project:
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
     strategies: Strategier og planer
-    characters: Projektets karakter
-    characters_help: Fx projekt eller drift.
+    types: Type
+    types_help: Fx projekt eller drift.
     status: Status
     status_help: Hvor langt projektet er.
     status_additional: Status – supplerende tekst
@@ -305,20 +305,20 @@ area:
         title: Ingen områder endnu
         hint: Opret et område, så det kan vælges på projekter.
 
-project_character:
+project_type:
     name: Navn
-    name_help: Karakterens navn, som det vises på projekter.
-    name_duplicate: Der findes allerede en projektkarakter med dette navn.
+    name_help: Typens navn, som det vises på projekter.
+    name_duplicate: Der findes allerede en projekttype med dette navn.
     index:
-        title: Projektkarakterer
-        subtitle: Projektets karakter, fx projekt eller drift, der kan vælges på projekter.
+        title: Projekttyper
+        subtitle: Projektets type, fx projekt eller drift, der kan vælges på projekter.
     new:
-        title: Ny projektkarakter
+        title: Ny projekttype
     edit:
-        title: Rediger projektkarakter
+        title: Rediger projekttype
     empty:
-        title: Ingen projektkarakterer endnu
-        hint: Opret en projektkarakter, så den kan vælges på projekter.
+        title: Ingen projekttyper endnu
+        hint: Opret en projekttype, så den kan vælges på projekter.
 
 user:
     email: E-mail
@@ -371,10 +371,10 @@ flash:
         created: Området blev oprettet.
         updated: Området blev opdateret.
         deleted: Området blev slettet.
-    project_character:
-        created: Projektkarakteren blev oprettet.
-        updated: Projektkarakteren blev opdateret.
-        deleted: Projektkarakteren blev slettet.
+    project_type:
+        created: Projekttypen blev oprettet.
+        updated: Projekttypen blev opdateret.
+        deleted: Projekttypen blev slettet.
     user:
         created: Brugeren blev oprettet.
         updated: Brugeren blev opdateret.

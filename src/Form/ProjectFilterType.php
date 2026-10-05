@@ -6,7 +6,7 @@ namespace App\Form;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -46,9 +46,9 @@ class ProjectFilterType extends AbstractType
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
-            ->add('character', EntityType::class, [
-                'label' => 'project.characters',
-                'class' => ProjectCharacter::class,
+            ->add('type', EntityType::class, [
+                'label' => 'project.types',
+                'class' => ProjectType::class,
                 'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'filter.all',

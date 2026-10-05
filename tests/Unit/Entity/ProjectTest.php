@@ -9,7 +9,7 @@ use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Partner;
 use App\Entity\Project;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType;
 use App\Entity\Term;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
@@ -28,7 +28,7 @@ final class ProjectTest extends TestCase
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getOrganizationalAnchoring());
-        self::assertCount(0, $project->getCharacters());
+        self::assertCount(0, $project->getTypes());
         self::assertCount(0, $project->getStrategies());
         self::assertCount(0, $project->getTags());
         self::assertCount(0, $project->getContacts());
@@ -82,7 +82,7 @@ final class ProjectTest extends TestCase
             ->setArea((new Area())->setName('Klima og miljø'))
             ->setSummary('S')
             ->setDescription('D')
-            ->addCharacter((new ProjectCharacter())->setName('Projekt'))
+            ->addType((new ProjectType())->setName('Projekt'))
             ->setStatus(Status::Granted)
             ->addOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
@@ -156,25 +156,25 @@ final class ProjectTest extends TestCase
         self::assertCount(0, $project->getOrganizationalAnchoring());
     }
 
-    public function testCharacterCollection(): void
+    public function testTypeCollection(): void
     {
         $project = new Project();
-        $character = (new ProjectCharacter())->setName('Pilot');
+        $type = (new ProjectType())->setName('Pilot');
 
-        $project->addCharacter($character);
-        $project->addCharacter($character);
-        self::assertCount(1, $project->getCharacters());
+        $project->addType($type);
+        $project->addType($type);
+        self::assertCount(1, $project->getTypes());
 
-        $project->removeCharacter($character);
-        self::assertCount(0, $project->getCharacters());
+        $project->removeType($type);
+        self::assertCount(0, $project->getTypes());
 
-        $project->setCharacters([
-            (new ProjectCharacter())->setName('Projekt'),
-            (new ProjectCharacter())->setName('Drift'),
+        $project->setTypes([
+            (new ProjectType())->setName('Projekt'),
+            (new ProjectType())->setName('Drift'),
         ]);
-        self::assertCount(2, $project->getCharacters());
-        $project->setCharacters([]);
-        self::assertCount(0, $project->getCharacters());
+        self::assertCount(2, $project->getTypes());
+        $project->setTypes([]);
+        self::assertCount(0, $project->getTypes());
     }
 
     public function testStrategyCollection(): void

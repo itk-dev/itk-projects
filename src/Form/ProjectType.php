@@ -7,7 +7,7 @@ namespace App\Form;
 use App\Entity\Area;
 use App\Entity\Department;
 use App\Entity\Project;
-use App\Entity\ProjectCharacter;
+use App\Entity\ProjectType as ProjectTypeEntity;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
 use App\Enum\Status;
@@ -72,16 +72,16 @@ class ProjectType extends AbstractType
                 'required' => false,
                 'help' => 'project.terms_help',
             ])
-            ->add('characters', EntityType::class, [
-                'label' => 'project.characters',
-                'class' => ProjectCharacter::class,
+            ->add('types', EntityType::class, [
+                'label' => 'project.types',
+                'class' => ProjectTypeEntity::class,
                 'choice_label' => 'name',
                 'multiple' => true,
                 'required' => false,
                 // Admin-managed pool, so a searchable multiselect without on-the-fly
                 // creation, like the department field (Tom Select, see app.js).
-                'attr' => ['data-character-select' => true, 'placeholder' => 'form.choose'],
-                'help' => 'project.characters_help',
+                'attr' => ['data-type-select' => true, 'placeholder' => 'form.choose'],
+                'help' => 'project.types_help',
             ])
             ->add('status', EnumType::class, [
                 'label' => 'project.status',
