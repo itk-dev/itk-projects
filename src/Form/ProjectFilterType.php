@@ -6,15 +6,17 @@ namespace App\Form;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\ProjectType as ProjectTypeEnum;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Event\PreSubmitEvent;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -46,19 +48,23 @@ class ProjectFilterType extends AbstractType
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
-            ->add('projectType', EnumType::class, [
-                'label' => 'project.project_type',
-                'class' => ProjectTypeEnum::class,
+            ->add('type', EntityType::class, [
+                'label' => 'project.types',
+                'class' => ProjectType::class,
+                'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'filter.all',
-                'choice_label' => static fn (ProjectTypeEnum $value): string => $value->labelKey(),
             ])
             ->add('organizationalAnchoring', EntityType::class, [
                 'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
+                'multiple' => true,
                 'required' => false,
-                'placeholder' => 'filter.all',
+                // Same searchable chip multiselect as the project form (Tom Select,
+                // see app.js); a multiple select has no placeholder option, so
+                // "All" goes on the input instead.
+                'attr' => ['data-department-select' => true, 'placeholder' => 'filter.all'],
             ])
             ->add('endorsement', ChoiceType::class, [
                 'label' => 'project.endorsement',
@@ -67,6 +73,20 @@ class ProjectFilterType extends AbstractType
                 'choices' => ['filter.yes' => true, 'filter.no' => false],
                 'choice_value' => $boolChoiceValue,
             ]);
+
+        // Links saved while the department filter was a single select carry one
+        // id (?organizationalAnchoring=…) rather than a list; a multiple choice
+        // field rejects a scalar, so wrap it before the field's own listener runs.
+        $builder->get('organizationalAnchoring')->addEventListener(
+            FormEvents::PRE_SUBMIT,
+            static function (PreSubmitEvent $event): void {
+                $data = $event->getData();
+                if (\is_string($data)) {
+                    $event->setData('' === $data ? [] : [$data]);
+                }
+            },
+            10,
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,0 +1,16 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'project_type.edit.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% block admin_content %}
+    <twig:Page:Header :title="type.name" style="margin-bottom: var(--itk-space-5);">
+        <twig:block name="breadcrumb">
+            <div class="breadcrumb"><a href="{{ path('admin_project_types') }}">{{ 'nav.project_types'|trans }}</a></div>
+        </twig:block>
+        <twig:ConfirmDelete
+            :action="path('admin_project_type_delete', {id: type.id})"
+            :token="csrf_token('delete-project-type-' ~ type.id)"
+            :title="'action.confirm_delete_title'|trans({'%name%': type.name})" />
+    </twig:Page:Header>
+    {{ include('admin/project_types/_form.html.twig', {button_label: 'action.save'}) }}
+{% endblock %}

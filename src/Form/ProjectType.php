@@ -7,10 +7,10 @@ namespace App\Form;
 use App\Entity\Area;
 use App\Entity\Department;
 use App\Entity\Project;
+use App\Entity\ProjectType as ProjectTypeEntity;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
 use App\Enum\FundingRate;
-use App\Enum\ProjectType as ProjectTypeEnum;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -65,19 +65,16 @@ class ProjectType extends AbstractType
                 'attr' => ['rows' => 8],
                 'help' => 'project.description_help',
             ])
-            ->add('strategies', TermsTextType::class, [
-                'label' => 'project.strategies',
-                'vocabulary' => Vocabulary::Strategy,
+            ->add('types', EntityType::class, [
+                'label' => 'project.types',
+                'class' => ProjectTypeEntity::class,
+                'choice_label' => 'name',
+                'multiple' => true,
                 'required' => false,
-                'help' => 'project.terms_help',
-            ])
-            ->add('projectType', EnumType::class, [
-                'label' => 'project.project_type',
-                'class' => ProjectTypeEnum::class,
-                'required' => false,
-                'placeholder' => 'form.choose',
-                'choice_label' => static fn (ProjectTypeEnum $value): string => $value->labelKey(),
-                'help' => 'project.project_type_help',
+                // Admin-managed pool, so a searchable multiselect without on-the-fly
+                // creation, like the department field (Tom Select, see app.js).
+                'attr' => ['data-type-select' => true, 'placeholder' => 'form.choose'],
+                'help' => 'project.types_help',
             ])
             ->add('status', EnumType::class, [
                 'label' => 'project.status',

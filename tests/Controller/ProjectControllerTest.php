@@ -7,6 +7,7 @@ namespace App\Tests\Controller;
 use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Project;
+use App\Entity\ProjectType;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
@@ -195,6 +196,9 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->persist($second);
         $em->flush();
         $unanchored = $this->createProject('Unanchored project '.uniqid());
+        $onlySecond = (new Project())->setTitle('Second-only project '.uniqid())->addOrganizationalAnchoring($second);
+        $em->persist($onlySecond);
+        $em->flush();
         $title = 'Anchored project '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
@@ -220,25 +224,105 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertStringContainsString((string) $first->getName(), $details);
         self::assertStringContainsString((string) $second->getName(), $details);
 
-        // … the department filter narrows the list to projects anchored there …
-        $crawler = $this->client->request('GET', '/projects?organizationalAnchoring='.$first->getId());
+        // … the department filter is a multiselect that narrows the list to
+        // projects anchored in the chosen department …
+        $crawler = $this->client->request('GET', '/projects?organizationalAnchoring[]='.$first->getId());
+        self::assertCount(1, $crawler->filter('#project-filters select[name="organizationalAnchoring[]"][multiple][data-department-select]'));
         $results = $crawler->filter('#project-results')->text();
         self::assertStringContainsString($title, $results);
         self::assertStringContainsString($first->getName().', '.$second->getName(), $results);
+        self::assertStringNotContainsString((string) $onlySecond->getTitle(), $results);
         self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
 
-        // … and the export lists every department of the project.
-        $this->client->request('GET', '/projects/export?organizationalAnchoring='.$first->getId());
+        // … or in any of several departments, which the form shows as selected …
+        $crawler = $this->client->request('GET', sprintf('/projects?organizationalAnchoring[]=%s&organizationalAnchoring[]=%s', $first->getId(), $second->getId()));
+        self::assertCount(2, $crawler->filter('#project-filters select[name="organizationalAnchoring[]"] option[selected]'));
+        $results = $crawler->filter('#project-results')->text();
+        self::assertStringContainsString($title, $results);
+        self::assertStringContainsString((string) $onlySecond->getTitle(), $results);
+        self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
+
+        // … a link saved while the filter was a single select still narrows …
+        $results = $this->client->request('GET', '/projects?organizationalAnchoring='.$second->getId())->filter('#project-results')->text();
+        self::assertStringContainsString((string) $onlySecond->getTitle(), $results);
+        self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
+        $results = $this->client->request('GET', '/projects?organizationalAnchoring=')->filter('#project-results')->text();
+        self::assertStringContainsString((string) $unanchored->getTitle(), $results);
+
+        // … and the export applies the same filter and lists every department
+        // of the project.
+        $this->client->request('GET', '/projects/export?organizationalAnchoring[]='.$first->getId());
         $csv = (string) $this->client->getInternalResponse()->getContent();
         self::assertStringContainsString($first->getName().', '.$second->getName(), $csv);
+        self::assertStringNotContainsString((string) $onlySecond->getTitle(), $csv);
 
         $this->removeProject($id);
         $this->removeProject((string) $unanchored->getId());
+        $this->removeProject((string) $onlySecond->getId());
         $em = $this->entityManager();
         foreach ([$first->getId(), $second->getId()] as $departmentId) {
             $department = $this->departments()->find($departmentId);
             if (null !== $department) {
                 $em->remove($department);
+            }
+        }
+        $em->flush();
+    }
+
+    public function testTypesAreSavedShownFilteredAndExported(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $first = (new ProjectType())->setName('Type first '.uniqid());
+        $second = (new ProjectType())->setName('Type second '.uniqid());
+        $em->persist($first);
+        $em->persist($second);
+        $em->flush();
+        $plain = $this->createProject('Plain project '.uniqid());
+        $title = 'Typed project '.uniqid();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertCount(1, $crawler->filter('select[name="project[types][]"][multiple][data-type-select]'));
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'types' => [(string) $first->getId(), (string) $second->getId()],
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertCount(2, $project->getTypes());
+        $id = (string) $project->getId();
+
+        // Both types are listed on the project page …
+        $crawler = $this->client->request('GET', '/projects/'.$id);
+        $details = $crawler->filter('.detail-list')->text();
+        self::assertStringContainsString((string) $first->getName(), $details);
+        self::assertStringContainsString((string) $second->getName(), $details);
+
+        // … the type filter narrows the list to projects of that type …
+        $crawler = $this->client->request('GET', '/projects?type='.$first->getId());
+        $results = $crawler->filter('#project-results')->text();
+        self::assertStringContainsString($title, $results);
+        self::assertStringContainsString($first->getName().', '.$second->getName(), $results);
+        self::assertStringNotContainsString((string) $plain->getTitle(), $results);
+
+        // … and the export lists every type of the project.
+        $this->client->request('GET', '/projects/export?type='.$first->getId());
+        $csv = (string) $this->client->getInternalResponse()->getContent();
+        self::assertStringContainsString($first->getName().', '.$second->getName(), $csv);
+
+        $this->removeProject($id);
+        $this->removeProject((string) $plain->getId());
+        $em = $this->entityManager();
+        foreach ([$first->getId(), $second->getId()] as $typeId) {
+            $type = $this->projectTypes()->find($typeId);
+            if (null !== $type) {
+                $em->remove($type);
             }
         }
         $em->flush();
@@ -479,6 +563,34 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
         $this->removeProject($id);
+    }
+
+    public function testTheProjectDefinitionIsShownOnCreateAndBehindALinkOnTheList(): void
+    {
+        $this->loginAsAdmin();
+
+        // Collapsed on the create page, above the form.
+        $crawler = $this->client->request('GET', '/projects/new');
+        $this->assertResponseIsSuccessful();
+        $callout = $crawler->filter('details.definition-callout');
+        self::assertCount(1, $callout);
+        self::assertNull($callout->attr('open'));
+        self::assertCount(4, $callout->filter('.definition__criteria li'));
+        self::assertCount(3, $callout->filter('.definition__examples li'));
+        self::assertTrue($callout->filter('.definition-callout__summary')->nextAll()->first()->matches('.definition'));
+
+        // On the list it sits in a dialog, opened from the subtitle and from the
+        // empty state.
+        $crawler = $this->client->request('GET', '/projects?q='.uniqid('no-such-project-', true));
+        $this->assertResponseIsSuccessful();
+        self::assertCount(1, $crawler->filter('.page__subtitle button[data-action="dialog#open"]'));
+        // The header's default content (the action buttons) survives the named subtitle block.
+        self::assertCount(1, $crawler->filter('.page__actions a.btn--primary[href="/projects/new"]'));
+        self::assertCount(1, $crawler->filter('.empty-state button[data-action="dialog#open"]'));
+        $dialog = $crawler->filter('.page[data-controller~="dialog"] dialog.dialog[data-dialog-target="dialog"]');
+        self::assertCount(1, $dialog);
+        self::assertCount(4, $dialog->filter('.definition__criteria li'));
+        self::assertCount(1, $dialog->filter('button[data-action="dialog#close"]'));
     }
 
     private function createProject(string $title, ?Status $status = null): Project
