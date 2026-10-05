@@ -74,11 +74,18 @@
     <div class="form-section">
         <div class="form-section__title">{{ 'project.section.economy'|trans }}</div>
         <div class="form-grid">
+            {{ form_row(form.amountApplied) }}
             {{ form_row(form.budget) }}
+            {{ form_row(form.budgetItk) }}
+        </div>
+        {{ form_row(form.funding) }}
+        {{ form_row(form.fundingRate) }}
+        {{ form_row(form.coFinancing) }}
+        {{ form_row(form.remainingFunding) }}
+        <div class="form-grid">
             {{ form_row(form.timePeriodStart) }}
             {{ form_row(form.timePeriodEnd) }}
         </div>
-        {{ form_row(form.funding) }}
 
         <div class="form-row">
             <label>{{ 'project.links'|trans }}</label>

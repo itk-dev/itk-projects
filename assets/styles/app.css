@@ -1041,24 +1041,19 @@ a.recent-item:hover .recent-item__cta {
     opacity: 0;
 }
 
+/* Always visible: a hint hidden until focus still takes up its line, which in a
+   multi-column grid reads as a blank band between the label and the input. */
 .form-row .help-text,
 .form-row .form-help {
     font-size: var(--itk-text-xs);
     font-weight: 400;
     color: var(--itk-slate-500);
-    opacity: 0;
-    transition: opacity 0.15s ease;
 }
 
 .form-row .help-text::before,
 .form-row .form-help::before {
     content: "–";
     margin-right: var(--itk-space-1);
-}
-
-.form-row:focus-within .help-text,
-.form-row:focus-within .form-help {
-    opacity: 1;
 }
 
 input[type="text"],
@@ -1193,6 +1188,20 @@ textarea {
     margin-bottom: 0;
 }
 
+/* A relevant-link row: the url takes the wider column, the note the narrower. */
+.link-fields {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--itk-space-3);
+}
+
+@media (max-width: 640px) {
+    .link-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
 .confirm,
 .dialog {
     width: min(520px, calc(100vw - var(--itk-space-6)));
@@ -1312,6 +1321,12 @@ textarea {
 
 .link-list {
     list-style: none;
+}
+
+.link-list__url {
+    display: block;
+    font-size: var(--itk-text-sm);
+    word-break: break-all;
 }
 
 .contact-card {

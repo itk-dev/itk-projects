@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-43](https://github.com/itk-dev/itk-projects/pull/43)
+  Overhaul "Økonomi og tid": add amount applied for, ITK budget, co-financing,
+  funding rate and what the rest consists of, and let each relevant link carry a note.
 * [PR-44](https://github.com/itk-dev/itk-projects/pull/44)
   Let the project list be filtered by several departments at once, picked with
   the same searchable multiselect as the project form.

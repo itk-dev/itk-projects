@@ -10,6 +10,7 @@ use App\Entity\Project;
 use App\Entity\ProjectType as ProjectTypeEntity;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
+use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -21,12 +22,10 @@ use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @extends AbstractType<Project>
@@ -114,11 +113,35 @@ class ProjectType extends AbstractType
                 'choice_label' => static fn (EndorsementAuthor $value): string => $value->labelKey(),
                 'help' => 'project.endorsement_author_help',
             ])
+            ->add('amountApplied', IntegerType::class, [
+                'label' => 'project.amount_applied',
+                'required' => false,
+                'attr' => ['min' => 0],
+                'help' => 'project.amount_applied_help',
+            ])
             ->add('budget', IntegerType::class, [
                 'label' => 'project.budget',
                 'required' => false,
                 'attr' => ['min' => 0],
                 'help' => 'project.budget_help',
+            ])
+            ->add('budgetItk', IntegerType::class, [
+                'label' => 'project.budget_itk',
+                'required' => false,
+                'attr' => ['min' => 0],
+                'help' => 'project.budget_itk_help',
+            ])
+            ->add('fundingRate', EnumType::class, [
+                'label' => 'project.funding_rate',
+                'class' => FundingRate::class,
+                'required' => false,
+                'placeholder' => 'form.choose',
+                'choice_label' => static fn (FundingRate $value): string => $value->labelKey(),
+                'help' => 'project.funding_rate_help',
+            ])
+            ->add('coFinancing', CheckboxType::class, [
+                'label' => 'project.co_financing',
+                'required' => false,
             ])
             ->add('funding', EnumType::class, [
                 'label' => 'project.funding',
@@ -127,6 +150,12 @@ class ProjectType extends AbstractType
                 'expanded' => true,
                 'required' => false,
                 'choice_label' => static fn (Funding $value): string => $value->labelKey(),
+            ])
+            ->add('remainingFunding', TextareaType::class, [
+                'label' => 'project.remaining_funding',
+                'required' => false,
+                'attr' => ['rows' => 3],
+                'help' => 'project.remaining_funding_help',
             ])
             ->add('tags', TermsTextType::class, [
                 'label' => 'project.tags',
@@ -150,17 +179,13 @@ class ProjectType extends AbstractType
             ])
             ->add('links', CollectionType::class, [
                 'label' => 'project.links',
-                'entry_type' => UrlType::class,
-                'entry_options' => [
-                    'required' => false,
-                    'default_protocol' => 'https',
-                    'label' => false,
-                    // Reject non-http(s) URLs (e.g. javascript:) to prevent stored XSS.
-                    'constraints' => [new Assert\Url(protocols: ['http', 'https'])],
-                ],
+                'entry_type' => ProjectLinkType::class,
+                'entry_options' => ['label' => false],
                 'allow_add' => true,
                 'allow_delete' => true,
-                'delete_empty' => true,
+                // A row is a url plus a note, and only the url makes it a link: a
+                // row holding just a note, or the untouched empty row, is dropped.
+                'delete_empty' => static fn (?array $link): bool => '' === trim((string) ($link['url'] ?? '')),
                 'by_reference' => false,
                 'required' => false,
                 'prototype' => true,
