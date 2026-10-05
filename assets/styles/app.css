@@ -947,6 +947,14 @@ a.recent-item:hover .recent-item__cta {
     line-height: 1.55;
 }
 
+/* The department filter is a chip multiselect among plain selects. Its caret
+   input normally claims 8rem, which in a filter cell means a line of its own:
+   let it squeeze in after the chips so the control stays one row high — the
+   same height as its neighbours — until the chips truly need a second. */
+.filters .ts-wrapper .ts-control > input {
+    min-width: 2rem;
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -1033,24 +1041,19 @@ a.recent-item:hover .recent-item__cta {
     opacity: 0;
 }
 
+/* Always visible: a hint hidden until focus still takes up its line, which in a
+   multi-column grid reads as a blank band between the label and the input. */
 .form-row .help-text,
 .form-row .form-help {
     font-size: var(--itk-text-xs);
     font-weight: 400;
     color: var(--itk-slate-500);
-    opacity: 0;
-    transition: opacity 0.15s ease;
 }
 
 .form-row .help-text::before,
 .form-row .form-help::before {
     content: "–";
     margin-right: var(--itk-space-1);
-}
-
-.form-row:focus-within .help-text,
-.form-row:focus-within .form-help {
-    opacity: 1;
 }
 
 input[type="text"],
@@ -1185,7 +1188,22 @@ textarea {
     margin-bottom: 0;
 }
 
-.confirm {
+/* A relevant-link row: the url takes the wider column, the note the narrower. */
+.link-fields {
+    display: grid;
+    flex: 1;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: var(--itk-space-3);
+}
+
+@media (max-width: 640px) {
+    .link-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+.confirm,
+.dialog {
     width: min(520px, calc(100vw - var(--itk-space-6)));
     margin: auto;
     padding: 0;
@@ -1196,20 +1214,24 @@ textarea {
     box-shadow: var(--itk-shadow-3);
 }
 
-.confirm::backdrop {
+.confirm::backdrop,
+.dialog::backdrop {
     background-color: rgba(17, 19, 24, 0.55);
 }
 
-.confirm__body {
+.confirm__body,
+.dialog__body {
     padding: var(--itk-space-5);
     font-size: var(--itk-text-sm);
 }
 
-.confirm__body p {
+.confirm__body p,
+.dialog__body p {
     margin: 0;
 }
 
-.confirm__title {
+.confirm__title,
+.dialog__title {
     margin: 0 0 var(--itk-space-3);
     font-size: var(--itk-text-md);
 }
@@ -1234,7 +1256,8 @@ textarea {
     margin-top: var(--itk-space-1);
 }
 
-.confirm__actions {
+.confirm__actions,
+.dialog__actions {
     display: flex;
     gap: var(--itk-space-3);
     justify-content: flex-end;
@@ -1298,6 +1321,12 @@ textarea {
 
 .link-list {
     list-style: none;
+}
+
+.link-list__url {
+    display: block;
+    font-size: var(--itk-text-sm);
+    word-break: break-all;
 }
 
 .contact-card {
@@ -2093,6 +2122,8 @@ textarea {
 .ts-wrapper.multi .ts-control .item {
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
+    white-space: nowrap;
     padding: 2px var(--itk-space-2);
     font-size: var(--itk-text-sm);
     font-weight: 400;
@@ -2104,6 +2135,15 @@ textarea {
     border-radius: var(--itk-radius-2);
     box-shadow: none;
     text-shadow: none;
+}
+
+/* A name too long for the control ("Sociale Forhold og Beskæftigelse") is cut
+   with an ellipsis — the chip's title carries the full name — so the chip never
+   outgrows its line and the remove button stays reachable. */
+.ts-wrapper.multi .ts-control .item .item__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ts-wrapper.multi .ts-control .item.active {
@@ -2158,4 +2198,64 @@ textarea {
 .ts-dropdown .no-results {
     padding: var(--itk-space-2) var(--itk-space-3);
     color: var(--itk-slate-500);
+}
+
+/* ---- Project definition ------------------------------------------------ */
+
+.definition {
+    font-size: var(--itk-text-sm);
+    color: var(--itk-ink-soft);
+}
+
+.definition p {
+    margin: 0;
+}
+
+.definition__criteria,
+.definition__examples {
+    margin: var(--itk-space-2) 0 0;
+    padding-left: var(--itk-space-5);
+}
+
+.definition__criteria li + li,
+.definition__examples li + li {
+    margin-top: var(--itk-space-1);
+}
+
+.definition .definition__examples-title {
+    margin-top: var(--itk-space-4);
+    font-weight: 600;
+}
+
+.definition-callout {
+    margin-bottom: var(--itk-space-5);
+    padding: var(--itk-space-4) var(--itk-space-5);
+    background-color: var(--itk-surface);
+    border: 1px solid var(--itk-slate-200);
+    border-left: 4px solid var(--itk-primary);
+    border-radius: var(--itk-radius-3);
+    box-shadow: var(--itk-shadow-1);
+}
+
+.definition-callout__summary {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.definition-callout[open] .definition-callout__summary {
+    margin-bottom: var(--itk-space-3);
+}
+
+.link-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--itk-primary);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    color: var(--itk-primary-hover);
 }

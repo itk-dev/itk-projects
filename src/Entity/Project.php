@@ -6,7 +6,7 @@ namespace App\Entity;
 
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\ProjectType;
+use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -22,15 +22,19 @@ class Project extends AbstractEntity
      * Fields that count toward {@see getCompletionPercentage()} and the client-side
      * progress bar. Limited to the project's own columns so list rendering stays
      * query-free; the booleans and the free-tagging lists are intentionally excluded.
-     * Areas and departments are the two collections counted: both are fixed,
-     * admin-managed pools and core to what a project is.
+     * Areas, types and departments are the three collections counted: all are
+     * fixed, admin-managed pools, and what a project is about, what kind of thing
+     * it is and where it is anchored are core to describing it. Of the economy
+     * fields, co-financing is a boolean and the remaining-funding text is
+     * explicitly optional, so neither counts.
      *
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'areas', 'summary', 'description', 'projectType', 'status',
+        'title', 'areas', 'summary', 'description', 'types', 'status',
         'organizationalAnchoring',
-        'budget', 'funding', 'timePeriodStart', 'timePeriodEnd',
+        'amountApplied', 'budget', 'budgetItk', 'fundingRate', 'funding',
+        'timePeriodStart', 'timePeriodEnd',
     ];
 
     #[Assert\NotBlank]
@@ -55,7 +59,7 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_area')]
     private Collection $areas;
 
-    /** A few lines summing up the project's purpose and content. */
+    /** A few lines summing up the project's purpose, content, strategy and plans. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $summary = null;
 
@@ -63,13 +67,15 @@ class Project extends AbstractEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    /** @var Collection<int, Term> */
-    #[ORM\ManyToMany(targetEntity: Term::class, cascade: ['persist'])]
-    #[ORM\JoinTable(name: 'project_strategy')]
-    private Collection $strategies;
-
-    #[ORM\Column(length: 32, nullable: true, enumType: ProjectType::class)]
-    private ?ProjectType $projectType = null;
+    /**
+     * What kind of thing the project is ("Projekt", "Drift", …). A project can be
+     * several at once, e.g. a pilot that is also operations.
+     *
+     * @var Collection<int, ProjectType>
+     */
+    #[ORM\ManyToMany(targetEntity: ProjectType::class)]
+    #[ORM\JoinTable(name: 'project_project_type')]
+    private Collection $types;
 
     #[ORM\Column(length: 32, nullable: true, enumType: Status::class)]
     private ?Status $status = null;
@@ -108,9 +114,31 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_partner')]
     private Collection $partners;
 
+    /** How much money the project has applied for, in whole kroner. */
+    #[Assert\PositiveOrZero]
+    #[ORM\Column(nullable: true)]
+    private ?int $amountApplied = null;
+
+    /** The project's total budget, in whole kroner. */
     #[Assert\PositiveOrZero]
     #[ORM\Column(nullable: true)]
     private ?int $budget = null;
+
+    /** The part of the total budget that lies with ITK, in whole kroner. */
+    #[Assert\PositiveOrZero]
+    #[ORM\Column(nullable: true)]
+    private ?int $budgetItk = null;
+
+    /** Whether the project is partly paid by co-financing or own financing. */
+    #[ORM\Column]
+    private bool $coFinancing = false;
+
+    #[ORM\Column(length: 32, nullable: true, enumType: FundingRate::class)]
+    private ?FundingRate $fundingRate = null;
+
+    /** What the share of the budget not covered by the funding rate consists of. */
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $remainingFunding = null;
 
     /**
      * Stored as the backing values of {@see Funding}; accessors expose enums.
@@ -131,7 +159,11 @@ class Project extends AbstractEntity
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $timePeriodEnd = null;
 
-    /** @var list<string> */
+    /**
+     * Relevant links, each a url with an optional note saying what it points to.
+     *
+     * @var list<array{url: string, note: string|null}>
+     */
     #[ORM\Column]
     private array $links = [];
 
@@ -140,7 +172,7 @@ class Project extends AbstractEntity
         parent::__construct();
         $this->areas = new ArrayCollection();
         $this->organizationalAnchoring = new ArrayCollection();
-        $this->strategies = new ArrayCollection();
+        $this->types = new ArrayCollection();
         $this->contacts = new ArrayCollection();
         $this->partners = new ArrayCollection();
         $this->tags = new ArrayCollection();
@@ -227,47 +259,35 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    /** @return Collection<int, Term> */
-    public function getStrategies(): Collection
+    /** @return Collection<int, ProjectType> */
+    public function getTypes(): Collection
     {
-        return $this->strategies;
+        return $this->types;
     }
 
-    public function addStrategy(Term $term): static
+    public function addType(ProjectType $type): static
     {
-        if (!$this->strategies->contains($term)) {
-            $this->strategies->add($term);
+        if (!$this->types->contains($type)) {
+            $this->types->add($type);
         }
 
         return $this;
     }
 
-    public function removeStrategy(Term $term): static
+    public function removeType(ProjectType $type): static
     {
-        $this->strategies->removeElement($term);
+        $this->types->removeElement($type);
 
         return $this;
     }
 
-    /** @param iterable<Term> $terms */
-    public function setStrategies(iterable $terms): static
+    /** @param iterable<ProjectType> $types */
+    public function setTypes(iterable $types): static
     {
-        $this->strategies->clear();
-        foreach ($terms as $term) {
-            $this->addStrategy($term);
+        $this->types->clear();
+        foreach ($types as $type) {
+            $this->addType($type);
         }
-
-        return $this;
-    }
-
-    public function getProjectType(): ?ProjectType
-    {
-        return $this->projectType;
-    }
-
-    public function setProjectType(?ProjectType $projectType): static
-    {
-        $this->projectType = $projectType;
 
         return $this;
     }
@@ -397,6 +417,18 @@ class Project extends AbstractEntity
         return $this;
     }
 
+    public function getAmountApplied(): ?int
+    {
+        return $this->amountApplied;
+    }
+
+    public function setAmountApplied(?int $amountApplied): static
+    {
+        $this->amountApplied = $amountApplied;
+
+        return $this;
+    }
+
     public function getBudget(): ?int
     {
         return $this->budget;
@@ -405,6 +437,54 @@ class Project extends AbstractEntity
     public function setBudget(?int $budget): static
     {
         $this->budget = $budget;
+
+        return $this;
+    }
+
+    public function getBudgetItk(): ?int
+    {
+        return $this->budgetItk;
+    }
+
+    public function setBudgetItk(?int $budgetItk): static
+    {
+        $this->budgetItk = $budgetItk;
+
+        return $this;
+    }
+
+    public function isCoFinancing(): bool
+    {
+        return $this->coFinancing;
+    }
+
+    public function setCoFinancing(bool $coFinancing): static
+    {
+        $this->coFinancing = $coFinancing;
+
+        return $this;
+    }
+
+    public function getFundingRate(): ?FundingRate
+    {
+        return $this->fundingRate;
+    }
+
+    public function setFundingRate(?FundingRate $fundingRate): static
+    {
+        $this->fundingRate = $fundingRate;
+
+        return $this;
+    }
+
+    public function getRemainingFunding(): ?string
+    {
+        return $this->remainingFunding;
+    }
+
+    public function setRemainingFunding(?string $remainingFunding): static
+    {
+        $this->remainingFunding = $remainingFunding;
 
         return $this;
     }
@@ -486,35 +566,38 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    /** @return list<string> */
+    /** @return list<array{url: string, note: string|null}> */
     public function getLinks(): array
     {
         return $this->links;
     }
 
-    /** @param list<string> $links */
+    /**
+     * Rows without a url are dropped (the form's empty prototype row posts as
+     * one), as are non-http(s) urls, since a javascript: scheme would be stored XSS.
+     *
+     * @param list<array{url?: string|null, note?: string|null}> $links
+     */
     public function setLinks(array $links): static
     {
-        $this->links = array_values(array_filter(
-            array_map(static fn (?string $link): string => trim((string) $link), $links),
-            // Keep only non-empty http(s) URLs; drop schemes like javascript: that enable stored XSS.
-            static function (string $link): bool {
-                if ('' === $link) {
-                    return false;
-                }
-                $scheme = strtolower((string) parse_url($link, \PHP_URL_SCHEME));
-
-                return 'http' === $scheme || 'https' === $scheme;
-            },
-        ));
+        $this->links = [];
+        foreach ($links as $link) {
+            $url = trim((string) ($link['url'] ?? ''));
+            $scheme = strtolower((string) parse_url($url, \PHP_URL_SCHEME));
+            if ('http' !== $scheme && 'https' !== $scheme) {
+                continue;
+            }
+            $note = trim((string) ($link['note'] ?? ''));
+            $this->links[] = ['url' => $url, 'note' => '' === $note ? null : $note];
+        }
 
         return $this;
     }
 
     /**
      * Share of {@see COMPLETION_FIELDS} that are filled in, as a 0–100 percentage.
-     * Reads own columns plus the area and department collections (one lazy load
-     * each), so it is cheap enough to call per row in a listing.
+     * Reads own columns plus the area, type and department collections (one lazy
+     * load each), so it is cheap enough to call per row in a listing.
      */
     public function getCompletionPercentage(): int
     {
@@ -523,10 +606,13 @@ class Project extends AbstractEntity
             !$this->areas->isEmpty(),
             null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
-            null !== $this->projectType,
+            !$this->types->isEmpty(),
             null !== $this->status,
             !$this->organizationalAnchoring->isEmpty(),
+            null !== $this->amountApplied,
             null !== $this->budget,
+            null !== $this->budgetItk,
+            null !== $this->fundingRate,
             [] !== $this->funding,
             null !== $this->timePeriodStart,
             null !== $this->timePeriodEnd,

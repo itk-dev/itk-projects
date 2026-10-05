@@ -49,7 +49,7 @@
         {{ form_row(form.topic) }}
         <div class="form-grid">
             {{ form_row(form.areas) }}
-            {{ form_row(form.projectType) }}
+            {{ form_row(form.types) }}
         </div>
         {{ form_row(form.summary) }}
         {{ form_row(form.description) }}
@@ -62,7 +62,6 @@
             {{ form_row(form.organizationalAnchoring) }}
         </div>
         {{ form_row(form.statusAdditional) }}
-        {{ form_row(form.strategies) }}
         {{ form_row(form.tags) }}
     </div>
 
@@ -75,11 +74,18 @@
     <div class="form-section">
         <div class="form-section__title">{{ 'project.section.economy'|trans }}</div>
         <div class="form-grid">
+            {{ form_row(form.amountApplied) }}
             {{ form_row(form.budget) }}
+            {{ form_row(form.budgetItk) }}
+        </div>
+        {{ form_row(form.funding) }}
+        {{ form_row(form.fundingRate) }}
+        {{ form_row(form.coFinancing) }}
+        {{ form_row(form.remainingFunding) }}
+        <div class="form-grid">
             {{ form_row(form.timePeriodStart) }}
             {{ form_row(form.timePeriodEnd) }}
         </div>
-        {{ form_row(form.funding) }}
 
         <div class="form-row">
             <label>{{ 'project.links'|trans }}</label>

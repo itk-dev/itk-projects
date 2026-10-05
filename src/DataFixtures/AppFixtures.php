@@ -9,11 +9,12 @@ use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Partner;
 use App\Entity\Project;
+use App\Entity\ProjectType;
 use App\Entity\Term;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\ProjectType;
+use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -23,10 +24,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class AppFixtures extends Fixture
 {
     private const array TAGS = ['Bæredygtighed', 'Borgerinddragelse', 'Innovation', 'Sundhed', 'Klima', 'Mobilitet', 'Data', 'Tryghed', 'Læring', 'Fællesskab'];
-    private const array STRATEGIES = ['Klimaplan 2030', 'Erhvervsplan', 'Børn- og ungepolitik', 'Mobilitetsplan', 'Digitaliseringsstrategi', 'Sundhedspolitik'];
     private const array DEPARTMENTS = ['ITK Development', 'CFIA', 'Aarhus CityLab', 'Stab', 'OS2', 'AI Lab', 'IOT Lab', 'GTM', 'Fut Lab'];
     private const array PARTNERS = ['Aarhus Universitet', 'VIA University College', 'Alexandra Instituttet', 'Teknologisk Institut', 'Region Midtjylland', 'Erhverv Aarhus', 'Danmarks Tekniske Universitet', 'Aarhus Vand', 'AffaldVarme Aarhus', 'Dansk Industri'];
     private const array AREAS = ['Klima og miljø', 'Mobilitet', 'Velfærd', 'Kultur og fritid', 'Uddannelse', 'Erhverv', 'Digitalisering', 'Byudvikling'];
+    private const array TYPES = ['Projekt', 'Program', 'Politik', 'Pilot', 'Drift'];
     private const array TOPICS = [
         'Digital Europe Blueprint for Data Space for smart and sustainable cities and communities.',
         'Horizon Europe — Climate-neutral and smart cities mission.',
@@ -59,7 +60,6 @@ class AppFixtures extends Fixture
         $users = [$admin, $editor];
 
         $tags = $this->makeTerms($manager, self::TAGS, Vocabulary::Tag);
-        $strategies = $this->makeTerms($manager, self::STRATEGIES, Vocabulary::Strategy);
 
         $departments = [];
         foreach (self::DEPARTMENTS as $name) {
@@ -73,6 +73,13 @@ class AppFixtures extends Fixture
             $area = (new Area())->setName($name);
             $manager->persist($area);
             $areas[] = $area;
+        }
+
+        $types = [];
+        foreach (self::TYPES as $name) {
+            $type = (new ProjectType())->setName($name);
+            $manager->persist($type);
+            $types[] = $type;
         }
 
         $partners = [];
@@ -129,19 +136,23 @@ class AppFixtures extends Fixture
         ];
 
         $statuses = Status::cases();
-        $types = ProjectType::cases();
         $endorsers = EndorsementAuthor::cases();
         $fundings = Funding::cases();
+        $rates = FundingRate::cases();
 
         foreach ($titles as $index => $title) {
+            $budget = mt_rand(1, 40) * 50000;
             $project = (new Project())
                 ->setTitle($title)
-                ->setProjectType($types[array_rand($types)])
                 ->setStatus($statuses[array_rand($statuses)])
                 ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
                 ->setDescription('Projektet er sat i gang, fordi kommunen har brug for at styrke indsatsen omkring '.mb_strtolower($title).".\n\nDet har ophæng i byrådets vedtagne strategier og i afdelingens handleplaner og gennemføres i samarbejde med relevante fagområder og eksterne partnere.")
                 ->setEndorsement(0 === $index % 3 ? false : true)
-                ->setBudget(mt_rand(1, 40) * 50000);
+                ->setAmountApplied((int) round($budget * 0.8))
+                ->setBudget($budget)
+                ->setBudgetItk((int) ($budget / 4))
+                ->setFundingRate($rates[array_rand($rates)])
+                ->setCoFinancing(0 === $index % 2);
             $project->setCreatedBy($users[array_rand($users)]);
 
             // Not every project belongs to a wider programme.
@@ -154,6 +165,15 @@ class AppFixtures extends Fixture
             }
 
             $project->setFunding(\array_slice($this->shuffleCopy($fundings), 0, mt_rand(1, 3)));
+            if (0 === $index % 2) {
+                $project->setRemainingFunding('Egenfinansiering fra afdelingens driftsbudget og medfinansiering fra samarbejdspartnerne.');
+            }
+
+            // Most projects are one thing; every fourth is two, e.g. a pilot that is
+            // also operations, so the multiselect has something to show.
+            foreach (\array_slice($this->shuffleCopy($types), 0, 0 === $index % 4 ? 2 : 1) as $type) {
+                $project->addType($type);
+            }
 
             // Roughly a third of the projects span two departments so the dashboard's
             // cross-department views have something to show; likewise every fourth
@@ -172,9 +192,6 @@ class AppFixtures extends Fixture
             foreach (\array_slice($this->shuffleCopy($tags), 0, mt_rand(1, 4)) as $term) {
                 $project->addTag($term);
             }
-            foreach (\array_slice($this->shuffleCopy($strategies), 0, mt_rand(0, 2)) as $term) {
-                $project->addStrategy($term);
-            }
             foreach (\array_slice($this->shuffleCopy($contacts), 0, mt_rand(1, 3)) as $contact) {
                 $project->addContact($contact);
             }
@@ -182,7 +199,7 @@ class AppFixtures extends Fixture
                 $project->addPartner($partner);
             }
 
-            $project->setLinks(['https://www.aarhus.dk']);
+            $project->setLinks([['url' => 'https://www.aarhus.dk', 'note' => 'Aarhus Kommune']]);
 
             $manager->persist($project);
         }

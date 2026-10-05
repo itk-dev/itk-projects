@@ -41,10 +41,24 @@
                             <h3 class="detail-subhead">{{ 'project.status_additional'|trans }}</h3>
                             <p class="prose">{{ project.statusAdditional }}</p>
                         {% endif %}
+                        {% if project.remainingFunding %}
+                            <h3 class="detail-subhead">{{ 'project.remaining_funding'|trans }}</h3>
+                            <p class="prose">{{ project.remainingFunding }}</p>
+                        {% endif %}
                         {% if project.links|length > 0 %}
                             <h3 class="detail-subhead">{{ 'project.links'|trans }}</h3>
                             <ul class="link-list">
-                                {% for link in project.links %}<li>{% if link starts with 'http://' or link starts with 'https://' %}<a href="{{ link }}" target="_blank" rel="noopener">{{ link }}</a>{% else %}{{ link }}{% endif %}</li>{% endfor %}
+                                {% for link in project.links %}
+                                    <li>
+                                        {# The note names the link; the url itself is kept visible underneath. #}
+                                        {% if link.url starts with 'http://' or link.url starts with 'https://' %}
+                                            <a href="{{ link.url }}" target="_blank" rel="noopener">{{ link.note ?: link.url }}</a>
+                                            {% if link.note %}<span class="link-list__url muted">{{ link.url }}</span>{% endif %}
+                                        {% else %}
+                                            {{ link.note ?: link.url }}
+                                        {% endif %}
+                                    </li>
+                                {% endfor %}
                             </ul>
                         {% endif %}
                     </div>
@@ -97,8 +111,8 @@
                         <dt>{{ 'project.area'|trans }}</dt>
                         <dd>{{ h.term_list(project.areas) }}</dd>
 
-                        <dt>{{ 'project.project_type'|trans }}</dt>
-                        <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>
+                        <dt>{{ 'project.types'|trans }}</dt>
+                        <dd>{{ h.term_list(project.types) }}</dd>
 
                         <dt>{{ 'project.organizational_anchoring'|trans }}</dt>
                         <dd>{{ h.term_list(project.organizationalAnchoring) }}</dd>
@@ -106,8 +120,20 @@
                         <dt>{{ 'project.endorsement'|trans }}</dt>
                         <dd>{{ project.endorsement ? 'common.yes'|trans : 'common.no'|trans }}{% if project.endorsementAuthor %} · {{ project.endorsementAuthor.labelKey|trans }}{% endif %}</dd>
 
+                        <dt>{{ 'project.amount_applied'|trans }}</dt>
+                        <dd>{{ project.amountApplied is not null ? project.amountApplied|number_format(0, ',', '.') ~ ' kr.' : '—' }}</dd>
+
                         <dt>{{ 'project.budget'|trans }}</dt>
                         <dd>{{ project.budget is not null ? project.budget|number_format(0, ',', '.') ~ ' kr.' : '—' }}</dd>
+
+                        <dt>{{ 'project.budget_itk'|trans }}</dt>
+                        <dd>{{ project.budgetItk is not null ? project.budgetItk|number_format(0, ',', '.') ~ ' kr.' : '—' }}</dd>
+
+                        <dt>{{ 'project.funding_rate'|trans }}</dt>
+                        <dd>{{ project.fundingRate ? project.fundingRate.labelKey|trans : '—' }}</dd>
+
+                        <dt>{{ 'project.co_financing'|trans }}</dt>
+                        <dd>{{ project.coFinancing ? 'common.yes'|trans : 'common.no'|trans }}</dd>
 
                         <dt>{{ 'project.funding'|trans }}</dt>
                         <dd>
@@ -122,9 +148,6 @@
                                 {{ project.timePeriodStart|date('d.m.Y') }}{% if project.timePeriodEnd %} – {{ project.timePeriodEnd|date('d.m.Y') }}{% endif %}
                             {% else %}—{% endif %}
                         </dd>
-
-                        <dt>{{ 'project.strategies'|trans }}</dt>
-                        <dd>{{ h.term_list(project.strategies) }}</dd>
 
                         <dt>{{ 'project.tags'|trans }}</dt>
                         <dd>{{ h.term_list(project.tags) }}</dd>
