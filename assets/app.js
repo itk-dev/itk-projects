@@ -103,8 +103,8 @@ function initCreatableSelect(selector, poolKey, transform) {
     });
 }
 
-// Free-tagging term fields (strategies, tags) capitalise new
-// entries; partners keep the typed name as-is.
+// Free-tagging term fields (tags) capitalise new entries; partners keep
+// the typed name as-is.
 function initTermSelect() {
     initCreatableSelect("[data-term-select]", "termPool", capitalize);
 }

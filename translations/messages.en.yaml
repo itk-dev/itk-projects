@@ -172,10 +172,9 @@ project:
     area: Area
     area_help: The thematic area the project belongs to.
     summary: Summary
-    summary_help: A brief summary of the purpose and content.
+    summary_help: A brief summary of the purpose, content, strategy and plans.
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
-    strategies: Strategies and plans
     types: Type
     types_help: E.g. project or operation.
     status: Status
@@ -420,4 +419,3 @@ enum:
         external_partner: External partner
     vocabulary:
         tag: Tag
-        strategy: Strategy
