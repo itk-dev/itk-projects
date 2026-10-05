@@ -9,6 +9,7 @@ use App\Entity\Department;
 use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
+use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 
 final class ProjectFilterTest extends TestCase
@@ -21,7 +22,7 @@ final class ProjectFilterTest extends TestCase
         self::assertNull($filter->status);
         self::assertNull($filter->area);
         self::assertNull($filter->type);
-        self::assertNull($filter->organizationalAnchoring);
+        self::assertTrue($filter->organizationalAnchoring->isEmpty());
         self::assertNull($filter->endorsement);
         self::assertSame('createdAt', $filter->sort);
         self::assertSame('DESC', $filter->direction);
@@ -34,13 +35,14 @@ final class ProjectFilterTest extends TestCase
         $filter->status = Status::Granted;
         $filter->area = (new Area())->setName('Klima og miljø');
         $filter->type = (new ProjectType())->setName('Drift');
-        $filter->organizationalAnchoring = (new Department())->setName('Sundhed og Omsorg');
+        $filter->organizationalAnchoring = new ArrayCollection([(new Department())->setName('Sundhed og Omsorg')]);
         $filter->endorsement = true;
         $filter->sort = 'title';
         $filter->direction = 'ASC';
 
         self::assertSame('klima', $filter->q);
         self::assertSame(Status::Granted, $filter->status);
+        self::assertCount(1, $filter->organizationalAnchoring);
         self::assertTrue($filter->endorsement);
     }
 }

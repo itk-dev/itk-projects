@@ -947,6 +947,14 @@ a.recent-item:hover .recent-item__cta {
     line-height: 1.55;
 }
 
+/* The department filter is a chip multiselect among plain selects. Its caret
+   input normally claims 8rem, which in a filter cell means a line of its own:
+   let it squeeze in after the chips so the control stays one row high — the
+   same height as its neighbours — until the chips truly need a second. */
+.filters .ts-wrapper .ts-control > input {
+    min-width: 2rem;
+}
+
 .form {
     display: flex;
     flex-direction: column;
@@ -2099,6 +2107,8 @@ textarea {
 .ts-wrapper.multi .ts-control .item {
     display: inline-flex;
     align-items: center;
+    max-width: 100%;
+    white-space: nowrap;
     padding: 2px var(--itk-space-2);
     font-size: var(--itk-text-sm);
     font-weight: 400;
@@ -2110,6 +2120,15 @@ textarea {
     border-radius: var(--itk-radius-2);
     box-shadow: none;
     text-shadow: none;
+}
+
+/* A name too long for the control ("Sociale Forhold og Beskæftigelse") is cut
+   with an ellipsis — the chip's title carries the full name — so the chip never
+   outgrows its line and the remove button stays reachable. */
+.ts-wrapper.multi .ts-control .item .item__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .ts-wrapper.multi .ts-control .item.active {

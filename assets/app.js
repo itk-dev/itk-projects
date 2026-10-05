@@ -180,11 +180,12 @@ function initPartnerSelect() {
     );
 }
 
-// Departments and project types are fixed, admin-managed pools, so the
-// project form's <select multiple> becomes a searchable chip multiselect
-// without `create`.
-// Tom Select reads the options and the selection from the select itself and
-// fires input/change on it, which is what autosave and the progress bar listen for.
+// Departments and project types are fixed, admin-managed pools, so a
+// <select multiple> — the project form's anchoring and type fields and the
+// project list's department filter — becomes a searchable chip multiselect
+// without `create`. Tom Select reads the options and the selection from the
+// select itself and fires input/change on it, which is what autosave, the
+// progress bar and the live filter listen for.
 function initPoolSelect() {
     document
         .querySelectorAll("[data-department-select], [data-type-select]")
@@ -197,8 +198,42 @@ function initPoolSelect() {
             new TomSelect(select, {
                 plugins: ["remove_button"],
                 hideSelected: true,
+                // Tom Select keeps a multiselect's placeholder ("All", "Choose …")
+                // visible next to the chips; drop it once something is picked.
+                hidePlaceholder: true,
                 maxOptions: null,
+                render: {
+                    // The name gets its own element so a long one can be cut with
+                    // an ellipsis (see .item__label) while the × stays visible.
+                    item: (data, escape) => {
+                        const name = escape(data.text);
+                        return `<div title="${name}"><span class="item__label">${name}</span></div>`;
+                    },
+                },
             });
+        });
+}
+
+// Turbo restores a visited page from its cached snapshot without running any
+// init again, so a Tom Select left in the snapshot would come back as dead
+// markup. Put the plain <select> back — destroy() resets it to the selection it
+// was built with, so the current one is reapplied — and drop the bound marker
+// so turbo:load rebuilds the widget on restore.
+function teardownPoolSelect() {
+    document
+        .querySelectorAll("[data-department-select], [data-type-select]")
+        .forEach((select) => {
+            const tomSelect = select.tomselect;
+            if (!tomSelect) {
+                return;
+            }
+            const selected = tomSelect.items.slice();
+            tomSelect.destroy();
+            for (const option of select.options) {
+                option.selected = selected.includes(option.value);
+                option.toggleAttribute("selected", option.selected);
+            }
+            delete select.dataset.bound;
         });
 }
 
@@ -238,4 +273,5 @@ document.addEventListener("turbo:before-cache", () => {
     document.querySelectorAll("dialog[open]").forEach((dialog) => {
         dialog.close();
     });
+    teardownPoolSelect();
 });

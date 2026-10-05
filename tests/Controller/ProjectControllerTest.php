@@ -195,6 +195,9 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->persist($second);
         $em->flush();
         $unanchored = $this->createProject('Unanchored project '.uniqid());
+        $onlySecond = (new Project())->setTitle('Second-only project '.uniqid())->addOrganizationalAnchoring($second);
+        $em->persist($onlySecond);
+        $em->flush();
         $title = 'Anchored project '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
@@ -220,20 +223,41 @@ final class ProjectControllerTest extends FunctionalTestCase
         self::assertStringContainsString((string) $first->getName(), $details);
         self::assertStringContainsString((string) $second->getName(), $details);
 
-        // … the department filter narrows the list to projects anchored there …
-        $crawler = $this->client->request('GET', '/projects?organizationalAnchoring='.$first->getId());
+        // … the department filter is a multiselect that narrows the list to
+        // projects anchored in the chosen department …
+        $crawler = $this->client->request('GET', '/projects?organizationalAnchoring[]='.$first->getId());
+        self::assertCount(1, $crawler->filter('#project-filters select[name="organizationalAnchoring[]"][multiple][data-department-select]'));
         $results = $crawler->filter('#project-results')->text();
         self::assertStringContainsString($title, $results);
         self::assertStringContainsString($first->getName().', '.$second->getName(), $results);
+        self::assertStringNotContainsString((string) $onlySecond->getTitle(), $results);
         self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
 
-        // … and the export lists every department of the project.
-        $this->client->request('GET', '/projects/export?organizationalAnchoring='.$first->getId());
+        // … or in any of several departments, which the form shows as selected …
+        $crawler = $this->client->request('GET', sprintf('/projects?organizationalAnchoring[]=%s&organizationalAnchoring[]=%s', $first->getId(), $second->getId()));
+        self::assertCount(2, $crawler->filter('#project-filters select[name="organizationalAnchoring[]"] option[selected]'));
+        $results = $crawler->filter('#project-results')->text();
+        self::assertStringContainsString($title, $results);
+        self::assertStringContainsString((string) $onlySecond->getTitle(), $results);
+        self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
+
+        // … a link saved while the filter was a single select still narrows …
+        $results = $this->client->request('GET', '/projects?organizationalAnchoring='.$second->getId())->filter('#project-results')->text();
+        self::assertStringContainsString((string) $onlySecond->getTitle(), $results);
+        self::assertStringNotContainsString((string) $unanchored->getTitle(), $results);
+        $results = $this->client->request('GET', '/projects?organizationalAnchoring=')->filter('#project-results')->text();
+        self::assertStringContainsString((string) $unanchored->getTitle(), $results);
+
+        // … and the export applies the same filter and lists every department
+        // of the project.
+        $this->client->request('GET', '/projects/export?organizationalAnchoring[]='.$first->getId());
         $csv = (string) $this->client->getInternalResponse()->getContent();
         self::assertStringContainsString($first->getName().', '.$second->getName(), $csv);
+        self::assertStringNotContainsString((string) $onlySecond->getTitle(), $csv);
 
         $this->removeProject($id);
         $this->removeProject((string) $unanchored->getId());
+        $this->removeProject((string) $onlySecond->getId());
         $em = $this->entityManager();
         foreach ([$first->getId(), $second->getId()] as $departmentId) {
             $department = $this->departments()->find($departmentId);
