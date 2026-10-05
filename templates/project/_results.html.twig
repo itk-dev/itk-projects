@@ -19,7 +19,9 @@
 {% endmacro %}
 
 {% if pagination.items is empty %}
-    <twig:EmptyState :title="'project.empty.title'|trans" :hint="'project.empty.hint'|trans" />
+    <twig:EmptyState :title="'project.empty.title'|trans" :hint="'project.empty.hint'|trans">
+        <p><button type="button" class="link-button" data-action="dialog#open">{{ 'project.definition.link'|trans }}</button></p>
+    </twig:EmptyState>
 {% else %}
     <div class="table-wrap">
         <table class="table">

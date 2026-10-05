@@ -464,6 +464,34 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->removeProject($id);
     }
 
+    public function testTheProjectDefinitionIsShownOnCreateAndBehindALinkOnTheList(): void
+    {
+        $this->loginAsAdmin();
+
+        // Collapsed on the create page, above the form.
+        $crawler = $this->client->request('GET', '/projects/new');
+        $this->assertResponseIsSuccessful();
+        $callout = $crawler->filter('details.definition-callout');
+        self::assertCount(1, $callout);
+        self::assertNull($callout->attr('open'));
+        self::assertCount(4, $callout->filter('.definition__criteria li'));
+        self::assertCount(3, $callout->filter('.definition__examples li'));
+        self::assertTrue($callout->filter('.definition-callout__summary')->nextAll()->first()->matches('.definition'));
+
+        // On the list it sits in a dialog, opened from the subtitle and from the
+        // empty state.
+        $crawler = $this->client->request('GET', '/projects?q='.uniqid('no-such-project-', true));
+        $this->assertResponseIsSuccessful();
+        self::assertCount(1, $crawler->filter('.page__subtitle button[data-action="dialog#open"]'));
+        // The header's default content (the action buttons) survives the named subtitle block.
+        self::assertCount(1, $crawler->filter('.page__actions a.btn--primary[href="/projects/new"]'));
+        self::assertCount(1, $crawler->filter('.empty-state button[data-action="dialog#open"]'));
+        $dialog = $crawler->filter('.page[data-controller~="dialog"] dialog.dialog[data-dialog-target="dialog"]');
+        self::assertCount(1, $dialog);
+        self::assertCount(4, $dialog->filter('.definition__criteria li'));
+        self::assertCount(1, $dialog->filter('button[data-action="dialog#close"]'));
+    }
+
     private function createProject(string $title, ?Status $status = null): Project
     {
         $project = (new Project())->setTitle($title)->setStatus($status);

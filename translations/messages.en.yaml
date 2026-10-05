@@ -58,6 +58,7 @@ tour:
         intro: "This is the Project database — where we gather the departments' projects in one place, so we can see what's happening across them."
         dashboard: "The overview shows key figures, status and any opportunities for collaboration across departments."
         create: "Browse every project from the Projects menu — or create a new one right away with the Opret button."
+        definition: "Not sure what counts as a project? At ITK a project has an end, a project budget and governance — and we get paid to do it. You'll find the full definition under Projects."
         admin: "Inside this menu you'll find Administration, where you can create, view and edit departments, areas, partners and contacts."
         outro: "You're all set! I'm always right here in the corner if you need a tip. 🌟"
 
@@ -114,6 +115,7 @@ action:
     remove: Remove
     confirm_delete_title: "Delete “%name%”?"
     irreversible: This action cannot be undone.
+    close: Close
 
 common:
     yes: Yes
@@ -218,6 +220,20 @@ project:
     empty:
         title: No projects found
         hint: Try adjusting your filters, or create a new project.
+    definition:
+        title: What is a project?
+        link: What counts as a project?
+        intro: "At ITK, a project is defined by the following:"
+        criteria:
+            end: it has an end
+            economy: it has a project budget
+            governance: it has governance
+            paid: we get paid to do it
+        examples_title: Examples of projects
+        examples:
+            first: Example x
+            second: Example y
+            third: Example z
     section:
         basics: Basics
         classification: Classification

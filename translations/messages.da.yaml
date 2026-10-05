@@ -58,6 +58,7 @@ tour:
         intro: "Det her er Projektdatabasen — her samler vi afdelingernes projekter ét sted, så vi kan se, hvad der sker på tværs."
         dashboard: "På overblikket ser du nøgletal, status og eventuelle muligheder for samarbejds på tværs af afdelinger."
         create: "Se alle projekter via menupunktet Projekter — eller opret et nyt med det samme via Opret-knappen."
+        definition: "Er du i tvivl om, hvad der tæller som et projekt? Hos ITK har et projekt en slutning, en projektøkonomi og en governance — og vi får penge for at lave det. Du finder hele definitionen under Projekter."
         admin: "Inde i menuen her finder du menupunktet Administration, hvor du kan oprette, se og redigere afdelinger, områder, samarbejdspartnere og kontaktpersoner."
         outro: "Så er du klar! Jeg er altid lige her i hjørnet, hvis du får brug for et tip. 🌟"
 
@@ -114,6 +115,7 @@ action:
     remove: Fjern
     confirm_delete_title: "Slet “%name%”?"
     irreversible: Denne handling kan ikke fortrydes.
+    close: Luk
 
 common:
     yes: Ja
@@ -218,6 +220,20 @@ project:
     empty:
         title: Ingen projekter fundet
         hint: Prøv at justere dine filtre, eller opret et nyt projekt.
+    definition:
+        title: Hvad er et projekt?
+        link: Hvad tæller som et projekt?
+        intro: "Hos ITK er et projekt kendetegnet ved, at:"
+        criteria:
+            end: det har en slutning
+            economy: det har en projektøkonomi
+            governance: det har en governance
+            paid: vi får penge for at lave det
+        examples_title: Eksempler på projekter
+        examples:
+            first: Eksempel x
+            second: Eksempel y
+            third: Eksempel z
     section:
         basics: Grundoplysninger
         classification: Klassificering
