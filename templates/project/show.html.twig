@@ -97,8 +97,8 @@
                         <dt>{{ 'project.area'|trans }}</dt>
                         <dd>{{ project.area ? project.area.name : '—' }}</dd>
 
-                        <dt>{{ 'project.project_type'|trans }}</dt>
-                        <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>
+                        <dt>{{ 'project.types'|trans }}</dt>
+                        <dd>{{ h.term_list(project.types) }}</dd>
 
                         <dt>{{ 'project.organizational_anchoring'|trans }}</dt>
                         <dd>{{ h.term_list(project.organizationalAnchoring) }}</dd>

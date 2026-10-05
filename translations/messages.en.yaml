@@ -86,6 +86,7 @@ nav:
     partners: Partners
     departments: Departments
     areas: Areas
+    project_types: Project types
     users: Users
     admin: Administration
     preferences: Preferences
@@ -173,8 +174,8 @@ project:
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
     strategies: Strategies and plans
-    project_type: Type of project
-    project_type_help: The nature of the project, e.g. project or operation.
+    types: Type
+    types_help: E.g. project or operation.
     status: Status
     status_help: How far along the project is.
     status_additional: Status – additional text
@@ -304,6 +305,21 @@ area:
         title: No areas yet
         hint: Create an area so it can be chosen on projects.
 
+project_type:
+    name: Name
+    name_help: The type name as shown on projects.
+    name_duplicate: A project type with this name already exists.
+    index:
+        title: Project types
+        subtitle: The type of a project, e.g. project or operation, that can be chosen on projects.
+    new:
+        title: New project type
+    edit:
+        title: Edit project type
+    empty:
+        title: No project types yet
+        hint: Create a project type so it can be chosen on projects.
+
 user:
     email: Email
     email_help: Used to sign in and for notifications.
@@ -355,6 +371,10 @@ flash:
         created: The area was created.
         updated: The area was updated.
         deleted: The area was deleted.
+    project_type:
+        created: The project type was created.
+        updated: The project type was updated.
+        deleted: The project type was deleted.
     user:
         created: The user was created.
         updated: The user was updated.
@@ -371,12 +391,6 @@ enum:
         on_hold: On hold
         rejected: Rejected
         completed: Completed
-    project_type:
-        project: Project
-        programme: Programme
-        policy: Policy
-        pilot: Pilot
-        operation: Operation
     endorsement_author:
         city_council: City Council
         magistrate: The Magistrate

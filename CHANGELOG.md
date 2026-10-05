@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [PR-41](https://github.com/itk-dev/itk-projects/pull/41)
+  Let a project have several types, picked from an admin-managed pool
+  instead of a fixed list.
 * [PR-33](https://github.com/itk-dev/itk-projects/pull/33)
   Let a project be anchored in several departments, picked with a searchable
   multiselect.
