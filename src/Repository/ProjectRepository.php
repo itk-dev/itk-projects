@@ -8,7 +8,6 @@ use App\Entity\Project;
 use App\Entity\User;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\TranslatableEnum;
 use App\Model\ProjectFilter;
@@ -50,20 +49,19 @@ class ProjectRepository extends ServiceEntityRepository
                 // paginator's count stays correct.
                 sprintf('i.id IN (SELECT icrt.id FROM %s icrt JOIN icrt.createdBy cb WHERE LOWER(cb.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT itag.id FROM %s itag JOIN itag.tags tg WHERE LOWER(tg.name) LIKE :q)', Project::class),
-                sprintf('i.id IN (SELECT istr.id FROM %s istr JOIN istr.strategies st WHERE LOWER(st.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT icon.id FROM %s icon JOIN icon.contacts co WHERE LOWER(co.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT ipar.id FROM %s ipar JOIN ipar.partners pa WHERE LOWER(pa.name) LIKE :q)', Project::class),
-                // Department and area are related entities searched by their stored
-                // name ("nik" should find "Teknik og Miljø").
+                // Department, area and type are related entities searched by
+                // their stored name ("nik" should find "Teknik og Miljø").
                 sprintf('i.id IN (SELECT idep.id FROM %s idep JOIN idep.organizationalAnchoring dep WHERE LOWER(dep.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.area ar WHERE LOWER(ar.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT ityp.id FROM %s ityp JOIN ityp.types ty WHERE LOWER(ty.name) LIKE :q)', Project::class),
             ];
 
             // Enum columns store slugs, but the user searches their translated
-            // labels ("nik" should find "Teknik og Miljø"); map labels to values.
+            // labels ("bevilliget" should find granted); map labels to values.
             $enumFields = [
                 'status' => Status::cases(),
-                'projectType' => ProjectType::cases(),
                 'endorsementAuthor' => EndorsementAuthor::cases(),
             ];
             foreach ($enumFields as $field => $cases) {
@@ -92,8 +90,9 @@ class ProjectRepository extends ServiceEntityRepository
             $qb->andWhere('i.area = :area')->setParameter('area', $filter->area->getId(), 'ulid');
         }
 
-        if (null !== $filter->projectType) {
-            $qb->andWhere('i.projectType = :projectType')->setParameter('projectType', $filter->projectType->value);
+        if (null !== $filter->type) {
+            $qb->andWhere(':type MEMBER OF i.types')
+                ->setParameter('type', $filter->type->getId(), 'ulid');
         }
 
         if (!$filter->organizationalAnchoring->isEmpty()) {
@@ -154,7 +153,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['organizationalAnchoring', 'strategies', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['types', 'organizationalAnchoring', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')

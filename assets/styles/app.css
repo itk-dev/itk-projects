@@ -1193,7 +1193,8 @@ textarea {
     margin-bottom: 0;
 }
 
-.confirm {
+.confirm,
+.dialog {
     width: min(520px, calc(100vw - var(--itk-space-6)));
     margin: auto;
     padding: 0;
@@ -1204,20 +1205,24 @@ textarea {
     box-shadow: var(--itk-shadow-3);
 }
 
-.confirm::backdrop {
+.confirm::backdrop,
+.dialog::backdrop {
     background-color: rgba(17, 19, 24, 0.55);
 }
 
-.confirm__body {
+.confirm__body,
+.dialog__body {
     padding: var(--itk-space-5);
     font-size: var(--itk-text-sm);
 }
 
-.confirm__body p {
+.confirm__body p,
+.dialog__body p {
     margin: 0;
 }
 
-.confirm__title {
+.confirm__title,
+.dialog__title {
     margin: 0 0 var(--itk-space-3);
     font-size: var(--itk-text-md);
 }
@@ -1242,7 +1247,8 @@ textarea {
     margin-top: var(--itk-space-1);
 }
 
-.confirm__actions {
+.confirm__actions,
+.dialog__actions {
     display: flex;
     gap: var(--itk-space-3);
     justify-content: flex-end;
@@ -2177,4 +2183,64 @@ textarea {
 .ts-dropdown .no-results {
     padding: var(--itk-space-2) var(--itk-space-3);
     color: var(--itk-slate-500);
+}
+
+/* ---- Project definition ------------------------------------------------ */
+
+.definition {
+    font-size: var(--itk-text-sm);
+    color: var(--itk-ink-soft);
+}
+
+.definition p {
+    margin: 0;
+}
+
+.definition__criteria,
+.definition__examples {
+    margin: var(--itk-space-2) 0 0;
+    padding-left: var(--itk-space-5);
+}
+
+.definition__criteria li + li,
+.definition__examples li + li {
+    margin-top: var(--itk-space-1);
+}
+
+.definition .definition__examples-title {
+    margin-top: var(--itk-space-4);
+    font-weight: 600;
+}
+
+.definition-callout {
+    margin-bottom: var(--itk-space-5);
+    padding: var(--itk-space-4) var(--itk-space-5);
+    background-color: var(--itk-surface);
+    border: 1px solid var(--itk-slate-200);
+    border-left: 4px solid var(--itk-primary);
+    border-radius: var(--itk-radius-3);
+    box-shadow: var(--itk-shadow-1);
+}
+
+.definition-callout__summary {
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.definition-callout[open] .definition-callout__summary {
+    margin-bottom: var(--itk-space-3);
+}
+
+.link-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--itk-primary);
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.link-button:hover {
+    color: var(--itk-primary-hover);
 }

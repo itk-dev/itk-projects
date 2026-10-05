@@ -6,7 +6,7 @@ namespace App\Model;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\ProjectType;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -23,7 +23,7 @@ class ProjectFilter
 
     public ?Area $area = null;
 
-    public ?ProjectType $projectType = null;
+    public ?ProjectType $type = null;
 
     /**
      * Several departments may be chosen; a project matches when it is anchored

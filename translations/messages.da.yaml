@@ -58,6 +58,7 @@ tour:
         intro: "Det her er Projektdatabasen — her samler vi afdelingernes projekter ét sted, så vi kan se, hvad der sker på tværs."
         dashboard: "På overblikket ser du nøgletal, status og eventuelle muligheder for samarbejds på tværs af afdelinger."
         create: "Se alle projekter via menupunktet Projekter — eller opret et nyt med det samme via Opret-knappen."
+        definition: "Er du i tvivl om, hvad der tæller som et projekt? Hos ITK har et projekt en slutning, en projektøkonomi og en governance — og vi får penge for at lave det. Du finder hele definitionen under Projekter."
         admin: "Inde i menuen her finder du menupunktet Administration, hvor du kan oprette, se og redigere afdelinger, områder, samarbejdspartnere og kontaktpersoner."
         outro: "Så er du klar! Jeg er altid lige her i hjørnet, hvis du får brug for et tip. 🌟"
 
@@ -86,6 +87,7 @@ nav:
     partners: Samarbejdspartnere
     departments: Afdelinger
     areas: Områder
+    project_types: Projekttyper
     users: Brugere
     admin: Administration
     preferences: Indstillinger
@@ -113,6 +115,7 @@ action:
     remove: Fjern
     confirm_delete_title: "Slet “%name%”?"
     irreversible: Denne handling kan ikke fortrydes.
+    close: Luk
 
 common:
     yes: Ja
@@ -169,12 +172,11 @@ project:
     area: Område
     area_help: Det tematiske område projektet hører under.
     summary: Opsummering
-    summary_help: Kort opsummering af formål og indhold.
+    summary_help: Kort opsummering af formål, indhold, strategi og planer.
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
-    strategies: Strategier og planer
-    project_type: Projektets karakter
-    project_type_help: Projektets karakter, fx projekt eller drift.
+    types: Type
+    types_help: Fx projekt eller drift.
     status: Status
     status_help: Hvor langt projektet er.
     status_additional: Status – supplerende tekst
@@ -217,6 +219,20 @@ project:
     empty:
         title: Ingen projekter fundet
         hint: Prøv at justere dine filtre, eller opret et nyt projekt.
+    definition:
+        title: Hvad er et projekt?
+        link: Hvad tæller som et projekt?
+        intro: "Hos ITK er et projekt kendetegnet ved, at:"
+        criteria:
+            end: det har en slutning
+            economy: det har en projektøkonomi
+            governance: det har en governance
+            paid: vi får penge for at lave det
+        examples_title: Eksempler på projekter
+        examples:
+            first: Eksempel x
+            second: Eksempel y
+            third: Eksempel z
     section:
         basics: Grundoplysninger
         classification: Klassificering
@@ -304,6 +320,21 @@ area:
         title: Ingen områder endnu
         hint: Opret et område, så det kan vælges på projekter.
 
+project_type:
+    name: Navn
+    name_help: Typens navn, som det vises på projekter.
+    name_duplicate: Der findes allerede en projekttype med dette navn.
+    index:
+        title: Projekttyper
+        subtitle: Projektets type, fx projekt eller drift, der kan vælges på projekter.
+    new:
+        title: Ny projekttype
+    edit:
+        title: Rediger projekttype
+    empty:
+        title: Ingen projekttyper endnu
+        hint: Opret en projekttype, så den kan vælges på projekter.
+
 user:
     email: E-mail
     email_help: Bruges som login og til notifikationer.
@@ -355,6 +386,10 @@ flash:
         created: Området blev oprettet.
         updated: Området blev opdateret.
         deleted: Området blev slettet.
+    project_type:
+        created: Projekttypen blev oprettet.
+        updated: Projekttypen blev opdateret.
+        deleted: Projekttypen blev slettet.
     user:
         created: Brugeren blev oprettet.
         updated: Brugeren blev opdateret.
@@ -371,12 +406,6 @@ enum:
         on_hold: Sat i bero
         rejected: Afvist
         completed: Afsluttet
-    project_type:
-        project: Projekt
-        programme: Program
-        policy: Politik
-        pilot: Pilot
-        operation: Drift
     endorsement_author:
         city_council: Byrådet
         magistrate: Magistraten
@@ -390,4 +419,3 @@ enum:
         external_partner: Ekstern partner
     vocabulary:
         tag: Tag
-        strategy: Strategi

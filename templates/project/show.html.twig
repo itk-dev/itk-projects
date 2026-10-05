@@ -97,8 +97,8 @@
                         <dt>{{ 'project.area'|trans }}</dt>
                         <dd>{{ project.area ? project.area.name : '—' }}</dd>
 
-                        <dt>{{ 'project.project_type'|trans }}</dt>
-                        <dd>{{ project.projectType ? project.projectType.labelKey|trans : '—' }}</dd>
+                        <dt>{{ 'project.types'|trans }}</dt>
+                        <dd>{{ h.term_list(project.types) }}</dd>
 
                         <dt>{{ 'project.organizational_anchoring'|trans }}</dt>
                         <dd>{{ h.term_list(project.organizationalAnchoring) }}</dd>
@@ -122,9 +122,6 @@
                                 {{ project.timePeriodStart|date('d.m.Y') }}{% if project.timePeriodEnd %} – {{ project.timePeriodEnd|date('d.m.Y') }}{% endif %}
                             {% else %}—{% endif %}
                         </dd>
-
-                        <dt>{{ 'project.strategies'|trans }}</dt>
-                        <dd>{{ h.term_list(project.strategies) }}</dd>
 
                         <dt>{{ 'project.tags'|trans }}</dt>
                         <dd>{{ h.term_list(project.tags) }}</dd>

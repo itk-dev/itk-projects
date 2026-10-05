@@ -6,7 +6,7 @@ namespace App\Form;
 
 use App\Entity\Area;
 use App\Entity\Department;
-use App\Enum\ProjectType as ProjectTypeEnum;
+use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -48,12 +48,12 @@ class ProjectFilterType extends AbstractType
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
-            ->add('projectType', EnumType::class, [
-                'label' => 'project.project_type',
-                'class' => ProjectTypeEnum::class,
+            ->add('type', EntityType::class, [
+                'label' => 'project.types',
+                'class' => ProjectType::class,
+                'choice_label' => 'name',
                 'required' => false,
                 'placeholder' => 'filter.all',
-                'choice_label' => static fn (ProjectTypeEnum $value): string => $value->labelKey(),
             ])
             ->add('organizationalAnchoring', EntityType::class, [
                 'label' => 'project.organizational_anchoring',

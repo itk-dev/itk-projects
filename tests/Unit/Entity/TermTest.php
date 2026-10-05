@@ -24,11 +24,11 @@ final class TermTest extends TestCase
 
     public function testAccessors(): void
     {
-        $term = (new Term(Vocabulary::Strategy))->setName('Klimaplan 2030');
+        $term = (new Term(Vocabulary::Tag))->setName('Klima');
 
-        self::assertSame('Klimaplan 2030', $term->getName());
-        self::assertSame(Vocabulary::Strategy, $term->getVocabulary());
-        self::assertSame('Klimaplan 2030', (string) $term);
+        self::assertSame('Klima', $term->getName());
+        self::assertSame(Vocabulary::Tag, $term->getVocabulary());
+        self::assertSame('Klima', (string) $term);
 
         $term->setVocabulary(Vocabulary::Tag);
         self::assertSame(Vocabulary::Tag, $term->getVocabulary());

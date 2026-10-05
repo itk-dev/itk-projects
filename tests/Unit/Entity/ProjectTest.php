@@ -9,10 +9,10 @@ use App\Entity\Contact;
 use App\Entity\Department;
 use App\Entity\Partner;
 use App\Entity\Project;
+use App\Entity\ProjectType;
 use App\Entity\Term;
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +28,7 @@ final class ProjectTest extends TestCase
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
         self::assertCount(0, $project->getOrganizationalAnchoring());
-        self::assertCount(0, $project->getStrategies());
+        self::assertCount(0, $project->getTypes());
         self::assertCount(0, $project->getTags());
         self::assertCount(0, $project->getContacts());
         self::assertCount(0, $project->getPartners());
@@ -49,7 +49,6 @@ final class ProjectTest extends TestCase
             ->setArea($area)
             ->setSummary('Opsummering')
             ->setDescription('Beskrivelse')
-            ->setProjectType(ProjectType::Project)
             ->setStatus(Status::Granted)
             ->setStatusAdditional('Igangsat')
             ->setEndorsement(false)
@@ -63,7 +62,6 @@ final class ProjectTest extends TestCase
         self::assertSame($area, $project->getArea());
         self::assertSame('Opsummering', $project->getSummary());
         self::assertSame('Beskrivelse', $project->getDescription());
-        self::assertSame(ProjectType::Project, $project->getProjectType());
         self::assertSame(Status::Granted, $project->getStatus());
         self::assertSame('Igangsat', $project->getStatusAdditional());
         self::assertFalse($project->isEndorsement());
@@ -83,7 +81,7 @@ final class ProjectTest extends TestCase
             ->setArea((new Area())->setName('Klima og miljø'))
             ->setSummary('S')
             ->setDescription('D')
-            ->setProjectType(ProjectType::Project)
+            ->addType((new ProjectType())->setName('Projekt'))
             ->setStatus(Status::Granted)
             ->addOrganizationalAnchoring((new Department())->setName('Teknik og Miljø'))
             ->setBudget(1000)
@@ -157,22 +155,25 @@ final class ProjectTest extends TestCase
         self::assertCount(0, $project->getOrganizationalAnchoring());
     }
 
-    public function testStrategyCollection(): void
+    public function testTypeCollection(): void
     {
         $project = new Project();
-        $term = new Term(Vocabulary::Strategy);
+        $type = (new ProjectType())->setName('Pilot');
 
-        $project->addStrategy($term);
-        $project->addStrategy($term);
-        self::assertCount(1, $project->getStrategies());
+        $project->addType($type);
+        $project->addType($type);
+        self::assertCount(1, $project->getTypes());
 
-        $project->removeStrategy($term);
-        self::assertCount(0, $project->getStrategies());
+        $project->removeType($type);
+        self::assertCount(0, $project->getTypes());
 
-        $project->setStrategies([new Term(Vocabulary::Strategy), new Term(Vocabulary::Strategy)]);
-        self::assertCount(2, $project->getStrategies());
-        $project->setStrategies([]);
-        self::assertCount(0, $project->getStrategies());
+        $project->setTypes([
+            (new ProjectType())->setName('Projekt'),
+            (new ProjectType())->setName('Drift'),
+        ]);
+        self::assertCount(2, $project->getTypes());
+        $project->setTypes([]);
+        self::assertCount(0, $project->getTypes());
     }
 
     public function testTagCollection(): void

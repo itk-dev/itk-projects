@@ -103,8 +103,8 @@ function initCreatableSelect(selector, poolKey, transform) {
     });
 }
 
-// Free-tagging term fields (strategies, tags) capitalise new
-// entries; partners keep the typed name as-is.
+// Free-tagging term fields (tags) capitalise new entries; partners keep
+// the typed name as-is.
 function initTermSelect() {
     initCreatableSelect("[data-term-select]", "termPool", capitalize);
 }
@@ -180,35 +180,38 @@ function initPartnerSelect() {
     );
 }
 
-// Departments are a fixed, admin-managed pool, so a <select multiple> — the
-// project form's anchoring field and the project list's department filter —
-// becomes a searchable chip multiselect without `create`. Tom Select reads the
-// options and the selection from the select itself and fires input/change on
-// it, which is what autosave, the progress bar and the live filter listen for.
-function initDepartmentSelect() {
-    document.querySelectorAll("[data-department-select]").forEach((select) => {
-        if (select.dataset.bound) {
-            return;
-        }
-        select.dataset.bound = "1";
+// Departments and project types are fixed, admin-managed pools, so a
+// <select multiple> — the project form's anchoring and type fields and the
+// project list's department filter — becomes a searchable chip multiselect
+// without `create`. Tom Select reads the options and the selection from the
+// select itself and fires input/change on it, which is what autosave, the
+// progress bar and the live filter listen for.
+function initPoolSelect() {
+    document
+        .querySelectorAll("[data-department-select], [data-type-select]")
+        .forEach((select) => {
+            if (select.dataset.bound) {
+                return;
+            }
+            select.dataset.bound = "1";
 
-        new TomSelect(select, {
-            plugins: ["remove_button"],
-            hideSelected: true,
-            // Tom Select keeps a multiselect's placeholder ("All", "Choose …")
-            // visible next to the chips; drop it once something is picked.
-            hidePlaceholder: true,
-            maxOptions: null,
-            render: {
-                // The name gets its own element so a long one can be cut with
-                // an ellipsis (see .item__label) while the × stays visible.
-                item: (data, escape) => {
-                    const name = escape(data.text);
-                    return `<div title="${name}"><span class="item__label">${name}</span></div>`;
+            new TomSelect(select, {
+                plugins: ["remove_button"],
+                hideSelected: true,
+                // Tom Select keeps a multiselect's placeholder ("All", "Choose …")
+                // visible next to the chips; drop it once something is picked.
+                hidePlaceholder: true,
+                maxOptions: null,
+                render: {
+                    // The name gets its own element so a long one can be cut with
+                    // an ellipsis (see .item__label) while the × stays visible.
+                    item: (data, escape) => {
+                        const name = escape(data.text);
+                        return `<div title="${name}"><span class="item__label">${name}</span></div>`;
+                    },
                 },
-            },
+            });
         });
-    });
 }
 
 // Turbo restores a visited page from its cached snapshot without running any
@@ -216,20 +219,22 @@ function initDepartmentSelect() {
 // markup. Put the plain <select> back — destroy() resets it to the selection it
 // was built with, so the current one is reapplied — and drop the bound marker
 // so turbo:load rebuilds the widget on restore.
-function teardownDepartmentSelect() {
-    document.querySelectorAll("[data-department-select]").forEach((select) => {
-        const tomSelect = select.tomselect;
-        if (!tomSelect) {
-            return;
-        }
-        const selected = tomSelect.items.slice();
-        tomSelect.destroy();
-        for (const option of select.options) {
-            option.selected = selected.includes(option.value);
-            option.toggleAttribute("selected", option.selected);
-        }
-        delete select.dataset.bound;
-    });
+function teardownPoolSelect() {
+    document
+        .querySelectorAll("[data-department-select], [data-type-select]")
+        .forEach((select) => {
+            const tomSelect = select.tomselect;
+            if (!tomSelect) {
+                return;
+            }
+            const selected = tomSelect.items.slice();
+            tomSelect.destroy();
+            for (const option of select.options) {
+                option.selected = selected.includes(option.value);
+                option.toggleAttribute("selected", option.selected);
+            }
+            delete select.dataset.bound;
+        });
 }
 
 // One delegated handler on the document (which survives Turbo navigations and
@@ -258,7 +263,7 @@ document.addEventListener("turbo:load", () => {
     initCollections();
     initContactSelect();
     initPartnerSelect();
-    initDepartmentSelect();
+    initPoolSelect();
     initTermSelect();
 });
 
@@ -268,5 +273,5 @@ document.addEventListener("turbo:before-cache", () => {
     document.querySelectorAll("dialog[open]").forEach((dialog) => {
         dialog.close();
     });
-    teardownDepartmentSelect();
+    teardownPoolSelect();
 });

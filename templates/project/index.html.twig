@@ -3,11 +3,25 @@
 {% block title %}{{ 'project.index.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="page" data-controller="live-search" data-live-search-export-url-value="{{ path('app_project_export') }}">
-        <twig:Page:Header :title="'project.index.title'|trans" :subtitle="'project.index.subtitle'|trans">
+    <div class="page" data-controller="live-search dialog" data-live-search-export-url-value="{{ path('app_project_export') }}">
+        <twig:Page:Header :title="'project.index.title'|trans">
+            <twig:block name="subtitle">
+                {{ 'project.index.subtitle'|trans }}
+                <button type="button" class="link-button" data-action="dialog#open">{{ 'project.definition.link'|trans }}</button>
+            </twig:block>
             <button type="button" class="btn btn--ghost" data-action="live-search#exportCsv">{{ 'action.export'|trans }}</button>
             <a href="{{ path('app_project_new') }}" class="btn btn--primary">{{ 'action.new'|trans }}</a>
         </twig:Page:Header>
+
+        <dialog class="dialog" aria-labelledby="project-definition-title" data-dialog-target="dialog" data-action="click->dialog#backdrop">
+            <div class="dialog__body">
+                <h2 class="dialog__title" id="project-definition-title">{{ 'project.definition.title'|trans }}</h2>
+                <twig:ProjectDefinition />
+            </div>
+            <div class="dialog__actions">
+                <button type="button" class="btn btn--ghost" data-action="dialog#close">{{ 'action.close'|trans }}</button>
+            </div>
+        </dialog>
 
         {{ form_start(form, {attr: {
             class: 'filters',
@@ -24,7 +38,7 @@
             <div class="filters__grid">
                 {{ form_row(form.status) }}
                 {{ form_row(form.area) }}
-                {{ form_row(form.projectType) }}
+                {{ form_row(form.type) }}
                 {{ form_row(form.organizationalAnchoring) }}
                 {{ form_row(form.endorsement) }}
             </div>

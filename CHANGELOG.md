@@ -10,6 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-44](https://github.com/itk-dev/itk-projects/pull/44)
   Let the project list be filtered by several departments at once, picked with
   the same searchable multiselect as the project form.
+* [PR-45](https://github.com/itk-dev/itk-projects/pull/45)
+  Remove the "Strategies and plans" field. Update Summary help text to now ask
+  for strategy and plans.
+* [PR-42](https://github.com/itk-dev/itk-projects/pull/42)
+  Describe what ITK counts as a project: a callout on the create page, a
+  "What counts as a project?" dialog on the project list, and a tour step.
+* [PR-41](https://github.com/itk-dev/itk-projects/pull/41)
+  Let a project have several types, picked from an admin-managed pool
+  instead of a fixed list.
 * [PR-33](https://github.com/itk-dev/itk-projects/pull/33)
   Let a project be anchored in several departments, picked with a searchable
   multiselect.

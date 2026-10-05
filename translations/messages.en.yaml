@@ -58,6 +58,7 @@ tour:
         intro: "This is the Project database — where we gather the departments' projects in one place, so we can see what's happening across them."
         dashboard: "The overview shows key figures, status and any opportunities for collaboration across departments."
         create: "Browse every project from the Projects menu — or create a new one right away with the Opret button."
+        definition: "Not sure what counts as a project? At ITK a project has an end, a project budget and governance — and we get paid to do it. You'll find the full definition under Projects."
         admin: "Inside this menu you'll find Administration, where you can create, view and edit departments, areas, partners and contacts."
         outro: "You're all set! I'm always right here in the corner if you need a tip. 🌟"
 
@@ -86,6 +87,7 @@ nav:
     partners: Partners
     departments: Departments
     areas: Areas
+    project_types: Project types
     users: Users
     admin: Administration
     preferences: Preferences
@@ -113,6 +115,7 @@ action:
     remove: Remove
     confirm_delete_title: "Delete “%name%”?"
     irreversible: This action cannot be undone.
+    close: Close
 
 common:
     yes: Yes
@@ -169,12 +172,11 @@ project:
     area: Area
     area_help: The thematic area the project belongs to.
     summary: Summary
-    summary_help: A brief summary of the purpose and content.
+    summary_help: A brief summary of the purpose, content, strategy and plans.
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
-    strategies: Strategies and plans
-    project_type: Type of project
-    project_type_help: The nature of the project, e.g. project or operation.
+    types: Type
+    types_help: E.g. project or operation.
     status: Status
     status_help: How far along the project is.
     status_additional: Status – additional text
@@ -217,6 +219,20 @@ project:
     empty:
         title: No projects found
         hint: Try adjusting your filters, or create a new project.
+    definition:
+        title: What is a project?
+        link: What counts as a project?
+        intro: "At ITK, a project is defined by the following:"
+        criteria:
+            end: it has an end
+            economy: it has a project budget
+            governance: it has governance
+            paid: we get paid to do it
+        examples_title: Examples of projects
+        examples:
+            first: Example x
+            second: Example y
+            third: Example z
     section:
         basics: Basics
         classification: Classification
@@ -304,6 +320,21 @@ area:
         title: No areas yet
         hint: Create an area so it can be chosen on projects.
 
+project_type:
+    name: Name
+    name_help: The type name as shown on projects.
+    name_duplicate: A project type with this name already exists.
+    index:
+        title: Project types
+        subtitle: The type of a project, e.g. project or operation, that can be chosen on projects.
+    new:
+        title: New project type
+    edit:
+        title: Edit project type
+    empty:
+        title: No project types yet
+        hint: Create a project type so it can be chosen on projects.
+
 user:
     email: Email
     email_help: Used to sign in and for notifications.
@@ -355,6 +386,10 @@ flash:
         created: The area was created.
         updated: The area was updated.
         deleted: The area was deleted.
+    project_type:
+        created: The project type was created.
+        updated: The project type was updated.
+        deleted: The project type was deleted.
     user:
         created: The user was created.
         updated: The user was updated.
@@ -371,12 +406,6 @@ enum:
         on_hold: On hold
         rejected: Rejected
         completed: Completed
-    project_type:
-        project: Project
-        programme: Programme
-        policy: Policy
-        pilot: Pilot
-        operation: Operation
     endorsement_author:
         city_council: City Council
         magistrate: The Magistrate
@@ -390,4 +419,3 @@ enum:
         external_partner: External partner
     vocabulary:
         tag: Tag
-        strategy: Strategy

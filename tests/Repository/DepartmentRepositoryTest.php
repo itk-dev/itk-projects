@@ -20,6 +20,6 @@ final class DepartmentRepositoryTest extends KernelTestCase
         // Ordering is delegated to the database collation, so we only assert the
         // method returns the persisted departments.
         self::assertNotEmpty($departments);
-        self::assertNotNull($departments[0]->getId());
+        self::assertNotNull($departments[0]->getName());
     }
 }
