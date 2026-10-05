@@ -34,6 +34,7 @@ final class ProjectTest extends TestCase
         self::assertNull($project->getRemainingFunding());
         self::assertSame([], $project->getFunding());
         self::assertSame([], $project->getLinks());
+        self::assertCount(0, $project->getAreas());
         self::assertCount(0, $project->getOrganizationalAnchoring());
         self::assertCount(0, $project->getTypes());
         self::assertCount(0, $project->getTags());
@@ -48,12 +49,10 @@ final class ProjectTest extends TestCase
     {
         $start = new \DateTimeImmutable('2025-01-01');
         $end = new \DateTimeImmutable('2025-12-31');
-        $area = (new Area())->setName('Klima og miljø');
 
         $project = (new Project())
             ->setTitle('Grøn omstilling')
             ->setTopic('Digital Europe Blueprint for Data Space')
-            ->setArea($area)
             ->setSummary('Opsummering')
             ->setDescription('Beskrivelse')
             ->setStatus(Status::Granted)
@@ -71,7 +70,6 @@ final class ProjectTest extends TestCase
 
         self::assertSame('Grøn omstilling', $project->getTitle());
         self::assertSame('Digital Europe Blueprint for Data Space', $project->getTopic());
-        self::assertSame($area, $project->getArea());
         self::assertSame('Opsummering', $project->getSummary());
         self::assertSame('Beskrivelse', $project->getDescription());
         self::assertSame(Status::Granted, $project->getStatus());
@@ -95,7 +93,7 @@ final class ProjectTest extends TestCase
 
         $full = (new Project())
             ->setTitle('T')
-            ->setArea((new Area())->setName('Klima og miljø'))
+            ->addArea((new Area())->setName('Klima og miljø'))
             ->setSummary('S')
             ->setDescription('D')
             ->addType((new ProjectType())->setName('Projekt'))
@@ -178,6 +176,27 @@ final class ProjectTest extends TestCase
         self::assertCount(2, $project->getOrganizationalAnchoring());
         $project->setOrganizationalAnchoring([]);
         self::assertCount(0, $project->getOrganizationalAnchoring());
+    }
+
+    public function testAreaCollection(): void
+    {
+        $project = new Project();
+        $area = (new Area())->setName('Klima og miljø');
+
+        $project->addArea($area);
+        $project->addArea($area);
+        self::assertCount(1, $project->getAreas());
+
+        $project->removeArea($area);
+        self::assertCount(0, $project->getAreas());
+
+        $project->setAreas([
+            (new Area())->setName('Mobilitet'),
+            (new Area())->setName('Velfærd'),
+        ]);
+        self::assertCount(2, $project->getAreas());
+        $project->setAreas([]);
+        self::assertCount(0, $project->getAreas());
     }
 
     public function testTypeCollection(): void

@@ -56,7 +56,7 @@ class ProjectRepository extends ServiceEntityRepository
                 // Department, area and type are related entities searched by
                 // their stored name ("nik" should find "Teknik og Miljø").
                 sprintf('i.id IN (SELECT idep.id FROM %s idep JOIN idep.organizationalAnchoring dep WHERE LOWER(dep.name) LIKE :q)', Project::class),
-                sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.area ar WHERE LOWER(ar.name) LIKE :q)', Project::class),
+                sprintf('i.id IN (SELECT iare.id FROM %s iare JOIN iare.areas ar WHERE LOWER(ar.name) LIKE :q)', Project::class),
                 sprintf('i.id IN (SELECT ityp.id FROM %s ityp JOIN ityp.types ty WHERE LOWER(ty.name) LIKE :q)', Project::class),
             ];
 
@@ -90,7 +90,7 @@ class ProjectRepository extends ServiceEntityRepository
         }
 
         if (null !== $filter->area) {
-            $qb->andWhere('i.area = :area')->setParameter('area', $filter->area->getId(), 'ulid');
+            $qb->andWhere(':area MEMBER OF i.areas')->setParameter('area', $filter->area->getId(), 'ulid');
         }
 
         if (null !== $filter->type) {
@@ -156,7 +156,7 @@ class ProjectRepository extends ServiceEntityRepository
             return [];
         }
 
-        foreach (['types', 'organizationalAnchoring', 'tags', 'contacts', 'partners'] as $association) {
+        foreach (['areas', 'types', 'organizationalAnchoring', 'tags', 'contacts', 'partners'] as $association) {
             $this->createQueryBuilder('i')
                 ->addSelect('rel')
                 ->leftJoin('i.'.$association, 'rel')
@@ -272,45 +272,55 @@ class ProjectRepository extends ServiceEntityRepository
     /**
      * Lightweight per-project rows for the dashboard numbers: just the
      * columns the aggregates need, so it stays cheap to recompute on every live
-     * broadcast. `organizationalAnchoring` is the list of department ids (as
-     * strings); the other keys are plain columns.
+     * broadcast. `areas` and `organizationalAnchoring` are lists of area and
+     * department ids (as strings); the other keys are plain columns.
      *
      * @return list<array<string, mixed>>
      */
     public function dashboardRows(): array
     {
-        // Join and select the related ids (rather than IDENTITY()) so Doctrine
-        // applies the ULID type: IDENTITY() returns the raw binary FK, which would
-        // not match the canonical ULID strings the rest of build() keys on.
         $rows = $this->createQueryBuilder('i')
-            ->select(
-                'i.id',
-                'ar.id AS area',
-                'i.status',
-                'i.budget',
-            )
-            ->leftJoin('i.area', 'ar')
+            ->select('i.id', 'i.status', 'i.budget')
             ->getQuery()
             ->getArrayResult();
 
-        // Departments are many-to-many, so they are fetched separately and folded
-        // in: joining them above would repeat every project once per department.
-        $departmentsByProject = [];
-        $pairs = $this->createQueryBuilder('i')
-            ->select('i.id AS project', 'd.id AS department')
-            ->join('i.organizationalAnchoring', 'd')
-            ->getQuery()
-            ->getArrayResult();
-
-        foreach ($pairs as $pair) {
-            $departmentsByProject[(string) $pair['project']][] = (string) $pair['department'];
-        }
+        // Areas and departments are many-to-many, so each is fetched separately
+        // and folded in: joining them above would repeat every project once per
+        // area times department.
+        $areasByProject = $this->relatedIdsByProject('areas');
+        $departmentsByProject = $this->relatedIdsByProject('organizationalAnchoring');
 
         foreach ($rows as &$row) {
-            $row['organizationalAnchoring'] = $departmentsByProject[(string) $row['id']] ?? [];
+            $id = (string) $row['id'];
+            $row['areas'] = $areasByProject[$id] ?? [];
+            $row['organizationalAnchoring'] = $departmentsByProject[$id] ?? [];
             unset($row['id']);
         }
 
         return $rows;
+    }
+
+    /**
+     * The ids of a to-many association, as strings, keyed by project id.
+     *
+     * @return array<string, list<string>>
+     */
+    private function relatedIdsByProject(string $association): array
+    {
+        // Join and select the related id (rather than IDENTITY()) so Doctrine
+        // applies the ULID type: IDENTITY() returns the raw binary FK, which would
+        // not match the canonical ULID strings DashboardData keys on.
+        $pairs = $this->createQueryBuilder('i')
+            ->select('i.id AS project', 'rel.id AS related')
+            ->join('i.'.$association, 'rel')
+            ->getQuery()
+            ->getArrayResult();
+
+        $byProject = [];
+        foreach ($pairs as $pair) {
+            $byProject[(string) $pair['project']][] = (string) $pair['related'];
+        }
+
+        return $byProject;
     }
 }

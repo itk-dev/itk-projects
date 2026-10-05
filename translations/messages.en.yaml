@@ -170,7 +170,7 @@ project:
     topic: Topic
     topic_help: The wider programme this project is part of.
     area: Area
-    area_help: The thematic area the project belongs to.
+    area_help: Pick one or more thematic areas.
     summary: Summary
     summary_help: A brief summary of the purpose, content, strategy and plans.
     description: Description
@@ -182,7 +182,7 @@ project:
     status_additional: Status – additional text
     status_additional_help: Add detail to the status if needed.
     organizational_anchoring: Department
-    organizational_anchoring_help: The departments the project is anchored in. Pick several for a cross-cutting project.
+    organizational_anchoring_help: Pick one or more departments.
     endorsement: Has the project been endorsed
     endorsement_author: Where it was endorsed
     endorsement_author_help: Where the project was endorsed.

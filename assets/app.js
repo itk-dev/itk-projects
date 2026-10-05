@@ -180,15 +180,17 @@ function initPartnerSelect() {
     );
 }
 
-// Departments and project types are fixed, admin-managed pools, so a
-// <select multiple> — the project form's anchoring and type fields and the
-// project list's department filter — becomes a searchable chip multiselect
+// Departments, areas and project types are fixed, admin-managed pools, so a
+// <select multiple> — the project form's area, anchoring and type fields and
+// the project list's department filter — becomes a searchable chip multiselect
 // without `create`. Tom Select reads the options and the selection from the
 // select itself and fires input/change on it, which is what autosave, the
 // progress bar and the live filter listen for.
 function initPoolSelect() {
     document
-        .querySelectorAll("[data-department-select], [data-type-select]")
+        .querySelectorAll(
+            "[data-department-select], [data-area-select], [data-type-select]",
+        )
         .forEach((select) => {
             if (select.dataset.bound) {
                 return;
@@ -221,7 +223,9 @@ function initPoolSelect() {
 // so turbo:load rebuilds the widget on restore.
 function teardownPoolSelect() {
     document
-        .querySelectorAll("[data-department-select], [data-type-select]")
+        .querySelectorAll(
+            "[data-department-select], [data-area-select], [data-type-select]",
+        )
         .forEach((select) => {
             const tomSelect = select.tomselect;
             if (!tomSelect) {

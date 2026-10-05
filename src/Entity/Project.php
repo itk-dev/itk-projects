@@ -22,15 +22,16 @@ class Project extends AbstractEntity
      * Fields that count toward {@see getCompletionPercentage()} and the client-side
      * progress bar. Limited to the project's own columns so list rendering stays
      * query-free; the booleans and the free-tagging lists are intentionally excluded.
-     * Types and departments are the two collections counted: both are fixed,
-     * admin-managed pools, and what a project is and where it is anchored are
-     * core to describing it. Of the economy fields, co-financing is a boolean
-     * and the remaining-funding text is explicitly optional, so neither counts.
+     * Areas, types and departments are the three collections counted: all are
+     * fixed, admin-managed pools, and what a project is about, what kind of thing
+     * it is and where it is anchored are core to describing it. Of the economy
+     * fields, co-financing is a boolean and the remaining-funding text is
+     * explicitly optional, so neither counts.
      *
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'area', 'summary', 'description', 'types', 'status',
+        'title', 'areas', 'summary', 'description', 'types', 'status',
         'organizationalAnchoring',
         'amountApplied', 'budget', 'budgetItk', 'fundingRate', 'funding',
         'timePeriodStart', 'timePeriodEnd',
@@ -48,9 +49,15 @@ class Project extends AbstractEntity
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $topic = null;
 
-    #[ORM\ManyToOne(targetEntity: Area::class)]
-    #[ORM\JoinColumn(onDelete: 'SET NULL')]
-    private ?Area $area = null;
+    /**
+     * The thematic areas a project belongs to. Like departments, an admin-managed
+     * pool a project can sit in several of.
+     *
+     * @var Collection<int, Area>
+     */
+    #[ORM\ManyToMany(targetEntity: Area::class)]
+    #[ORM\JoinTable(name: 'project_area')]
+    private Collection $areas;
 
     /** A few lines summing up the project's purpose, content, strategy and plans. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -163,6 +170,7 @@ class Project extends AbstractEntity
     public function __construct()
     {
         parent::__construct();
+        $this->areas = new ArrayCollection();
         $this->organizationalAnchoring = new ArrayCollection();
         $this->types = new ArrayCollection();
         $this->contacts = new ArrayCollection();
@@ -194,14 +202,35 @@ class Project extends AbstractEntity
         return $this;
     }
 
-    public function getArea(): ?Area
+    /** @return Collection<int, Area> */
+    public function getAreas(): Collection
     {
-        return $this->area;
+        return $this->areas;
     }
 
-    public function setArea(?Area $area): static
+    public function addArea(Area $area): static
     {
-        $this->area = $area;
+        if (!$this->areas->contains($area)) {
+            $this->areas->add($area);
+        }
+
+        return $this;
+    }
+
+    public function removeArea(Area $area): static
+    {
+        $this->areas->removeElement($area);
+
+        return $this;
+    }
+
+    /** @param iterable<Area> $areas */
+    public function setAreas(iterable $areas): static
+    {
+        $this->areas->clear();
+        foreach ($areas as $area) {
+            $this->addArea($area);
+        }
 
         return $this;
     }
@@ -567,14 +596,14 @@ class Project extends AbstractEntity
 
     /**
      * Share of {@see COMPLETION_FIELDS} that are filled in, as a 0–100 percentage.
-     * Reads own columns plus the type and department collections (one lazy
+     * Reads own columns plus the area, type and department collections (one lazy
      * load each), so it is cheap enough to call per row in a listing.
      */
     public function getCompletionPercentage(): int
     {
         $checks = [
             null !== $this->title && '' !== $this->title,
-            null !== $this->area,
+            !$this->areas->isEmpty(),
             null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
             !$this->types->isEmpty(),
