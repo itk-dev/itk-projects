@@ -11,6 +11,7 @@
             <a href="{{ path('admin_partners') }}" class="admin-sidebar__link {{ route starts with 'admin_partner' ? 'is-active' }}">{{ 'nav.partners'|trans }}</a>
             <a href="{{ path('admin_departments') }}" class="admin-sidebar__link {{ route starts with 'admin_department' ? 'is-active' }}">{{ 'nav.departments'|trans }}</a>
             <a href="{{ path('admin_areas') }}" class="admin-sidebar__link {{ route starts with 'admin_area' ? 'is-active' }}">{{ 'nav.areas'|trans }}</a>
+            <a href="{{ path('admin_project_types') }}" class="admin-sidebar__link {{ route starts with 'admin_project_type' ? 'is-active' }}">{{ 'nav.project_types'|trans }}</a>
         </aside>
         <div>
             {% block admin_content %}{% endblock %}

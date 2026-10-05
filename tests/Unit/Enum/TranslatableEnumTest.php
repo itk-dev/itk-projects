@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Enum;
 
 use App\Enum\EndorsementAuthor;
 use App\Enum\Funding;
-use App\Enum\ProjectType;
 use App\Enum\Status;
 use App\Enum\TranslatableEnum;
 use App\Enum\Vocabulary;
@@ -18,7 +17,6 @@ final class TranslatableEnumTest extends TestCase
     {
         $this->assertLabelKeys(EndorsementAuthor::cases(), 'enum.endorsement_author.');
         $this->assertLabelKeys(Funding::cases(), 'enum.funding.');
-        $this->assertLabelKeys(ProjectType::cases(), 'enum.project_type.');
         $this->assertLabelKeys(Status::cases(), 'enum.status.');
         $this->assertLabelKeys(Vocabulary::cases(), 'enum.vocabulary.');
     }
