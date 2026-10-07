@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [PR-46](https://github.com/itk-dev/itk-projects/pull/46)
   * Remove the "Summary" field.
   * Ask "Er projektet godkendt" instead of "Er projektet vedtaget".
+  * Label the committee endorsement choice "Udvalg/Styregruppe".
 * [PR-40](https://github.com/itk-dev/itk-projects/pull/40)
   Let a project belong to several areas, picked with a searchable multiselect.
 * [PR-43](https://github.com/itk-dev/itk-projects/pull/43)

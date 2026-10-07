@@ -418,7 +418,7 @@ enum:
     endorsement_author:
         city_council: Byrådet
         magistrate: Magistraten
-        committee: Udvalg
+        committee: Udvalg/Styregruppe
         department: Afdeling
     funding:
         municipal_budget: Kommunalt budget
