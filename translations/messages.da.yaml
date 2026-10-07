@@ -181,7 +181,7 @@ project:
     status_additional_help: Uddyb status, hvis der er behov.
     organizational_anchoring: Afdeling
     organizational_anchoring_help: Vælg en eller flere afdelinger.
-    endorsement: Er projektet vedtaget
+    endorsement: Er projektet godkendt
     endorsement_author: Hvor er det vedtaget
     endorsement_author_help: Hvor projektet er vedtaget.
     amount_applied: Ansøgt beløb (kr.)
