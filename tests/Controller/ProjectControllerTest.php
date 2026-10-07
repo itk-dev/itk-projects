@@ -429,10 +429,11 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->loginAsAdmin();
         $title = 'Grouped budget project '.uniqid();
 
-        // Grouping turns the number inputs into text inputs with a numeric keypad hint.
+        // Grouping turns the number inputs into text inputs with a numeric keypad
+        // hint, and the number-format controller groups the digits as they are typed.
         $crawler = $this->client->request('GET', '/projects/new');
         foreach (['amountApplied', 'budget', 'budgetItk'] as $field) {
-            self::assertCount(1, $crawler->filter(sprintf('input[type="text"][inputmode="numeric"][name="project[%s]"]', $field)));
+            self::assertCount(1, $crawler->filter(sprintf('input[type="text"][inputmode="numeric"][data-controller="number-format"][name="project[%s]"]', $field)));
         }
 
         // Values typed with Danish separators are parsed to whole kroner.

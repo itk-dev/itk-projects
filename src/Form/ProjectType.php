@@ -34,6 +34,14 @@ class ProjectType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Shared by the money fields: a numeric keypad on phones, and the
+        // number-format controller grouping the digits as they are typed.
+        $moneyAttr = [
+            'inputmode' => 'numeric',
+            'data-controller' => 'number-format',
+            'data-action' => 'input->number-format#format',
+        ];
+
         $builder
             ->add('title', TextType::class, [
                 'label' => 'project.title',
@@ -111,25 +119,26 @@ class ProjectType extends AbstractType
             ])
             // The money fields are grouped ("1.250.000" in Danish), which makes
             // Symfony render them as text inputs; the min attribute would be ignored
-            // there, so PositiveOrZero on the entity is the lower bound.
+            // there, so PositiveOrZero on the entity is the lower bound. The same
+            // grouping is applied live by the number-format controller.
             ->add('amountApplied', IntegerType::class, [
                 'label' => 'project.amount_applied',
                 'required' => false,
-                'attr' => ['inputmode' => 'numeric'],
+                'attr' => $moneyAttr,
                 'grouping' => true,
                 'help' => 'project.amount_applied_help',
             ])
             ->add('budget', IntegerType::class, [
                 'label' => 'project.budget',
                 'required' => false,
-                'attr' => ['inputmode' => 'numeric'],
+                'attr' => $moneyAttr,
                 'grouping' => true,
                 'help' => 'project.budget_help',
             ])
             ->add('budgetItk', IntegerType::class, [
                 'label' => 'project.budget_itk',
                 'required' => false,
-                'attr' => ['inputmode' => 'numeric'],
+                'attr' => $moneyAttr,
                 'grouping' => true,
                 'help' => 'project.budget_itk_help',
             ])
