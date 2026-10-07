@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     added as you type.
   * Mark the invalid fields and show their messages when a save fails, for
     example a negative amount.
-  * Add (tidy-feedback)[https://github.com/itk-dev/tidy-feedback] to the mix.
+  * Add [tidy-feedback](https://github.com/itk-dev/tidy-feedback) to the mix.
 * [PR-40](https://github.com/itk-dev/itk-projects/pull/40)
   Let a project belong to several areas, picked with a searchable multiselect.
 * [PR-43](https://github.com/itk-dev/itk-projects/pull/43)
