@@ -171,8 +171,6 @@ project:
     topic_help: The wider programme this project is part of.
     area: Area
     area_help: Pick one or more thematic areas.
-    summary: Summary
-    summary_help: A brief summary of the purpose, content, strategy and plans.
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
     types: Type

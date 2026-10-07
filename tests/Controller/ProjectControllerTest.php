@@ -12,7 +12,6 @@ use App\Entity\ProjectType;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Ulid;
 
@@ -387,27 +386,20 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->flush();
     }
 
-    public function testSummaryAndDescriptionAreSavedShownAndSearchable(): void
+    public function testDescriptionIsSavedShownAndSearchable(): void
     {
         $this->loginAsAdmin();
-        $summary = 'Opsummering '.uniqid();
         $description = 'Ophæng i klimaplanen '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
-        self::assertStringContainsString('Opsummering', $crawler->filter('label[for="project_summary"]')->text());
         self::assertStringContainsString('Beskrivelse', $crawler->filter('label[for="project_description"]')->text());
-
-        // The fuller description sits directly under the summary.
-        $names = $crawler->filter('form textarea')->each(static fn (Crawler $node): string => (string) $node->attr('name'));
-        $summaryAt = array_search('project[summary]', $names, true);
-        self::assertIsInt($summaryAt);
-        self::assertSame('project[description]', $names[$summaryAt + 1] ?? null);
+        // The summary field is gone; the description is the only free text in the basics section.
+        self::assertCount(0, $crawler->filter('[name="project[summary]"]'));
 
         $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
         $this->client->request('POST', '/projects/new', [
             'project' => [
                 'title' => 'Described project',
-                'summary' => $summary,
                 'description' => $description,
                 '_token' => $token,
             ],
@@ -416,20 +408,16 @@ final class ProjectControllerTest extends FunctionalTestCase
 
         $project = $this->projects()->findOneBy(['title' => 'Described project']);
         self::assertInstanceOf(Project::class, $project);
-        self::assertSame($summary, $project->getSummary());
         self::assertSame($description, $project->getDescription());
         $id = (string) $project->getId();
 
+        // The description leads the details card.
         $crawler = $this->client->request('GET', '/projects/'.$id);
-        $details = $crawler->filter('.card__body')->first()->text();
-        self::assertStringContainsString($summary, $details);
-        self::assertStringContainsString($description, $details);
+        self::assertStringContainsString($description, $crawler->filter('.card__body')->first()->text());
 
-        // Both texts are covered by the free-text filter.
-        foreach ([$summary, $description] as $needle) {
-            $crawler = $this->client->request('GET', '/projects?q='.urlencode($needle));
-            self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
-        }
+        // And is covered by the free-text filter.
+        $crawler = $this->client->request('GET', '/projects?q='.urlencode($description));
+        self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
 
         $this->removeProject($id);
     }

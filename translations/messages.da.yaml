@@ -171,8 +171,6 @@ project:
     topic_help: Det overordnede program, projektet er en del af.
     area: Område
     area_help: Vælg et eller flere tematiske områder.
-    summary: Opsummering
-    summary_help: Kort opsummering af formål, indhold, strategi og planer.
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
     types: Type
