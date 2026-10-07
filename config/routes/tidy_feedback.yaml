@@ -1,0 +1,4 @@
+#config/routes/tidy_feedback.yaml
+tidy_feedback:
+  resource: "@TidyFeedbackBundle/config/routes.php"
+  prefix: /tidy-feedback
