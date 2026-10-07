@@ -18,7 +18,7 @@ export default class extends Controller {
         unsavedText: { type: String, default: "Unsaved changes" },
         errorText: {
             type: String,
-            default: "Couldn’t save — check the required fields",
+            default: "Couldn’t save — check the marked fields",
         },
         offlineText: {
             type: String,
@@ -73,9 +73,10 @@ export default class extends Controller {
         );
 
         try {
-            const { status, location } = await this.request();
+            const { status, location, body } = await this.request();
 
             if (201 === status) {
+                this.clearErrors();
                 // The draft now exists — edit it in place from here on.
                 if (location) {
                     this.element.action = location;
@@ -92,12 +93,21 @@ export default class extends Controller {
                     "saved",
                 );
             } else if (204 === status) {
+                this.clearErrors();
                 this.setStatus(
                     `${this.savedTextValue} · ${this.timestamp()}`,
                     "saved",
                 );
             } else if (422 === status) {
-                this.setStatus(this.errorTextValue, "error");
+                // Mark the invalid fields; messages that belong to no field (errors
+                // on the form itself) go in the status line instead.
+                const unplaced = this.markErrors(this.parseErrors(body));
+                this.setStatus(
+                    unplaced.length > 0
+                        ? unplaced.join(" ")
+                        : this.errorTextValue,
+                    "error",
+                );
             } else {
                 this.setStatus(this.offlineTextValue, "error");
             }
@@ -113,8 +123,8 @@ export default class extends Controller {
     }
 
     // POST the whole form via XHR so an in-flight save can be aborted when a
-    // newer one supersedes it. Resolves with the status and the
-    // X-Project-Location header (if any); rejects with an AbortError when
+    // newer one supersedes it. Resolves with the status, the response body and
+    // the X-Project-Location header (if any); rejects with an AbortError when
     // superseded.
     request() {
         return new Promise((resolve, reject) => {
@@ -127,6 +137,7 @@ export default class extends Controller {
             xhr.addEventListener("load", () =>
                 resolve({
                     status: xhr.status,
+                    body: xhr.responseText,
                     location: xhr.getResponseHeader("X-Project-Location"),
                 }),
             );
@@ -141,6 +152,57 @@ export default class extends Controller {
 
             xhr.send(new FormData(this.element));
         });
+    }
+
+    // The 422 body is {errors: {"project[budget]": ["message", …], …}}.
+    parseErrors(body) {
+        try {
+            return JSON.parse(body)?.errors ?? {};
+        } catch {
+            return {};
+        }
+    }
+
+    // Mark each invalid field the way a full render would: aria-invalid on the
+    // widget and a .form-errors list at the end of its row. Returns the
+    // messages that matched no field.
+    markErrors(errors) {
+        this.clearErrors();
+        const unplaced = [];
+
+        for (const [name, messages] of Object.entries(errors)) {
+            const escaped = CSS.escape(name);
+            const field = this.element.querySelector(
+                `[name="${escaped}"], [name="${escaped}[]"]`,
+            );
+            const row = field?.closest(".form-row");
+            if (!field || !row) {
+                unplaced.push(...messages);
+                continue;
+            }
+
+            field.setAttribute("aria-invalid", "true");
+            const list = document.createElement("ul");
+            list.className = "form-errors";
+            for (const message of messages) {
+                const item = document.createElement("li");
+                item.textContent = message;
+                list.append(item);
+            }
+            row.append(list);
+        }
+
+        return unplaced;
+    }
+
+    // Drops both our marks and any rendered by the server on a full submit.
+    clearErrors() {
+        this.element
+            .querySelectorAll('[aria-invalid="true"]')
+            .forEach((field) => field.removeAttribute("aria-invalid"));
+        this.element
+            .querySelectorAll(".form-errors")
+            .forEach((list) => list.remove());
     }
 
     hasEmptyRequiredField() {

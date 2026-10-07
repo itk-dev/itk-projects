@@ -109,22 +109,28 @@ class ProjectType extends AbstractType
                 'choice_label' => static fn (EndorsementAuthor $value): string => $value->labelKey(),
                 'help' => 'project.endorsement_author_help',
             ])
+            // The money fields are grouped ("1.250.000" in Danish), which makes
+            // Symfony render them as text inputs; the min attribute would be ignored
+            // there, so PositiveOrZero on the entity is the lower bound.
             ->add('amountApplied', IntegerType::class, [
                 'label' => 'project.amount_applied',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => ['inputmode' => 'numeric'],
+                'grouping' => true,
                 'help' => 'project.amount_applied_help',
             ])
             ->add('budget', IntegerType::class, [
                 'label' => 'project.budget',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => ['inputmode' => 'numeric'],
+                'grouping' => true,
                 'help' => 'project.budget_help',
             ])
             ->add('budgetItk', IntegerType::class, [
                 'label' => 'project.budget_itk',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => ['inputmode' => 'numeric'],
+                'grouping' => true,
                 'help' => 'project.budget_itk_help',
             ])
             ->add('fundingRate', EnumType::class, [

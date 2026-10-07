@@ -67,7 +67,7 @@ autosave:
     saved: Saved
     unsaved: Unsaved changes
     required: Add a title to save.
-    error: Couldn’t save — check the required fields
+    error: Couldn’t save — check the marked fields
     offline: Save failed — your changes are kept here
     completion: Form completion
 

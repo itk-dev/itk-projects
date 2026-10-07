@@ -1281,6 +1281,12 @@ textarea {
     margin-top: var(--itk-space-1);
 }
 
+input[aria-invalid="true"],
+select[aria-invalid="true"],
+textarea[aria-invalid="true"] {
+    border-color: var(--itk-danger);
+}
+
 .detail-grid {
     display: grid;
     grid-template-columns: 1.5fr 1fr;

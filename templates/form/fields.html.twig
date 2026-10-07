@@ -16,7 +16,9 @@
                 <div class="form-help">{{ help|trans(help_translation_parameters, translation_domain) }}</div>
             {%- endif -%}
         </div>
-        {{ form_widget(form) }}
+        {#- aria-invalid lets the stylesheet outline the field, and is what the
+            autosave controller sets when it marks a field from a 422 response. -#}
+        {{ form_widget(form, errors|length > 0 ? {attr: attr|merge({'aria-invalid': 'true'})} : {}) }}
         {{ form_errors(form) }}
     </div>
 {% endblock %}

@@ -67,7 +67,7 @@ autosave:
     saved: Gemt
     unsaved: Ikke-gemte ændringer
     required: Tilføj en titel for at gemme.
-    error: Kunne ikke gemme — tjek de påkrævede felter
+    error: Kunne ikke gemme — tjek de markerede felter
     offline: Kunne ikke gemme — dine ændringer er bevaret her
     completion: Udfyldningsgrad
 

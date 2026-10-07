@@ -15,6 +15,8 @@ use App\Service\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Csv\Writer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -161,7 +163,7 @@ class ProjectController extends AbstractController
 
         if ($isAutosave) {
             // Not valid yet (e.g. no title): report it without creating anything.
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->autosaveErrors($form);
         }
 
         return $this->render('project/new.html.twig', [
@@ -214,7 +216,7 @@ class ProjectController extends AbstractController
 
         if ($isAutosave) {
             // Report the failed validation without redrawing the form the user is editing.
-            return new Response(null, Response::HTTP_UNPROCESSABLE_ENTITY);
+            return $this->autosaveErrors($form);
         }
 
         return $this->render('project/edit.html.twig', [
@@ -247,5 +249,35 @@ class ProjectController extends AbstractController
         $user = $this->getUser();
 
         return $user instanceof User ? $user : null;
+    }
+
+    /**
+     * The failed validation for the autosave client, which cannot redraw the
+     * form: the messages keyed by the fields' HTML names ("project[budget]") so
+     * it can mark the fields in place. Errors on the form itself sit under its
+     * own name ("project").
+     *
+     * @param FormInterface<mixed> $form
+     */
+    private function autosaveErrors(FormInterface $form): JsonResponse
+    {
+        $errors = [];
+        foreach ($form->getErrors(true, true) as $error) {
+            $errors[$this->htmlName($error->getOrigin() ?? $form)][] = $error->getMessage();
+        }
+
+        return new JsonResponse(['errors' => $errors], Response::HTTP_UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * The name a field is posted under, built the way the form view does it.
+     *
+     * @param FormInterface<mixed> $form
+     */
+    private function htmlName(FormInterface $form): string
+    {
+        $parent = $form->getParent();
+
+        return null === $parent ? $form->getName() : sprintf('%s[%s]', $this->htmlName($parent), $form->getName());
     }
 }
