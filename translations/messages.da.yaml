@@ -167,7 +167,7 @@ dashboard:
 project:
     title: Titel
     title_help: Et kort, sigende navn på projektet.
-    topic: Emne
+    topic: EU topic
     topic_help: Det overordnede program, projektet er en del af.
     area: Område
     area_help: Vælg et eller flere tematiske områder.

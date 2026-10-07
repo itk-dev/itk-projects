@@ -161,6 +161,8 @@ final class ProjectControllerTest extends FunctionalTestCase
         $topic = 'Digital Europe Blueprint '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
+        // A single-line field like the title, not a textarea.
+        self::assertCount(1, $crawler->filter('input[type="text"][name="project[topic]"]'));
         $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
         $this->client->request('POST', '/projects/new', [
             'project' => ['title' => 'Topic project', 'topic' => $topic, '_token' => $token],

@@ -39,10 +39,9 @@ class ProjectType extends AbstractType
                 'label' => 'project.title',
                 'help' => 'project.title_help',
             ])
-            ->add('topic', TextareaType::class, [
+            ->add('topic', TextType::class, [
                 'label' => 'project.topic',
                 'required' => false,
-                'attr' => ['rows' => 4],
                 'help' => 'project.topic_help',
             ])
             ->add('areas', EntityType::class, [
