@@ -67,7 +67,7 @@ autosave:
     saved: Gemt
     unsaved: Ikke-gemte ændringer
     required: Tilføj en titel for at gemme.
-    error: Kunne ikke gemme — tjek de påkrævede felter
+    error: Kunne ikke gemme — tjek de markerede felter
     offline: Kunne ikke gemme — dine ændringer er bevaret her
     completion: Udfyldningsgrad
 
@@ -167,12 +167,10 @@ dashboard:
 project:
     title: Titel
     title_help: Et kort, sigende navn på projektet.
-    topic: Emne
+    topic: EU topic
     topic_help: Det overordnede program, projektet er en del af.
     area: Område
     area_help: Vælg et eller flere tematiske områder.
-    summary: Opsummering
-    summary_help: Kort opsummering af formål, indhold, strategi og planer.
     description: Beskrivelse
     description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
     types: Type
@@ -183,7 +181,7 @@ project:
     status_additional_help: Uddyb status, hvis der er behov.
     organizational_anchoring: Afdeling
     organizational_anchoring_help: Vælg en eller flere afdelinger.
-    endorsement: Er projektet vedtaget
+    endorsement: Er projektet godkendt
     endorsement_author: Hvor er det vedtaget
     endorsement_author_help: Hvor projektet er vedtaget.
     amount_applied: Ansøgt beløb (kr.)
@@ -241,9 +239,9 @@ project:
             paid: vi får penge for at lave det
         examples_title: Eksempler på projekter
         examples:
-            first: Eksempel x
-            second: Eksempel y
-            third: Eksempel z
+            first: OS2ai storskala
+            second: EUROPAI
+            third: Aarhus ADM PC
     section:
         basics: Grundoplysninger
         classification: Klassificering
@@ -420,7 +418,7 @@ enum:
     endorsement_author:
         city_council: Byrådet
         magistrate: Magistraten
-        committee: Udvalg
+        committee: Udvalg/Styregruppe
         department: Afdeling
     funding:
         municipal_budget: Kommunalt budget

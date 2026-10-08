@@ -31,7 +31,7 @@ class Project extends AbstractEntity
      * @var list<string>
      */
     public const array COMPLETION_FIELDS = [
-        'title', 'areas', 'summary', 'description', 'types', 'status',
+        'title', 'areas', 'description', 'types', 'status',
         'organizationalAnchoring',
         'amountApplied', 'budget', 'budgetItk', 'fundingRate', 'funding',
         'timePeriodStart', 'timePeriodEnd',
@@ -58,10 +58,6 @@ class Project extends AbstractEntity
     #[ORM\ManyToMany(targetEntity: Area::class)]
     #[ORM\JoinTable(name: 'project_area')]
     private Collection $areas;
-
-    /** A few lines summing up the project's purpose, content, strategy and plans. */
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $summary = null;
 
     /** The fuller account: why the project is done and what it is anchored in. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -231,18 +227,6 @@ class Project extends AbstractEntity
         foreach ($areas as $area) {
             $this->addArea($area);
         }
-
-        return $this;
-    }
-
-    public function getSummary(): ?string
-    {
-        return $this->summary;
-    }
-
-    public function setSummary(?string $summary): static
-    {
-        $this->summary = $summary;
 
         return $this;
     }
@@ -604,7 +588,6 @@ class Project extends AbstractEntity
         $checks = [
             null !== $this->title && '' !== $this->title,
             !$this->areas->isEmpty(),
-            null !== $this->summary && '' !== $this->summary,
             null !== $this->description && '' !== $this->description,
             !$this->types->isEmpty(),
             null !== $this->status,

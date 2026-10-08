@@ -43,7 +43,6 @@ class ProjectRepository extends ServiceEntityRepository
             $ors = [
                 'LOWER(i.title) LIKE :q',
                 'LOWER(i.topic) LIKE :q',
-                'LOWER(i.summary) LIKE :q',
                 'LOWER(i.description) LIKE :q',
                 'LOWER(i.statusAdditional) LIKE :q',
                 'LOWER(i.remainingFunding) LIKE :q',
