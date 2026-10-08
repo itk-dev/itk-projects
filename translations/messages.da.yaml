@@ -239,9 +239,9 @@ project:
             paid: vi får penge for at lave det
         examples_title: Eksempler på projekter
         examples:
-            first: Eksempel x
-            second: Eksempel y
-            third: Eksempel z
+            first: OS2ai storskala
+            second: EUROPAI
+            third: Aarhus ADM PC
     section:
         basics: Grundoplysninger
         classification: Klassificering

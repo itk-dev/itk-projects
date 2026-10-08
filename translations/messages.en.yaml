@@ -239,9 +239,9 @@ project:
             paid: we get paid to do it
         examples_title: Examples of projects
         examples:
-            first: Example x
-            second: Example y
-            third: Example z
+            first: OS2ai storskala
+            second: EUROPAI
+            third: Aarhus ADM PC
     section:
         basics: Basics
         classification: Classification
