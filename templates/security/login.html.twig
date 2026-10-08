@@ -17,7 +17,9 @@
                 </div>
             {% endif %}
 
-            <form method="post">
+            {# A full page load after login: the feedback widget only initialises on
+               one, and Turbo carries it over to later visits from there. #}
+            <form method="post" data-turbo="false">
                 <div class="form-row">
                     <label for="username">{{ 'login.email'|trans }}</label>
                     <input type="email" id="username" name="_username" value="{{ last_username }}" autocomplete="email" required autofocus>
