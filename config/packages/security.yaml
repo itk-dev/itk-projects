@@ -34,6 +34,10 @@ security:
     # (contacts, departments) is open to any signed-in user.
     - { path: ^/admin/users, roles: ROLE_ADMIN }
     - { path: ^/admin, roles: ROLE_USER }
+    # The feedback widget's stylesheet and script are static files. Behind the
+    # firewall they would be answered with a redirect to the login page, and a
+    # redirected GET saves itself as the post-login target.
+    - { path: ^/tidy-feedback/asset/, roles: PUBLIC_ACCESS }
     - { path: ^/, roles: ROLE_USER }
 
 when@test:
