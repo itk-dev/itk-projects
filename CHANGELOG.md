@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - 2026-XX-XX
+## [0.4.0] - XXXX-XX-XX
 
 * [PR-47](https://github.com/itk-dev/itk-projects/pull/47)
   Keep the feedback widget working on pages reached through Turbo Drive
