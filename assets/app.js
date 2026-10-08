@@ -279,3 +279,21 @@ document.addEventListener("turbo:before-cache", () => {
     });
     teardownPoolSelect();
 });
+
+// The Tidy feedback widget is injected server side as a declarative shadow root
+// with its script inside the template. Turbo parses the next page with
+// DOMParser, which builds neither, so the widget would only work on full page
+// loads. Marking its two elements permanent on both sides just before a render
+// makes Turbo carry the live, initialised nodes over instead of the inert copy.
+const TIDY_FEEDBACK_IDS = ["tidy-feedback", "tidy-feedback-region"];
+
+document.addEventListener("turbo:before-render", (event) => {
+    for (const id of TIDY_FEEDBACK_IDS) {
+        for (const root of [document, event.detail.newBody]) {
+            root.querySelector(`#${id}`)?.setAttribute(
+                "data-turbo-permanent",
+                "",
+            );
+        }
+    }
+});
