@@ -12,7 +12,6 @@ use App\Entity\ProjectType;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
-use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Ulid;
 
@@ -162,6 +161,8 @@ final class ProjectControllerTest extends FunctionalTestCase
         $topic = 'Digital Europe Blueprint '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
+        // A single-line field like the title, not a textarea.
+        self::assertCount(1, $crawler->filter('input[type="text"][name="project[topic]"]'));
         $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
         $this->client->request('POST', '/projects/new', [
             'project' => ['title' => 'Topic project', 'topic' => $topic, '_token' => $token],
@@ -387,27 +388,20 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->flush();
     }
 
-    public function testSummaryAndDescriptionAreSavedShownAndSearchable(): void
+    public function testDescriptionIsSavedShownAndSearchable(): void
     {
         $this->loginAsAdmin();
-        $summary = 'Opsummering '.uniqid();
         $description = 'Ophæng i klimaplanen '.uniqid();
 
         $crawler = $this->client->request('GET', '/projects/new');
-        self::assertStringContainsString('Opsummering', $crawler->filter('label[for="project_summary"]')->text());
         self::assertStringContainsString('Beskrivelse', $crawler->filter('label[for="project_description"]')->text());
-
-        // The fuller description sits directly under the summary.
-        $names = $crawler->filter('form textarea')->each(static fn (Crawler $node): string => (string) $node->attr('name'));
-        $summaryAt = array_search('project[summary]', $names, true);
-        self::assertIsInt($summaryAt);
-        self::assertSame('project[description]', $names[$summaryAt + 1] ?? null);
+        // The summary field is gone; the description is the only free text in the basics section.
+        self::assertCount(0, $crawler->filter('[name="project[summary]"]'));
 
         $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
         $this->client->request('POST', '/projects/new', [
             'project' => [
                 'title' => 'Described project',
-                'summary' => $summary,
                 'description' => $description,
                 '_token' => $token,
             ],
@@ -416,20 +410,57 @@ final class ProjectControllerTest extends FunctionalTestCase
 
         $project = $this->projects()->findOneBy(['title' => 'Described project']);
         self::assertInstanceOf(Project::class, $project);
-        self::assertSame($summary, $project->getSummary());
         self::assertSame($description, $project->getDescription());
         $id = (string) $project->getId();
 
+        // The description leads the details card.
         $crawler = $this->client->request('GET', '/projects/'.$id);
-        $details = $crawler->filter('.card__body')->first()->text();
-        self::assertStringContainsString($summary, $details);
-        self::assertStringContainsString($description, $details);
+        self::assertStringContainsString($description, $crawler->filter('.card__body')->first()->text());
 
-        // Both texts are covered by the free-text filter.
-        foreach ([$summary, $description] as $needle) {
-            $crawler = $this->client->request('GET', '/projects?q='.urlencode($needle));
-            self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
+        // And is covered by the free-text filter.
+        $crawler = $this->client->request('GET', '/projects?q='.urlencode($description));
+        self::assertStringContainsString('Described project', $crawler->filter('#project-results')->text());
+
+        $this->removeProject($id);
+    }
+
+    public function testMoneyFieldsUseThousandsSeparators(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Grouped budget project '.uniqid();
+
+        // Grouping turns the number inputs into text inputs with a numeric keypad
+        // hint, and the number-format controller groups the digits as they are typed.
+        $crawler = $this->client->request('GET', '/projects/new');
+        foreach (['amountApplied', 'budget', 'budgetItk'] as $field) {
+            self::assertCount(1, $crawler->filter(sprintf('input[type="text"][inputmode="numeric"][data-controller="number-format"][name="project[%s]"]', $field)));
         }
+
+        // Values typed with Danish separators are parsed to whole kroner.
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'amountApplied' => '800.000',
+                'budget' => '1.250.000',
+                'budgetItk' => '250000',
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame(800000, $project->getAmountApplied());
+        self::assertSame(1250000, $project->getBudget());
+        self::assertSame(250000, $project->getBudgetItk());
+        $id = (string) $project->getId();
+
+        // And are rendered back with the separators.
+        $crawler = $this->client->request('GET', '/projects/'.$id.'/edit');
+        self::assertSame('800.000', $crawler->filter('input[name="project[amountApplied]"]')->attr('value'));
+        self::assertSame('1.250.000', $crawler->filter('input[name="project[budget]"]')->attr('value'));
+        self::assertSame('250.000', $crawler->filter('input[name="project[budgetItk]"]')->attr('value'));
 
         $this->removeProject($id);
     }
@@ -592,6 +623,9 @@ final class ProjectControllerTest extends FunctionalTestCase
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
         self::assertNull($this->projects()->findOneBy(['title' => '']));
+
+        // The body names the field so the form can mark it in place.
+        self::assertSame(['project[title]'], array_keys($this->autosaveErrors()));
     }
 
     public function testEditAutosaveReturnsNoContent(): void
@@ -616,12 +650,41 @@ final class ProjectControllerTest extends FunctionalTestCase
         $id = (string) $project->getId();
 
         $this->client->request('POST', sprintf('/projects/%s/edit', $id), [
-            'project' => ['title' => ''],
+            'project' => ['title' => '', 'budget' => '-500'],
         ], [], ['HTTP_X-Autosave' => '1']);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_UNPROCESSABLE_ENTITY);
 
+        // Each invalid field is named with its message, so a negative amount
+        // points at the money field rather than at the form as a whole.
+        $errors = $this->autosaveErrors();
+        self::assertSame(['project[title]', 'project[budget]'], array_keys($errors));
+        foreach ($errors as $messages) {
+            self::assertCount(1, $messages);
+            self::assertNotSame('', $messages[0]);
+        }
+
         $this->removeProject($id);
+    }
+
+    public function testAnInvalidFieldIsMarkedOnTheRenderedForm(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Negative budget project '.uniqid();
+
+        $crawler = $this->client->request('GET', '/projects/new');
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $crawler = $this->client->request('POST', '/projects/new', [
+            'project' => ['title' => $title, 'budget' => '-500', '_token' => $token],
+        ]);
+
+        // A plain submit redraws the form: the invalid field is flagged and its
+        // message sits in the same row; valid fields are left alone.
+        $budget = $crawler->filter('input[name="project[budget]"]');
+        self::assertSame('true', $budget->attr('aria-invalid'));
+        self::assertCount(1, $budget->closest('.form-row')->filter('.form-errors li'));
+        self::assertNull($crawler->filter('input[name="project[title]"]')->attr('aria-invalid'));
+        self::assertNull($this->projects()->findOneBy(['title' => $title]));
     }
 
     public function testTheProjectDefinitionIsShownOnCreateAndBehindALinkOnTheList(): void
@@ -660,6 +723,24 @@ final class ProjectControllerTest extends FunctionalTestCase
         $em->flush();
 
         return $project;
+    }
+
+    /**
+     * The field errors in the last autosave response.
+     *
+     * @return array<string, list<string>>
+     */
+    private function autosaveErrors(): array
+    {
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertIsArray($body);
+        self::assertIsArray($body['errors']);
+
+        /** @var array<string, list<string>> $errors */
+        $errors = $body['errors'];
+
+        return $errors;
     }
 
     private function removeProject(string $id): void

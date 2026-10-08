@@ -145,7 +145,6 @@ class AppFixtures extends Fixture
             $project = (new Project())
                 ->setTitle($title)
                 ->setStatus($statuses[array_rand($statuses)])
-                ->setSummary('Projektet arbejder med '.mb_strtolower($title).' gennem en tværgående indsats med fokus på borgernes hverdag og kommunens strategiske mål.')
                 ->setDescription('Projektet er sat i gang, fordi kommunen har brug for at styrke indsatsen omkring '.mb_strtolower($title).".\n\nDet har ophæng i byrådets vedtagne strategier og i afdelingens handleplaner og gennemføres i samarbejde med relevante fagområder og eksterne partnere.")
                 ->setEndorsement(0 === $index % 3 ? false : true)
                 ->setAmountApplied((int) round($budget * 0.8))

@@ -67,7 +67,7 @@ autosave:
     saved: Saved
     unsaved: Unsaved changes
     required: Add a title to save.
-    error: Couldn’t save — check the required fields
+    error: Couldn’t save — check the marked fields
     offline: Save failed — your changes are kept here
     completion: Form completion
 
@@ -167,12 +167,10 @@ dashboard:
 project:
     title: Title
     title_help: A short, descriptive name for the project.
-    topic: Topic
+    topic: EU topic
     topic_help: The wider programme this project is part of.
     area: Area
     area_help: Pick one or more thematic areas.
-    summary: Summary
-    summary_help: A brief summary of the purpose, content, strategy and plans.
     description: Description
     description_help: Why we are doing it, and what the project is anchored in.
     types: Type
@@ -241,9 +239,9 @@ project:
             paid: we get paid to do it
         examples_title: Examples of projects
         examples:
-            first: Example x
-            second: Example y
-            third: Example z
+            first: OS2ai storskala
+            second: EUROPAI
+            third: Aarhus ADM PC
     section:
         basics: Basics
         classification: Classification

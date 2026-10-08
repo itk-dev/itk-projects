@@ -34,15 +34,22 @@ class ProjectType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        // Shared by the money fields: a numeric keypad on phones, and the
+        // number-format controller grouping the digits as they are typed.
+        $moneyAttr = [
+            'inputmode' => 'numeric',
+            'data-controller' => 'number-format',
+            'data-action' => 'input->number-format#format',
+        ];
+
         $builder
             ->add('title', TextType::class, [
                 'label' => 'project.title',
                 'help' => 'project.title_help',
             ])
-            ->add('topic', TextareaType::class, [
+            ->add('topic', TextType::class, [
                 'label' => 'project.topic',
                 'required' => false,
-                'attr' => ['rows' => 4],
                 'help' => 'project.topic_help',
             ])
             ->add('areas', EntityType::class, [
@@ -55,12 +62,6 @@ class ProjectType extends AbstractType
                 // (Tom Select, see app.js) without on-the-fly creation.
                 'attr' => ['data-area-select' => true, 'placeholder' => 'form.choose'],
                 'help' => 'project.area_help',
-            ])
-            ->add('summary', TextareaType::class, [
-                'label' => 'project.summary',
-                'required' => false,
-                'attr' => ['rows' => 4],
-                'help' => 'project.summary_help',
             ])
             ->add('description', TextareaType::class, [
                 'label' => 'project.description',
@@ -116,22 +117,29 @@ class ProjectType extends AbstractType
                 'choice_label' => static fn (EndorsementAuthor $value): string => $value->labelKey(),
                 'help' => 'project.endorsement_author_help',
             ])
+            // The money fields are grouped ("1.250.000" in Danish), which makes
+            // Symfony render them as text inputs; the min attribute would be ignored
+            // there, so PositiveOrZero on the entity is the lower bound. The same
+            // grouping is applied live by the number-format controller.
             ->add('amountApplied', IntegerType::class, [
                 'label' => 'project.amount_applied',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => $moneyAttr,
+                'grouping' => true,
                 'help' => 'project.amount_applied_help',
             ])
             ->add('budget', IntegerType::class, [
                 'label' => 'project.budget',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => $moneyAttr,
+                'grouping' => true,
                 'help' => 'project.budget_help',
             ])
             ->add('budgetItk', IntegerType::class, [
                 'label' => 'project.budget_itk',
                 'required' => false,
-                'attr' => ['min' => 0],
+                'attr' => $moneyAttr,
+                'grouping' => true,
                 'help' => 'project.budget_itk_help',
             ])
             ->add('fundingRate', EnumType::class, [
