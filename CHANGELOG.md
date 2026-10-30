@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.4.0] - XXXX-XX-XX
+## [0.4.0] - 2026-XX-XX
 
 * [PR-48](https://github.com/itk-dev/itk-projects/pull/48)
   Remove feedback from login page.
