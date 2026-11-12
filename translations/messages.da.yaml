@@ -420,6 +420,7 @@ enum:
         magistrate: Magistraten
         committee: Udvalg/Styregruppe
         department: Afdeling
+        grant_provider: Bevillingsgiver
     funding:
         municipal_budget: Kommunalt budget
         state_grant: Statsligt tilskud

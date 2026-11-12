@@ -420,6 +420,7 @@ enum:
         magistrate: The Magistrate
         committee: Committee
         department: Department
+        grant_provider: Grant provider
     funding:
         municipal_budget: Municipal budget
         state_grant: State grant
