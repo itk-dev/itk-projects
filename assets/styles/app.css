@@ -998,7 +998,9 @@ a.recent-item:hover .recent-item__cta {
 .form-row__head {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    /* Baseline, not center: the help text is smaller than the label, and
+       centering their line boxes leaves its baseline a few pixels high. */
+    align-items: baseline;
     gap: var(--itk-space-2);
 }
 
@@ -1009,9 +1011,13 @@ a.recent-item:hover .recent-item__cta {
     color: var(--itk-slate-700);
 }
 
+/* An inline box, not a flex container: a flex container reports the baseline
+   of its first item, here the (possibly hidden) completion star, whose glyph
+   comes from a fallback font with its own metrics. An inline box reports the
+   text baseline, which is what the help text beside it aligns to. The star
+   and the lock are atomic inlines aligned on the middle of the text. */
 .form-row__head > label {
-    display: inline-flex;
-    align-items: center;
+    display: inline-block;
 }
 
 .completion-star {
@@ -1039,6 +1045,26 @@ a.recent-item:hover .recent-item__cta {
     width: 0;
     margin-right: 0;
     opacity: 0;
+}
+
+/* The lock after a curated field's label: a link to the administrators who
+   maintain the pool, muted until hovered so it reads as a hint, not a button. */
+.curated-mark {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    margin-left: var(--itk-space-1);
+    color: var(--itk-slate-400);
+}
+
+.curated-mark svg {
+    width: 0.9em;
+    height: 0.9em;
+}
+
+.curated-mark:hover,
+.curated-mark:focus-visible {
+    color: var(--itk-primary);
 }
 
 /* Always visible: a hint hidden until focus still takes up its line, which in a

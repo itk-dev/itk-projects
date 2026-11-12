@@ -187,6 +187,14 @@ class AppFixtures extends Fixture
             $start = new \DateTimeImmutable(sprintf('2025-%02d-01', mt_rand(1, 12)));
             $project->setTimePeriodStart($start);
             $project->setTimePeriodEnd($start->modify('+'.mt_rand(6, 36).' months'));
+            // Every other project is an application with a deadline before it starts.
+            if (0 === $index % 2) {
+                $project->setApplicationDeadline($start->modify('-'.mt_rand(1, 6).' months'));
+            }
+            // Every other project is an application with a deadline before it starts.
+            if (0 === $index % 2) {
+                $project->setApplicationDeadline($start->modify('-'.mt_rand(1, 6).' months'));
+            }
 
             foreach (\array_slice($this->shuffleCopy($tags), 0, mt_rand(1, 4)) as $term) {
                 $project->addTag($term);

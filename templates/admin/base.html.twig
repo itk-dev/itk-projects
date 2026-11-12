@@ -9,9 +9,14 @@
             {% endif %}
             <a href="{{ path('admin_contacts') }}" class="admin-sidebar__link {{ route starts with 'admin_contact' ? 'is-active' }}">{{ 'nav.contacts'|trans }}</a>
             <a href="{{ path('admin_partners') }}" class="admin-sidebar__link {{ route starts with 'admin_partner' ? 'is-active' }}">{{ 'nav.partners'|trans }}</a>
-            <a href="{{ path('admin_departments') }}" class="admin-sidebar__link {{ route starts with 'admin_department' ? 'is-active' }}">{{ 'nav.departments'|trans }}</a>
-            <a href="{{ path('admin_areas') }}" class="admin-sidebar__link {{ route starts with 'admin_area' ? 'is-active' }}">{{ 'nav.areas'|trans }}</a>
-            <a href="{{ path('admin_project_types') }}" class="admin-sidebar__link {{ route starts with 'admin_project_type' ? 'is-active' }}">{{ 'nav.project_types'|trans }}</a>
+            {# The curated vocabularies are admin-only; everyone else gets the list
+               of administrators to ask instead. #}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('admin_departments') }}" class="admin-sidebar__link {{ route starts with 'admin_department' ? 'is-active' }}">{{ 'nav.departments'|trans }}</a>
+                <a href="{{ path('admin_areas') }}" class="admin-sidebar__link {{ route starts with 'admin_area' ? 'is-active' }}">{{ 'nav.areas'|trans }}</a>
+                <a href="{{ path('admin_project_types') }}" class="admin-sidebar__link {{ route starts with 'admin_project_type' ? 'is-active' }}">{{ 'nav.project_types'|trans }}</a>
+            {% endif %}
+            <a href="{{ path('admin_administrators') }}" class="admin-sidebar__link {{ route starts with 'admin_administrator' ? 'is-active' }}">{{ 'nav.administrators'|trans }}</a>
         </aside>
         <div>
             {% block admin_content %}{% endblock %}

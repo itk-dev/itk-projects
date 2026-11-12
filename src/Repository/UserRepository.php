@@ -21,6 +21,21 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * The users who can curate the admin-only vocabularies, by name. Roles are
+     * a JSON list, so they are filtered here rather than in DQL; the user table
+     * is a few dozen rows at most.
+     *
+     * @return list<User>
+     */
+    public function findAdmins(): array
+    {
+        return array_values(array_filter(
+            $this->findBy([], ['name' => 'ASC']),
+            static fn (User $user): bool => \in_array('ROLE_ADMIN', $user->getRoles(), true),
+        ));
+    }
+
     public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
     {
         if (!$user instanceof User) {

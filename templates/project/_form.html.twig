@@ -47,9 +47,17 @@
         {% if not project.id %}{% set title_attr = title_attr|merge({autofocus: true}) %}{% endif %}
         {{ form_row(form.title, {attr: title_attr}) }}
         {{ form_row(form.topic) }}
+        {# Areas, types and departments are curated by administrators; a search
+           that matches nothing names whom to ask (see the Tom Select setup in app.js). #}
+        {% set curated_url = path('admin_administrators') %}
+        {% set curated_attr = {
+            'data-curated-url': curated_url,
+            'data-curated-text': 'form.curated_no_results'|trans,
+            'data-curated-link': 'form.curated_no_results_link'|trans,
+        } %}
         <div class="form-grid">
-            {{ form_row(form.areas) }}
-            {{ form_row(form.types) }}
+            {{ form_row(form.areas, {attr: form.areas.vars.attr|merge(curated_attr), curated_url: curated_url}) }}
+            {{ form_row(form.types, {attr: form.types.vars.attr|merge(curated_attr), curated_url: curated_url}) }}
         </div>
         {{ form_row(form.description) }}
     </div>
@@ -58,7 +66,7 @@
         <div class="form-section__title">{{ 'project.section.classification'|trans }}</div>
         <div class="form-grid">
             {{ form_row(form.status) }}
-            {{ form_row(form.organizationalAnchoring) }}
+            {{ form_row(form.organizationalAnchoring, {attr: form.organizationalAnchoring.vars.attr|merge(curated_attr), curated_url: curated_url}) }}
         </div>
         {{ form_row(form.statusAdditional) }}
         {{ form_row(form.tags) }}
@@ -84,6 +92,7 @@
         <div class="form-grid">
             {{ form_row(form.timePeriodStart) }}
             {{ form_row(form.timePeriodEnd) }}
+            {{ form_row(form.applicationDeadline) }}
         </div>
 
         <div class="form-row">
