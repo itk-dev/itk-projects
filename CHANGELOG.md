@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-XX-XX
 
+* [PR-52](https://github.com/itk-dev/itk-projects/pull/52)
+  Align help texts with their field label
 * [PR-51](https://github.com/itk-dev/itk-projects/pull/51)
   * Add an optional application deadline to projects.
   * Reword the description help text, and rename "EU topic" to "Programindkaldelse".
