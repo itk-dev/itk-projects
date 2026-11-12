@@ -434,7 +434,7 @@ enum:
         municipal_budget: Municipal budget
         state_grant: State grant
         eu_funds: EU funds
-        foundation: Foundation
+        foundation: Private foundation
         external_partner: External partner
     funding_rate:
         "25": 25 %

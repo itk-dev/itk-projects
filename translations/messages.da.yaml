@@ -434,7 +434,7 @@ enum:
         municipal_budget: Kommunalt budget
         state_grant: Statsligt tilskud
         eu_funds: EU-midler
-        foundation: Fond
+        foundation: Privat fond
         external_partner: Ekstern partner
     funding_rate:
         "25": 25 %
