@@ -12,7 +12,6 @@ use App\Model\ProjectFilter;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -26,8 +25,6 @@ class ProjectFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $boolChoiceValue = static fn (?bool $value): string => null === $value ? '' : ($value ? '1' : '0');
-
         $builder
             ->add('q', SearchType::class, [
                 'label' => 'filter.search',
@@ -65,13 +62,6 @@ class ProjectFilterType extends AbstractType
                 // see app.js); a multiple select has no placeholder option, so
                 // "All" goes on the input instead.
                 'attr' => ['data-department-select' => true, 'placeholder' => 'filter.all'],
-            ])
-            ->add('endorsement', ChoiceType::class, [
-                'label' => 'project.endorsement',
-                'required' => false,
-                'placeholder' => 'filter.all',
-                'choices' => ['filter.yes' => true, 'filter.no' => false],
-                'choice_value' => $boolChoiceValue,
             ]);
 
         // Links saved while the department filter was a single select carry one
