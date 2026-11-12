@@ -211,7 +211,7 @@ project:
     links: Relevante links
     link_url_placeholder: https://…
     link_note_placeholder: Note – hvad viser linket?
-    contacts: Kontaktpersoner
+    contacts: ITK-kontaktpersoner
     partners: Samarbejdspartnere
     partners_help: Vælg en eksisterende samarbejdspartner, eller skriv en ny og tryk Enter.
     author: Udfyldt af
@@ -226,10 +226,10 @@ project:
         title: Rediger projekt
     show:
         details: Detaljer
-        contacts: Kontaktpersoner
+        contacts: ITK-kontaktpersoner
         partners: Samarbejdspartnere
         classification: Klassificering
-        no_contacts: Ingen kontaktpersoner tilknyttet.
+        no_contacts: Ingen ITK-kontaktpersoner tilknyttet.
         no_partners: Ingen samarbejdspartnere tilknyttet.
     empty:
         title: Ingen projekter fundet

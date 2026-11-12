@@ -211,7 +211,7 @@ project:
     links: Relevant links
     link_url_placeholder: https://…
     link_note_placeholder: Note – what does the link show?
-    contacts: Contacts
+    contacts: ITK contacts
     partners: Partners
     partners_help: Choose an existing partner, or type a new and press Enter.
     author: Filled out by
@@ -226,10 +226,10 @@ project:
         title: Edit project
     show:
         details: Details
-        contacts: Contacts
+        contacts: ITK contacts
         partners: Partners
         classification: Classification
-        no_contacts: No contacts attached.
+        no_contacts: No ITK contacts attached.
         no_partners: No partners attached.
     empty:
         title: No projects found
