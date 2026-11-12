@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 2026-XX-XX
 
 * [PR-50](https://github.com/itk-dev/itk-projects/pull/50)
-  Link the dashboard's "Total projects" and "In progress" boxes to the project list.
+  Dashboard: KPI boxes and chart statuses link to the filtered project list. Budget is charted by status.
 * [PR-48](https://github.com/itk-dev/itk-projects/pull/48)
   Remove feedback from login page.
 * [PR-47](https://github.com/itk-dev/itk-projects/pull/47)

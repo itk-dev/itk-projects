@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus";
+import * as Turbo from "@hotwired/turbo";
 import Chart from "chart.js/auto";
 
 /*
@@ -7,19 +8,13 @@ import Chart from "chart.js/auto";
  * entrance animation plays when seen rather than off-screen at page load. The
  * live broadcast replaces the data island; a MutationObserver feeds the new
  * numbers to the existing charts so they animate the delta instead of
- * re-mounting from zero on every save.
+ * re-mounting from zero on every save. Both charts are keyed on status, and a
+ * click on a status (slice, bar or legend entry) opens the project list
+ * filtered on it.
  */
 // Palette from the itk-workspace prototype-ds v1 tokens (teal-led brand), with
-// variations where more distinct hues were needed.
-const DEPT_COLORS = [
-    "#007ba6",
-    "#89bd23",
-    "#ee0043",
-    "#f5b800",
-    "#00a5cd",
-    "#73bc99",
-];
-// One entry per App\Enum\Status case, in the enum's order.
+// variations where more distinct hues were needed. One entry per
+// App\Enum\Status case, in the enum's order.
 const STATUS_COLORS = [
     "#adb5bd", // idea
     "#00a5cd", // opportunity
@@ -41,11 +36,13 @@ const BAR_HOVER = {
 
 export default class extends Controller {
     static targets = ["source", "statusDist", "budget"];
+    static values = { listUrl: String };
 
     connect() {
         this.reduce = window.matchMedia(
             "(prefers-reduced-motion: reduce)",
         ).matches;
+        this.legendHovered = false;
         Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
         Chart.defaults.font.size = 12;
         Chart.defaults.color = "#52606e";
@@ -60,11 +57,16 @@ export default class extends Controller {
         // hover interpolator, which throws "this._fn is not a function" on hover.
         Chart.defaults.animation.duration = this.reduce ? 0 : 800;
         Chart.defaults.animation.easing = "easeOutQuart";
-        // Pointer cursor whenever the mouse is over a hoverable data element.
+        // Pointer cursor whenever the mouse is over a clickable data element or
+        // legend entry. This runs on every mouse move, after the legend's own
+        // enter/leave hooks, so the legend state is tracked rather than set here.
         Chart.defaults.onHover = (event, elements) => {
             const target = event.native && event.native.target;
             if (target) {
-                target.style.cursor = elements.length ? "pointer" : "default";
+                target.style.cursor =
+                    elements.length || this.legendHovered
+                        ? "pointer"
+                        : "default";
             }
         };
 
@@ -161,9 +163,7 @@ export default class extends Controller {
                 datasets: [
                     {
                         data: d.statusDistribution,
-                        backgroundColor: d.statuses.map(
-                            (_, i) => STATUS_COLORS[i % STATUS_COLORS.length],
-                        ),
+                        backgroundColor: this.statusColors(),
                         borderColor: "#fff",
                         borderWidth: 1,
                         hoverOffset: 12,
@@ -175,7 +175,21 @@ export default class extends Controller {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: "right" } },
+                onClick: (event, elements) => this.visitClicked(elements),
+                plugins: {
+                    legend: {
+                        position: "right",
+                        // Legend entries are status links rather than the
+                        // default show/hide toggles.
+                        onClick: (event, item) => this.visitStatus(item.index),
+                        onHover: () => {
+                            this.legendHovered = true;
+                        },
+                        onLeave: () => {
+                            this.legendHovered = false;
+                        },
+                    },
+                },
                 scales: {
                     r: {
                         ticks: { display: false, backdropColor: "transparent" },
@@ -196,14 +210,12 @@ export default class extends Controller {
         this.charts.budget = new Chart(this.budgetTarget, {
             type: "bar",
             data: {
-                labels: d.departments.map((x) => x.label),
+                labels: d.statuses.map((s) => s.label),
                 datasets: [
                     {
                         label: "Budget",
-                        data: d.budgetByDept,
-                        backgroundColor: d.departments.map(
-                            (_, i) => DEPT_COLORS[i % DEPT_COLORS.length],
-                        ),
+                        data: d.budgetByStatus,
+                        backgroundColor: this.statusColors(),
                         borderRadius: 6,
                         borderSkipped: false,
                         ...BAR_HOVER,
@@ -214,6 +226,7 @@ export default class extends Controller {
                 indexAxis: "y",
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: (event, elements) => this.visitClicked(elements),
                 scales: {
                     x: {
                         beginAtZero: true,
@@ -234,6 +247,31 @@ export default class extends Controller {
         });
     }
 
+    statusColors() {
+        return this.viz.statuses.map(
+            (_, i) => STATUS_COLORS[i % STATUS_COLORS.length],
+        );
+    }
+
+    // ---- Click to filter -----------------------------------------------
+    visitClicked(elements) {
+        if (elements.length) {
+            this.visitStatus(elements[0].index);
+        }
+    }
+
+    // Both charts list the statuses in the data island's order, so an element
+    // index on either one maps straight to a status key.
+    visitStatus(index) {
+        const status = this.viz.statuses[index];
+        if (!status || !this.hasListUrlValue) {
+            return;
+        }
+        const url = new URL(this.listUrlValue, window.location.href);
+        url.searchParams.set("status", status.key);
+        Turbo.visit(url.href);
+    }
+
     // ---- Live updates: feed new data, let Chart.js animate the delta ---
     updateCharts() {
         const d = this.viz;
@@ -243,7 +281,7 @@ export default class extends Controller {
             c.statusDist.update();
         }
         if (c.budget) {
-            c.budget.data.datasets[0].data = d.budgetByDept;
+            c.budget.data.datasets[0].data = d.budgetByStatus;
             c.budget.update();
         }
     }

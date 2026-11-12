@@ -47,4 +47,30 @@ final class DashboardControllerTest extends FunctionalTestCase
             $crawler->filter('select[name="status"] option[selected]')->attr('value'),
         );
     }
+
+    public function testTheChartsAreKeyedOnStatusAndKnowTheListUrl(): void
+    {
+        $this->loginAsAdmin();
+        $crawler = $this->client->request('GET', '/');
+
+        $this->assertResponseIsSuccessful();
+        // The chart controller turns a clicked status into a visit to the project
+        // list filtered on it, and reads the list URL from its controller element.
+        self::assertSame(
+            '/projects',
+            $crawler->filter('[data-controller~="dashboard-viz"]')->attr('data-dashboard-viz-list-url-value'),
+        );
+
+        $viz = json_decode($crawler->filter('#dashboard-viz-data')->text(), true, 512, \JSON_THROW_ON_ERROR);
+        \assert(\is_array($viz));
+        // Both charts read their labels from the statuses list, in enum order, and
+        // index into the distribution and budget cells with the same position.
+        self::assertSame(
+            array_map(static fn (Status $status): string => $status->value, Status::cases()),
+            array_column($viz['statuses'], 'key'),
+        );
+        self::assertCount(\count(Status::cases()), $viz['statusDistribution']);
+        self::assertCount(\count(Status::cases()), $viz['budgetByStatus']);
+        self::assertArrayNotHasKey('budgetByDept', $viz);
+    }
 }
