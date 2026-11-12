@@ -12,6 +12,7 @@ use App\Entity\ProjectType;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Ulid;
 
@@ -810,6 +811,54 @@ final class ProjectControllerTest extends FunctionalTestCase
         // The list filter picks from the same pools but adds nothing, so it stays quiet.
         $crawler = $this->client->request('GET', '/projects');
         self::assertNull($crawler->filter('select[name="organizationalAnchoring[]"]')->attr('data-curated-url'));
+    }
+
+    public function testVocabularyChoicesAreListedAlphabetically(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $suffix = uniqid();
+        // Persisted with B before A, so insertion order would list them wrongly.
+        $rows = [
+            (new Area())->setName('Sort test B '.$suffix),
+            (new Area())->setName('Sort test A '.$suffix),
+            (new ProjectType())->setName('Sort test B '.$suffix),
+            (new ProjectType())->setName('Sort test A '.$suffix),
+            (new Department())->setName('Sort test B '.$suffix),
+            (new Department())->setName('Sort test A '.$suffix),
+        ];
+        foreach ($rows as $row) {
+            $em->persist($row);
+        }
+        $em->flush();
+
+        // The project form and the list filter offer the same three pools.
+        $pages = [
+            '/projects/new' => ['project[areas][]', 'project[types][]', 'project[organizationalAnchoring][]'],
+            '/projects' => ['area', 'type', 'organizationalAnchoring[]'],
+        ];
+        foreach ($pages as $url => $selects) {
+            $crawler = $this->client->request('GET', $url);
+            $this->assertResponseIsSuccessful();
+            foreach ($selects as $name) {
+                $labels = $crawler->filter(sprintf('select[name="%s"] option', $name))
+                    ->each(static fn (Crawler $option): string => $option->text());
+                $a = array_search('Sort test A '.$suffix, $labels, true);
+                $b = array_search('Sort test B '.$suffix, $labels, true);
+                self::assertNotFalse($a, $url.' '.$name);
+                self::assertNotFalse($b, $url.' '.$name);
+                self::assertLessThan($b, $a, $url.' '.$name);
+            }
+        }
+
+        $em = $this->entityManager();
+        foreach ($rows as $row) {
+            $fresh = $em->find($row::class, $row->getId());
+            if (null !== $fresh) {
+                $em->remove($fresh);
+            }
+        }
+        $em->flush();
     }
 
     private function removeProject(string $id): void

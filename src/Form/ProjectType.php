@@ -13,6 +13,9 @@ use App\Enum\Funding;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Enum\Vocabulary;
+use App\Repository\AreaRepository;
+use App\Repository\DepartmentRepository;
+use App\Repository\ProjectTypeRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -56,6 +59,7 @@ class ProjectType extends AbstractType
                 'label' => 'project.area',
                 'class' => Area::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (AreaRepository $areas) => $areas->createQueryBuilder('a')->orderBy('a.name', 'ASC'),
                 'multiple' => true,
                 'required' => false,
                 // Areas are admin-managed like departments: a searchable multiselect
@@ -73,6 +77,7 @@ class ProjectType extends AbstractType
                 'label' => 'project.types',
                 'class' => ProjectTypeEntity::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (ProjectTypeRepository $types) => $types->createQueryBuilder('t')->orderBy('t.name', 'ASC'),
                 'multiple' => true,
                 'required' => false,
                 // Admin-managed pool, so a searchable multiselect without on-the-fly
@@ -98,6 +103,7 @@ class ProjectType extends AbstractType
                 'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (DepartmentRepository $departments) => $departments->createQueryBuilder('d')->orderBy('d.name', 'ASC'),
                 'multiple' => true,
                 'required' => false,
                 // Departments are admin-managed, so the pool is fixed: a searchable
