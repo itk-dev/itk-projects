@@ -14,6 +14,7 @@ enum EndorsementAuthor: string implements TranslatableEnum
     case Magistrate = 'magistrate';
     case Committee = 'committee';
     case Department = 'department';
+    case GrantProvider = 'grant_provider';
 
     public function labelKey(): string
     {
