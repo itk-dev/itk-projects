@@ -171,8 +171,8 @@ dashboard:
 project:
     title: Title
     title_help: A short, descriptive name for the project.
-    topic: EU topic
-    topic_help: The wider programme this project is part of.
+    topic: Programme call
+    topic_help: Call/EU topic, if the project has one.
     area: Area
     area_help: Pick one or more broad thematic areas.
     description: Description
