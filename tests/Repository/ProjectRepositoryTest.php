@@ -44,7 +44,6 @@ final class ProjectRepositoryTest extends KernelTestCase
         $filter->area = $areas->findAllOrdered()[0];
         $filter->type = $types->findAllOrdered()[0];
         $filter->organizationalAnchoring->add($departments->findAllOrdered()[0]);
-        $filter->endorsement = true;
         $filter->sort = 'title';
         $filter->direction = 'ASC';
 
