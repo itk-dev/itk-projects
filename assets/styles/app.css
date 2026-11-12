@@ -1041,6 +1041,25 @@ a.recent-item:hover .recent-item__cta {
     opacity: 0;
 }
 
+/* The lock after a curated field's label: a link to the administrators who
+   maintain the pool, muted until hovered so it reads as a hint, not a button. */
+.curated-mark {
+    display: inline-flex;
+    align-items: center;
+    margin-left: var(--itk-space-1);
+    color: var(--itk-slate-400);
+}
+
+.curated-mark svg {
+    width: 0.9em;
+    height: 0.9em;
+}
+
+.curated-mark:hover,
+.curated-mark:focus-visible {
+    color: var(--itk-primary);
+}
+
 /* Always visible: a hint hidden until focus still takes up its line, which in a
    multi-column grid reads as a blank band between the label and the input. */
 .form-row .help-text,

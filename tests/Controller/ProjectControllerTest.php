@@ -786,6 +786,32 @@ final class ProjectControllerTest extends FunctionalTestCase
         $this->removeProject($id);
     }
 
+    public function testTheCuratedSelectsPointToTheAdministratorsWhenNothingMatches(): void
+    {
+        // Areas, types and departments are curated by admins; a search with no
+        // match in the pool names whom to ask (rendered by app.js from these).
+        $this->loginAsAdmin();
+        $crawler = $this->client->request('GET', '/projects/new');
+
+        $this->assertResponseIsSuccessful();
+        foreach (['areas', 'types', 'organizationalAnchoring'] as $field) {
+            $select = $crawler->filter(sprintf('select[name="project[%s][]"]', $field));
+            self::assertSame('/admin/administrators', $select->attr('data-curated-url'), $field);
+            self::assertNotSame('', (string) $select->attr('data-curated-text'), $field);
+            self::assertNotSame('', (string) $select->attr('data-curated-link'), $field);
+        }
+        // … and each label carries the lock linking to the same page, which an
+        // ordinary field does not.
+        foreach (['areas', 'types', 'organizationalAnchoring'] as $field) {
+            self::assertCount(1, $crawler->filter(sprintf('label[for="project_%s"] a.curated-mark[href="/admin/administrators"]', $field)), $field);
+        }
+        self::assertCount(0, $crawler->filter('label[for="project_title"] a.curated-mark'));
+
+        // The list filter picks from the same pools but adds nothing, so it stays quiet.
+        $crawler = $this->client->request('GET', '/projects');
+        self::assertNull($crawler->filter('select[name="organizationalAnchoring[]"]')->attr('data-curated-url'));
+    }
+
     private function removeProject(string $id): void
     {
         $this->entityManager()->clear();

@@ -89,6 +89,7 @@ nav:
     areas: Områder
     project_types: Projekttyper
     users: Brugere
+    administrators: Administratorer
     admin: Administration
     preferences: Indstillinger
     language: Sprog
@@ -127,6 +128,9 @@ common:
     optional: valgfri
 
 form:
+    curated_no_results: Ingen match. Mangler der noget på listen, så
+    curated_no_results_link: skriv til en administrator
+    curated_hint: Vedligeholdes af administratorerne – klik for at se hvem.
     choose: Vælg …
     terms:
         invalid: Ugyldige værdier.
@@ -170,7 +174,7 @@ project:
     topic: EU topic
     topic_help: Det overordnede program, projektet er en del af.
     area: Område
-    area_help: Vælg et eller flere tematiske områder.
+    area_help: Vælg et eller flere brede tematiske områder.
     description: Beskrivelse
     description_help: Hvad går det ud på? Indsæt evt. resumé/abstract.
     types: Type
@@ -363,6 +367,10 @@ role:
     admin: Administrator
 
 admin:
+    administrators:
+        title: Administratorer
+        subtitle: Administratorerne vedligeholder brugere, afdelinger, områder og projekttyper. Skriv til en af dem, hvis der mangler noget.
+        empty: Ingen administratorer endnu.
     users:
         title: Brugere
         subtitle: Administrér hvem der har adgang til platformen.

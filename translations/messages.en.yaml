@@ -89,6 +89,7 @@ nav:
     areas: Areas
     project_types: Project types
     users: Users
+    administrators: Administrators
     admin: Administration
     preferences: Preferences
     language: Language
@@ -127,6 +128,9 @@ common:
     optional: optional
 
 form:
+    curated_no_results: No match. If something is missing from the list,
+    curated_no_results_link: write to an administrator
+    curated_hint: Maintained by the administrators – click to see who.
     choose: Choose …
     terms:
         invalid: Invalid values.
@@ -170,7 +174,7 @@ project:
     topic: EU topic
     topic_help: The wider programme this project is part of.
     area: Area
-    area_help: Pick one or more thematic areas.
+    area_help: Pick one or more broad thematic areas.
     description: Description
     description_help: What is it about? Paste a summary or abstract if there is one.
     types: Type
@@ -363,6 +367,10 @@ role:
     admin: Administrator
 
 admin:
+    administrators:
+        title: Administrators
+        subtitle: The administrators maintain users, departments, areas and project types. Write to one of them if something is missing.
+        empty: No administrators yet.
     users:
         title: Users
         subtitle: Manage who can access the platform.
