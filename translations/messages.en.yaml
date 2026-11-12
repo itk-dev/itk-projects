@@ -172,7 +172,7 @@ project:
     area: Area
     area_help: Pick one or more thematic areas.
     description: Description
-    description_help: Why we are doing it, and what the project is anchored in.
+    description_help: What is it about? Paste a summary or abstract if there is one.
     types: Type
     types_help: E.g. project or operation.
     status: Status

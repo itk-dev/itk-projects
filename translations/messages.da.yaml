@@ -172,7 +172,7 @@ project:
     area: Område
     area_help: Vælg et eller flere tematiske områder.
     description: Beskrivelse
-    description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
+    description_help: Hvad går det ud på? Indsæt evt. resumé/abstract.
     types: Type
     types_help: Fx projekt eller drift.
     status: Status

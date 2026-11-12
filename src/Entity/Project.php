@@ -59,7 +59,7 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_area')]
     private Collection $areas;
 
-    /** The fuller account: why the project is done and what it is anchored in. */
+    /** What the project is about; typically the summary or abstract of the project itself. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
