@@ -76,6 +76,7 @@ final class DashboardDataTest extends KernelTestCase
 
         self::assertSame(6, $data['kpis']['total']);
         self::assertSame(5, $data['kpis']['inProgress']);
+        self::assertSame(Status::Granted->value, $data['kpis']['inProgressStatus']);
         self::assertSame(2, $data['kpis']['departments']);
         self::assertSame(2, $data['kpis']['departmentsTotal']);
         // "Shared" and "Solo" span >= 2 departments; "Third" does not count.
