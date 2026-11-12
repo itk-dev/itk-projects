@@ -202,6 +202,8 @@ project:
     time_period_end: Time period – end
     time_period_end_help: When the project is expected to end.
     time_period: Time period
+    application_deadline: Application deadline
+    application_deadline_help: Optional.
     links: Relevant links
     link_url_placeholder: https://…
     link_note_placeholder: Note – what does the link show?

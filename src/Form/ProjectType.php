@@ -188,6 +188,13 @@ class ProjectType extends AbstractType
                 'required' => false,
                 'help' => 'project.time_period_end_help',
             ])
+            ->add('applicationDeadline', DateType::class, [
+                'label' => 'project.application_deadline',
+                'widget' => 'single_text',
+                'input' => 'datetime_immutable',
+                'required' => false,
+                'help' => 'project.application_deadline_help',
+            ])
             ->add('links', CollectionType::class, [
                 'label' => 'project.links',
                 'entry_type' => ProjectLinkType::class,

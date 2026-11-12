@@ -743,6 +743,49 @@ final class ProjectControllerTest extends FunctionalTestCase
         return $errors;
     }
 
+    public function testTheApplicationDeadlineIsOptionalSavedShownAndExported(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Deadline project '.uniqid();
+
+        // A plain date input, and no completion star: the deadline is not one of
+        // the fields the completion score counts, unlike its neighbours.
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertCount(1, $crawler->filter('input[type="date"][name="project[applicationDeadline]"]'));
+        self::assertCount(1, $crawler->filter('label[for="project_timePeriodStart"] .completion-star'));
+        self::assertCount(0, $crawler->filter('label[for="project_applicationDeadline"] .completion-star'));
+
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'applicationDeadline' => '2026-03-31',
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame('2026-03-31', $project->getApplicationDeadline()?->format('Y-m-d'));
+        $id = (string) $project->getId();
+
+        $this->client->request('GET', '/projects/'.$id);
+        $page = (string) $this->client->getResponse()->getContent();
+        self::assertStringContainsString('Ansøgningsfrist', $page);
+        self::assertStringContainsString('31.03.2026', $page);
+
+        $crawler = $this->client->request('GET', '/projects/'.$id.'/edit');
+        self::assertSame('2026-03-31', $crawler->filter('input[name="project[applicationDeadline]"]')->attr('value'));
+
+        $this->client->request('GET', '/projects/export?q='.urlencode($title));
+        $csv = (string) $this->client->getInternalResponse()->getContent();
+        self::assertStringContainsString('Ansøgningsfrist', $csv);
+        self::assertStringContainsString('2026-03-31', $csv);
+
+        $this->removeProject($id);
+    }
+
     private function removeProject(string $id): void
     {
         $this->entityManager()->clear();

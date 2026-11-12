@@ -202,6 +202,8 @@ project:
     time_period_end: Tidshorisont – slut
     time_period_end_help: Hvornår projektet forventes afsluttet.
     time_period: Tidshorisont
+    application_deadline: Ansøgningsfrist
+    application_deadline_help: Valgfrit.
     links: Relevante links
     link_url_placeholder: https://…
     link_note_placeholder: Note – hvad viser linket?
