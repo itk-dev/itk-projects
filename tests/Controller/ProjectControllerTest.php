@@ -12,6 +12,7 @@ use App\Entity\ProjectType;
 use App\Enum\FundingRate;
 use App\Enum\Status;
 use App\Tests\FunctionalTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Uid\Ulid;
 
@@ -741,6 +742,123 @@ final class ProjectControllerTest extends FunctionalTestCase
         $errors = $body['errors'];
 
         return $errors;
+    }
+
+    public function testTheApplicationDeadlineIsOptionalSavedShownAndExported(): void
+    {
+        $this->loginAsAdmin();
+        $title = 'Deadline project '.uniqid();
+
+        // A plain date input, and no completion star: the deadline is not one of
+        // the fields the completion score counts, unlike its neighbours.
+        $crawler = $this->client->request('GET', '/projects/new');
+        self::assertCount(1, $crawler->filter('input[type="date"][name="project[applicationDeadline]"]'));
+        self::assertCount(1, $crawler->filter('label[for="project_timePeriodStart"] .completion-star'));
+        self::assertCount(0, $crawler->filter('label[for="project_applicationDeadline"] .completion-star'));
+
+        $token = (string) $crawler->filter('input[name="project[_token]"]')->attr('value');
+        $this->client->request('POST', '/projects/new', [
+            'project' => [
+                'title' => $title,
+                'applicationDeadline' => '2026-03-31',
+                '_token' => $token,
+            ],
+        ]);
+        $this->assertResponseRedirects();
+
+        $project = $this->projects()->findOneBy(['title' => $title]);
+        self::assertInstanceOf(Project::class, $project);
+        self::assertSame('2026-03-31', $project->getApplicationDeadline()?->format('Y-m-d'));
+        $id = (string) $project->getId();
+
+        $this->client->request('GET', '/projects/'.$id);
+        $page = (string) $this->client->getResponse()->getContent();
+        self::assertStringContainsString('Ansøgningsfrist', $page);
+        self::assertStringContainsString('31.03.2026', $page);
+
+        $crawler = $this->client->request('GET', '/projects/'.$id.'/edit');
+        self::assertSame('2026-03-31', $crawler->filter('input[name="project[applicationDeadline]"]')->attr('value'));
+
+        $this->client->request('GET', '/projects/export?q='.urlencode($title));
+        $csv = (string) $this->client->getInternalResponse()->getContent();
+        self::assertStringContainsString('Ansøgningsfrist', $csv);
+        self::assertStringContainsString('2026-03-31', $csv);
+
+        $this->removeProject($id);
+    }
+
+    public function testTheCuratedSelectsPointToTheAdministratorsWhenNothingMatches(): void
+    {
+        // Areas, types and departments are curated by admins; a search with no
+        // match in the pool names whom to ask (rendered by app.js from these).
+        $this->loginAsAdmin();
+        $crawler = $this->client->request('GET', '/projects/new');
+
+        $this->assertResponseIsSuccessful();
+        foreach (['areas', 'types', 'organizationalAnchoring'] as $field) {
+            $select = $crawler->filter(sprintf('select[name="project[%s][]"]', $field));
+            self::assertSame('/admin/administrators', $select->attr('data-curated-url'), $field);
+            self::assertNotSame('', (string) $select->attr('data-curated-text'), $field);
+            self::assertNotSame('', (string) $select->attr('data-curated-link'), $field);
+        }
+        // … and each label carries the lock linking to the same page, which an
+        // ordinary field does not.
+        foreach (['areas', 'types', 'organizationalAnchoring'] as $field) {
+            self::assertCount(1, $crawler->filter(sprintf('label[for="project_%s"] a.curated-mark[href="/admin/administrators"]', $field)), $field);
+        }
+        self::assertCount(0, $crawler->filter('label[for="project_title"] a.curated-mark'));
+
+        // The list filter picks from the same pools but adds nothing, so it stays quiet.
+        $crawler = $this->client->request('GET', '/projects');
+        self::assertNull($crawler->filter('select[name="organizationalAnchoring[]"]')->attr('data-curated-url'));
+    }
+
+    public function testVocabularyChoicesAreListedAlphabetically(): void
+    {
+        $this->loginAsAdmin();
+        $em = $this->entityManager();
+        $suffix = uniqid();
+        // Persisted with B before A, so insertion order would list them wrongly.
+        $rows = [
+            (new Area())->setName('Sort test B '.$suffix),
+            (new Area())->setName('Sort test A '.$suffix),
+            (new ProjectType())->setName('Sort test B '.$suffix),
+            (new ProjectType())->setName('Sort test A '.$suffix),
+            (new Department())->setName('Sort test B '.$suffix),
+            (new Department())->setName('Sort test A '.$suffix),
+        ];
+        foreach ($rows as $row) {
+            $em->persist($row);
+        }
+        $em->flush();
+
+        // The project form and the list filter offer the same three pools.
+        $pages = [
+            '/projects/new' => ['project[areas][]', 'project[types][]', 'project[organizationalAnchoring][]'],
+            '/projects' => ['area', 'type', 'organizationalAnchoring[]'],
+        ];
+        foreach ($pages as $url => $selects) {
+            $crawler = $this->client->request('GET', $url);
+            $this->assertResponseIsSuccessful();
+            foreach ($selects as $name) {
+                $labels = $crawler->filter(sprintf('select[name="%s"] option', $name))
+                    ->each(static fn (Crawler $option): string => $option->text());
+                $a = array_search('Sort test A '.$suffix, $labels, true);
+                $b = array_search('Sort test B '.$suffix, $labels, true);
+                self::assertNotFalse($a, $url.' '.$name);
+                self::assertNotFalse($b, $url.' '.$name);
+                self::assertLessThan($b, $a, $url.' '.$name);
+            }
+        }
+
+        $em = $this->entityManager();
+        foreach ($rows as $row) {
+            $fresh = $em->find($row::class, $row->getId());
+            if (null !== $fresh) {
+                $em->remove($fresh);
+            }
+        }
+        $em->flush();
     }
 
     private function removeProject(string $id): void

@@ -89,6 +89,7 @@ nav:
     areas: Areas
     project_types: Project types
     users: Users
+    administrators: Administrators
     admin: Administration
     preferences: Preferences
     language: Language
@@ -127,6 +128,9 @@ common:
     optional: optional
 
 form:
+    curated_no_results: No match. If something is missing from the list,
+    curated_no_results_link: write to an administrator
+    curated_hint: Maintained by the administrators – click to see who.
     choose: Choose …
     terms:
         invalid: Invalid values.
@@ -167,12 +171,12 @@ dashboard:
 project:
     title: Title
     title_help: A short, descriptive name for the project.
-    topic: EU topic
-    topic_help: The wider programme this project is part of.
+    topic: Programme call
+    topic_help: Call/EU topic, if the project has one.
     area: Area
-    area_help: Pick one or more thematic areas.
+    area_help: Pick one or more broad thematic areas.
     description: Description
-    description_help: Why we are doing it, and what the project is anchored in.
+    description_help: What is it about? Paste a summary or abstract if there is one.
     types: Type
     types_help: E.g. project or operation.
     status: Status
@@ -202,10 +206,12 @@ project:
     time_period_end: Time period – end
     time_period_end_help: When the project is expected to end.
     time_period: Time period
+    application_deadline: Application deadline
+    application_deadline_help: Optional.
     links: Relevant links
     link_url_placeholder: https://…
     link_note_placeholder: Note – what does the link show?
-    contacts: Contacts
+    contacts: ITK contacts
     partners: Partners
     partners_help: Choose an existing partner, or type a new and press Enter.
     author: Filled out by
@@ -220,10 +226,10 @@ project:
         title: Edit project
     show:
         details: Details
-        contacts: Contacts
+        contacts: ITK contacts
         partners: Partners
         classification: Classification
-        no_contacts: No contacts attached.
+        no_contacts: No ITK contacts attached.
         no_partners: No partners attached.
     empty:
         title: No projects found
@@ -361,6 +367,10 @@ role:
     admin: Administrator
 
 admin:
+    administrators:
+        title: Administrators
+        subtitle: The administrators maintain users, departments, areas and project types. Write to one of them if something is missing.
+        empty: No administrators yet.
     users:
         title: Users
         subtitle: Manage who can access the platform.
@@ -424,7 +434,7 @@ enum:
         municipal_budget: Municipal budget
         state_grant: State grant
         eu_funds: EU funds
-        foundation: Foundation
+        foundation: Private foundation
         external_partner: External partner
     funding_rate:
         "25": 25 %

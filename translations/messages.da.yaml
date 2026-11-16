@@ -89,6 +89,7 @@ nav:
     areas: Områder
     project_types: Projekttyper
     users: Brugere
+    administrators: Administratorer
     admin: Administration
     preferences: Indstillinger
     language: Sprog
@@ -127,6 +128,9 @@ common:
     optional: valgfri
 
 form:
+    curated_no_results: Ingen match. Mangler der noget på listen, så
+    curated_no_results_link: skriv til en administrator
+    curated_hint: Vedligeholdes af administratorerne – klik for at se hvem.
     choose: Vælg …
     terms:
         invalid: Ugyldige værdier.
@@ -167,12 +171,12 @@ dashboard:
 project:
     title: Titel
     title_help: Et kort, sigende navn på projektet.
-    topic: EU topic
-    topic_help: Det overordnede program, projektet er en del af.
+    topic: Programindkaldelse
+    topic_help: Indkaldelse/EU topic, hvis projektet har et.
     area: Område
-    area_help: Vælg et eller flere tematiske områder.
+    area_help: Vælg et eller flere brede tematiske områder.
     description: Beskrivelse
-    description_help: Hvorfor vi gør det, og hvad projektet har ophæng i.
+    description_help: Hvad går det ud på? Indsæt evt. resumé/abstract.
     types: Type
     types_help: Fx projekt eller drift.
     status: Status
@@ -202,10 +206,12 @@ project:
     time_period_end: Tidshorisont – slut
     time_period_end_help: Hvornår projektet forventes afsluttet.
     time_period: Tidshorisont
+    application_deadline: Ansøgningsfrist
+    application_deadline_help: Valgfrit.
     links: Relevante links
     link_url_placeholder: https://…
     link_note_placeholder: Note – hvad viser linket?
-    contacts: Kontaktpersoner
+    contacts: ITK-kontaktpersoner
     partners: Samarbejdspartnere
     partners_help: Vælg en eksisterende samarbejdspartner, eller skriv en ny og tryk Enter.
     author: Udfyldt af
@@ -220,10 +226,10 @@ project:
         title: Rediger projekt
     show:
         details: Detaljer
-        contacts: Kontaktpersoner
+        contacts: ITK-kontaktpersoner
         partners: Samarbejdspartnere
         classification: Klassificering
-        no_contacts: Ingen kontaktpersoner tilknyttet.
+        no_contacts: Ingen ITK-kontaktpersoner tilknyttet.
         no_partners: Ingen samarbejdspartnere tilknyttet.
     empty:
         title: Ingen projekter fundet
@@ -361,6 +367,10 @@ role:
     admin: Administrator
 
 admin:
+    administrators:
+        title: Administratorer
+        subtitle: Administratorerne vedligeholder brugere, afdelinger, områder og projekttyper. Skriv til en af dem, hvis der mangler noget.
+        empty: Ingen administratorer endnu.
     users:
         title: Brugere
         subtitle: Administrér hvem der har adgang til platformen.
@@ -424,7 +434,7 @@ enum:
         municipal_budget: Kommunalt budget
         state_grant: Statsligt tilskud
         eu_funds: EU-midler
-        foundation: Fond
+        foundation: Privat fond
         external_partner: Ekstern partner
     funding_rate:
         "25": 25 %

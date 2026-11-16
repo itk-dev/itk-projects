@@ -9,6 +9,9 @@ use App\Entity\Department;
 use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
+use App\Repository\AreaRepository;
+use App\Repository\DepartmentRepository;
+use App\Repository\ProjectTypeRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
@@ -45,6 +48,7 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.area',
                 'class' => Area::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (AreaRepository $areas) => $areas->createQueryBuilder('a')->orderBy('a.name', 'ASC'),
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
@@ -52,6 +56,7 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.types',
                 'class' => ProjectType::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (ProjectTypeRepository $types) => $types->createQueryBuilder('t')->orderBy('t.name', 'ASC'),
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
@@ -59,6 +64,7 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (DepartmentRepository $departments) => $departments->createQueryBuilder('d')->orderBy('d.name', 'ASC'),
                 'multiple' => true,
                 'required' => false,
                 // Same searchable chip multiselect as the project form (Tom Select,
