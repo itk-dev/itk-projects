@@ -34,8 +34,6 @@ class ProjectFilter
      */
     public Collection $organizationalAnchoring;
 
-    public ?bool $endorsement = null;
-
     public string $sort = 'createdAt';
 
     public string $direction = 'DESC';

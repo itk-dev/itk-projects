@@ -109,10 +109,6 @@ class ProjectRepository extends ServiceEntityRepository
             $qb->andWhere('('.implode(' OR ', $ors).')');
         }
 
-        if (null !== $filter->endorsement) {
-            $qb->andWhere('i.endorsement = :endorsement')->setParameter('endorsement', $filter->endorsement);
-        }
-
         $sort = \in_array($filter->sort, self::SORTABLE, true) ? $filter->sort : 'createdAt';
         $direction = 'ASC' === strtoupper($filter->direction) ? 'ASC' : 'DESC';
 
