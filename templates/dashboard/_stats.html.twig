@@ -1,4 +1,4 @@
-<twig:Kpi accent="teal" :label="'dashboard.total'|trans" :value="viz.kpis.total" live="kpi-total" :hint="'dashboard.total_hint'|trans" />
-<twig:Kpi accent="green" :label="'dashboard.in_progress'|trans" :value="viz.kpis.inProgress" live="kpi-in-progress" :hint="'dashboard.in_progress_hint'|trans" />
+<twig:Kpi accent="teal" :label="'dashboard.total'|trans" :value="viz.kpis.total" live="kpi-total" :hint="'dashboard.total_hint'|trans" :href="path('app_project_index')" />
+<twig:Kpi accent="green" :label="'dashboard.in_progress'|trans" :value="viz.kpis.inProgress" live="kpi-in-progress" :hint="'dashboard.in_progress_hint'|trans" :href="path('app_project_index', {status: viz.kpis.inProgressStatus})" />
 <twig:Kpi accent="cyan" :label="'dashboard.departments_involved'|trans" :value="viz.kpis.departments" live="kpi-departments" :hint="'dashboard.departments_involved_hint'|trans" />
 <twig:Kpi accent="amber" :label="'dashboard.collaboration_count'|trans" :value="viz.kpis.collaboration" live="kpi-collaboration" :hint="'dashboard.collaboration_count_hint'|trans" />

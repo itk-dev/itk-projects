@@ -49,6 +49,7 @@ final class ProjectTest extends TestCase
     {
         $start = new \DateTimeImmutable('2025-01-01');
         $end = new \DateTimeImmutable('2025-12-31');
+        $deadline = new \DateTimeImmutable('2024-11-15');
 
         $project = (new Project())
             ->setTitle('Grøn omstilling')
@@ -65,7 +66,8 @@ final class ProjectTest extends TestCase
             ->setFundingRate(FundingRate::ThreeQuarters)
             ->setRemainingFunding('Egenfinansiering')
             ->setTimePeriodStart($start)
-            ->setTimePeriodEnd($end);
+            ->setTimePeriodEnd($end)
+            ->setApplicationDeadline($deadline);
 
         self::assertSame('Grøn omstilling', $project->getTitle());
         self::assertSame('Digital Europe Blueprint for Data Space', $project->getTopic());
@@ -82,6 +84,7 @@ final class ProjectTest extends TestCase
         self::assertSame('Egenfinansiering', $project->getRemainingFunding());
         self::assertSame($start, $project->getTimePeriodStart());
         self::assertSame($end, $project->getTimePeriodEnd());
+        self::assertSame($deadline, $project->getApplicationDeadline());
         self::assertSame('Grøn omstilling', (string) $project);
     }
 

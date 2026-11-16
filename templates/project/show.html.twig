@@ -145,6 +145,9 @@
                             {% else %}—{% endif %}
                         </dd>
 
+                        <dt>{{ 'project.application_deadline'|trans }}</dt>
+                        <dd>{{ project.applicationDeadline ? project.applicationDeadline|date('d.m.Y') : '—' }}</dd>
+
                         <dt>{{ 'project.tags'|trans }}</dt>
                         <dd>{{ h.term_list(project.tags) }}</dd>
 

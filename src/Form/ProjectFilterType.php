@@ -9,10 +9,12 @@ use App\Entity\Department;
 use App\Entity\ProjectType;
 use App\Enum\Status;
 use App\Model\ProjectFilter;
+use App\Repository\AreaRepository;
+use App\Repository\DepartmentRepository;
+use App\Repository\ProjectTypeRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Event\PreSubmitEvent;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\SearchType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -26,8 +28,6 @@ class ProjectFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $boolChoiceValue = static fn (?bool $value): string => null === $value ? '' : ($value ? '1' : '0');
-
         $builder
             ->add('q', SearchType::class, [
                 'label' => 'filter.search',
@@ -45,6 +45,7 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.area',
                 'class' => Area::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (AreaRepository $areas) => $areas->createQueryBuilder('a')->orderBy('a.name', 'ASC'),
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
@@ -52,6 +53,7 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.types',
                 'class' => ProjectType::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (ProjectTypeRepository $types) => $types->createQueryBuilder('t')->orderBy('t.name', 'ASC'),
                 'required' => false,
                 'placeholder' => 'filter.all',
             ])
@@ -59,19 +61,13 @@ class ProjectFilterType extends AbstractType
                 'label' => 'project.organizational_anchoring',
                 'class' => Department::class,
                 'choice_label' => 'name',
+                'query_builder' => static fn (DepartmentRepository $departments) => $departments->createQueryBuilder('d')->orderBy('d.name', 'ASC'),
                 'multiple' => true,
                 'required' => false,
                 // Same searchable chip multiselect as the project form (Tom Select,
                 // see app.js); a multiple select has no placeholder option, so
                 // "All" goes on the input instead.
                 'attr' => ['data-department-select' => true, 'placeholder' => 'filter.all'],
-            ])
-            ->add('endorsement', ChoiceType::class, [
-                'label' => 'project.endorsement',
-                'required' => false,
-                'placeholder' => 'filter.all',
-                'choices' => ['filter.yes' => true, 'filter.no' => false],
-                'choice_value' => $boolChoiceValue,
             ]);
 
         // Links saved while the department filter was a single select carry one

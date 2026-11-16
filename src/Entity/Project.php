@@ -59,7 +59,7 @@ class Project extends AbstractEntity
     #[ORM\JoinTable(name: 'project_area')]
     private Collection $areas;
 
-    /** The fuller account: why the project is done and what it is anchored in. */
+    /** What the project is about; typically the summary or abstract of the project itself. */
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
@@ -154,6 +154,10 @@ class Project extends AbstractEntity
 
     #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $timePeriodEnd = null;
+
+    /** When the funding application has to be in. Optional, and not part of the completion score. */
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $applicationDeadline = null;
 
     /**
      * Relevant links, each a url with an optional note saying what it points to.
@@ -546,6 +550,18 @@ class Project extends AbstractEntity
     public function setTimePeriodEnd(?\DateTimeImmutable $timePeriodEnd): static
     {
         $this->timePeriodEnd = $timePeriodEnd;
+
+        return $this;
+    }
+
+    public function getApplicationDeadline(): ?\DateTimeImmutable
+    {
+        return $this->applicationDeadline;
+    }
+
+    public function setApplicationDeadline(?\DateTimeImmutable $applicationDeadline): static
+    {
+        $this->applicationDeadline = $applicationDeadline;
 
         return $this;
     }

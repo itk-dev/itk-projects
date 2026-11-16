@@ -9,12 +9,12 @@ use App\Tests\FunctionalTestCase;
 
 final class DepartmentControllerTest extends FunctionalTestCase
 {
-    public function testIndexIsAccessibleToEditors(): void
+    public function testIndexIsForbiddenForNonAdmins(): void
     {
         $this->loginAsEditor();
         $this->client->request('GET', '/admin/departments');
 
-        $this->assertResponseIsSuccessful();
+        $this->assertResponseStatusCodeSame(403);
     }
 
     public function testNewCreatesDepartment(): void
