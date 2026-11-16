@@ -1,7 +1,11 @@
-{% props accent, label, value, hint, live = null %}
+{% props accent, label, value, hint, live = null, href = null %}
 
-<div{{ attributes.defaults({class: 'kpi kpi--' ~ accent}) }}>
+{# A box with an href is one whole-card link to the list it summarises; the
+   others stay plain. Both share the inner markup so the live update flashes
+   the value the same way either way. #}
+{% set tag = href ? 'a' : 'div' %}
+<{{ tag }}{{ attributes.defaults({class: 'kpi kpi--' ~ accent ~ (href ? ' kpi--link' : '')}) }}{% if href %} href="{{ href }}"{% endif %}>
     <div class="kpi__label">{{ label }}</div>
     <div class="kpi__value"{% if live %} data-live-text="{{ live }}" data-count="{{ value }}"{% endif %}>{{ value }}</div>
     <div class="kpi__hint">{{ hint }}</div>
-</div>
+</{{ tag }}>

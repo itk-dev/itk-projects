@@ -3,7 +3,7 @@
 {% block title %}{{ 'dashboard.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
 
 {% block body %}
-    <div class="page" data-controller="dashboard-live dashboard-viz">
+    <div class="page" data-controller="dashboard-live dashboard-viz" data-dashboard-viz-list-url-value="{{ path('app_project_index') }}">
         <twig:Page:Header :title="'dashboard.title'|trans">
             <a href="{{ path('app_project_new') }}" class="btn btn--primary">{{ 'action.new_project'|trans }}</a>
         </twig:Page:Header>
@@ -83,7 +83,7 @@
             </div>
 
             <div class="card span-7">
-                <twig:Card:Header :title="'dashboard.budget_by_dept'|trans" :sub="'dashboard.budget_by_dept_sub'|trans" />
+                <twig:Card:Header :title="'dashboard.budget_by_status'|trans" :sub="'dashboard.budget_by_status_sub'|trans" />
                 <div class="card__body"><div class="chart-box h-300"><canvas data-dashboard-viz-target="budget"></canvas></div></div>
             </div>
         </div>
