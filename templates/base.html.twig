@@ -12,6 +12,10 @@
     {% block javascripts %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
+    {% if tidy_feedback_widget_url and tidy_feedback_api_key %}
+        <script src="{{ tidy_feedback_widget_url }}"
+                data-api-key="{{ tidy_feedback_api_key }}"></script>
+    {% endif %}
 </head>
 <body>
     {% block nav %}
