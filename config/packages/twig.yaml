@@ -3,8 +3,8 @@ twig:
   form_themes:
     - 'form/fields.html.twig'
   globals:
-      tidy_feedback_widget_url: "%env(string:TIDY_FEEDBACK_WIDGET_URL)%"
-      tidy_feedback_api_key: "%env(string:TIDY_FEEDBACK_API_KEY)%"
+    tidy_feedback_widget_url: '%env(string:TIDY_FEEDBACK_WIDGET_URL)%'
+    tidy_feedback_api_key: '%env(string:TIDY_FEEDBACK_API_KEY)%'
 
 when@test:
   twig:
