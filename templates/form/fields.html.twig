@@ -5,6 +5,13 @@
         <span class="completion-star" aria-hidden="true" title="{{ 'project.completion_field_hint'|trans }}">★</span>
     {%- endif -%}
     {{- parent() -}}
+    {#- A curated pool (areas, types, departments) is marked with a lock that
+        links to the administrators who maintain it. -#}
+    {%- if curated_url|default(false) -%}
+        <a class="curated-mark" href="{{ curated_url }}" title="{{ 'form.curated_hint'|trans }}" aria-label="{{ 'form.curated_hint'|trans }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </a>
+    {%- endif -%}
 {% endblock %}
 
 {% block form_row %}

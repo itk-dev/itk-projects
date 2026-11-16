@@ -1,0 +1,32 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}{{ 'admin.administrators.title'|trans }} · {{ 'app.name'|trans }}{% endblock %}
+
+{% block admin_content %}
+    <twig:Page:Header :title="'admin.administrators.title'|trans" :subtitle="'admin.administrators.subtitle'|trans" style="margin-bottom: var(--itk-space-5);" />
+
+    <div class="card">
+        {% if admins is empty %}
+            <twig:EmptyState :title="'admin.administrators.empty'|trans" />
+        {% else %}
+            <div class="table-wrap">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>{{ 'user.name'|trans }}</th>
+                            <th>{{ 'user.email'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for admin in admins %}
+                            <tr>
+                                <td class="cell-title">{{ admin.name }}</td>
+                                <td><a href="mailto:{{ admin.email }}">{{ admin.email }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

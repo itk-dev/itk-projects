@@ -197,6 +197,21 @@ function initPoolSelect() {
             }
             select.dataset.bound = "1";
 
+            const render = {
+                // The name gets its own element so a long one can be cut with
+                // an ellipsis (see .item__label) while the × stays visible.
+                item: (data, escape) => {
+                    const name = escape(data.text);
+                    return `<div title="${name}"><span class="item__label">${name}</span></div>`;
+                },
+            };
+            // The project form's pools are curated by administrators, so a search
+            // that matches nothing says whom to ask for the missing entry.
+            if (select.dataset.curatedUrl) {
+                render.no_results = (data, escape) =>
+                    `<div class="no-results">${escape(select.dataset.curatedText)} <a href="${escape(select.dataset.curatedUrl)}">${escape(select.dataset.curatedLink)}</a>.</div>`;
+            }
+
             new TomSelect(select, {
                 plugins: ["remove_button"],
                 hideSelected: true,
@@ -204,14 +219,7 @@ function initPoolSelect() {
                 // visible next to the chips; drop it once something is picked.
                 hidePlaceholder: true,
                 maxOptions: null,
-                render: {
-                    // The name gets its own element so a long one can be cut with
-                    // an ellipsis (see .item__label) while the × stays visible.
-                    item: (data, escape) => {
-                        const name = escape(data.text);
-                        return `<div title="${name}"><span class="item__label">${name}</span></div>`;
-                    },
-                },
+                render,
             });
         });
 }

@@ -58,4 +58,16 @@ final class UserRepositoryTest extends KernelTestCase
         $this->expectException(UnsupportedUserException::class);
         $this->repository->upgradePassword($unsupported, 'hash');
     }
+
+    public function testFindAdminsListsOnlyUsersWithTheAdminRole(): void
+    {
+        $admins = $this->repository->findAdmins();
+        $emails = array_map(static fn (User $user): ?string => $user->getEmail(), $admins);
+
+        self::assertContains('admin@example.com', $emails);
+        self::assertNotContains('editor@example.com', $emails);
+        foreach ($admins as $admin) {
+            self::assertContains('ROLE_ADMIN', $admin->getRoles());
+        }
+    }
 }

@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [PR-53](https://github.com/itk-dev/itk-projects/pull/53)
   Remove the "Er projektet godkendt" filter from the project list.
+* [PR-52](https://github.com/itk-dev/itk-projects/pull/52)
+  Align help texts with their field label
+* [PR-51](https://github.com/itk-dev/itk-projects/pull/51)
+  * Add an optional application deadline to projects.
+  * Reword the description help text, and rename "EU topic" to "Programindkaldelse".
+  * Restrict departments, areas and project types to administrators.
+  * Add an administrators page in the admin panel: the project form points to it when a curated choice is missing.
+  * List departments, areas and project types alphabetically in the project form and the list filter.
+  * Rename the funding source "Fond" to "Privat fond".
+  * Label a project's contacts "ITK-kontaktpersoner".
+* [PR-50](https://github.com/itk-dev/itk-projects/pull/50)
+  Dashboard: KPI boxes and chart statuses link to the filtered project list. Budget is charted by status.
 * [PR-48](https://github.com/itk-dev/itk-projects/pull/48)
   Remove feedback from login page.
 * [PR-47](https://github.com/itk-dev/itk-projects/pull/47)
