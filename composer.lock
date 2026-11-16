@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "663de703d03c6feead72d7e5702edfdd",
+    "content-hash": "1abfb786d9aa16b8067534f3ed014ef8",
     "packages": [
         {
             "name": "composer/semver",
@@ -1407,56 +1407,6 @@
                 "issues": "https://github.com/itk-dev/entity-bundle/issues"
             },
             "time": "2026-06-15T05:39:42+00:00"
-        },
-        {
-            "name": "itk-dev/tidy-feedback",
-            "version": "1.0.0-RC4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/itk-dev/tidy-feedback.git",
-                "reference": "254965e7b3b0f77071f6fc6beb41648d0cc4c686"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/itk-dev/tidy-feedback/zipball/254965e7b3b0f77071f6fc6beb41648d0cc4c686",
-                "reference": "254965e7b3b0f77071f6fc6beb41648d0cc4c686",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/dbal": "^3 || ^4",
-                "doctrine/orm": "^2.8 || ^3",
-                "symfony/cache": "^6 || ^7 || ^8",
-                "symfony/http-foundation": "^6 || ^7 || ^8",
-                "symfony/http-kernel": "^6 || ^7 || ^8",
-                "symfony/mime": "^6 || ^7 || ^8",
-                "symfony/routing": "^6 || ^7 || ^8",
-                "twig/twig": "^3"
-            },
-            "require-dev": {
-                "drupal/coder": "^8.3",
-                "ergebnis/composer-normalize": "^2.47",
-                "friendsofphp/php-cs-fixer": "^3.75",
-                "phpunit/phpunit": "^11",
-                "rector/rector": "^2.0",
-                "vincentlanglet/twig-cs-fixer": "^3.8"
-            },
-            "type": "drupal-module",
-            "autoload": {
-                "psr-4": {
-                    "ItkDev\\TidyFeedback\\": "src/",
-                    "ItkDev\\TidyFeedbackBundle\\": "symfony/src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Tidy feedback",
-            "support": {
-                "issues": "https://github.com/itk-dev/tidy-feedback/issues",
-                "source": "https://github.com/itk-dev/tidy-feedback/tree/1.0.0-RC4"
-            },
-            "time": "2026-10-07T14:49:25+00:00"
         },
         {
             "name": "lcobucci/jwt",

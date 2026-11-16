@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-XX-XX
 
+* [PR-55](https://github.com/itk-dev/itk-projects/pull/55)
+  Remove the feedback widget (tidy-feedback).
 * [PR-54](https://github.com/itk-dev/itk-projects/pull/54)
   Add "Bevillingsgiver" as a choice under "Hvor er det vedtaget".
 * [PR-53](https://github.com/itk-dev/itk-projects/pull/53)

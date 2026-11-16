@@ -18,5 +18,4 @@ return [
     ITKDev\EntityBundle\ITKDevEntityBundle::class => ['all' => true],
     Symfony\UX\TwigComponent\TwigComponentBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
-    ItkDev\TidyFeedbackBundle\TidyFeedbackBundle::class => ['all' => true],
 ];

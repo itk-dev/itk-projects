@@ -8,9 +8,7 @@
             <a href="{{ path('app_project_new') }}" class="btn btn--primary">{{ 'action.new_project'|trans }}</a>
         </twig:Page:Header>
 
-        {# Kept out of the feedback widget's screenshot: snapdom clones the page,
-           and a cloned stream source connects without its src and throws. #}
-        <div data-capture="exclude" hidden>{{ turbo_stream_from('activities') }}</div>
+        {{ turbo_stream_from('activities') }}
         <script type="application/json" id="dashboard-viz-data" data-dashboard-viz-target="source">{{ include('dashboard/_viz_json.html.twig') }}</script>
 
         <div id="dashboard-content">
