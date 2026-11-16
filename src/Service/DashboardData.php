@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Department;
 use App\Enum\Status;
 use App\Repository\DepartmentRepository;
 use App\Repository\ProjectRepository;
@@ -12,7 +11,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Builds the dashboard numbers (KPIs, status distribution and budget per
- * department) as one plain array, ready to be JSON encoded into the page and
+ * status) as one plain array, ready to be JSON encoded into the page and
  * re-encoded for live broadcasts. Labels are translated here so the client
  * controller stays language-agnostic; colours are a presentation concern and
  * live in the Stimulus controller instead.
@@ -31,20 +30,17 @@ final class DashboardData
      */
     public function build(): array
     {
-        // Departments are managed entities, so normalise them to the same
-        // {key, label} shape the enums get; the key is the id as a string, which is
-        // what dashboardRows() returns by joining and selecting the id.
-        $departments = array_map(
-            static fn (Department $department): array => ['key' => (string) $department->getId(), 'label' => (string) $department->getName()],
-            $this->departments->findAllOrdered(),
-        );
+        // Departments are managed entities, keyed by the id as a string, which
+        // is what dashboardRows() returns by joining and selecting the id.
+        $deptIndex = [];
+        foreach ($this->departments->findAllOrdered() as $i => $department) {
+            $deptIndex[(string) $department->getId()] = $i;
+        }
         $statuses = Status::cases();
-
-        $deptIndex = $this->indexKeys($departments);
         $statusIndex = $this->index($statuses);
 
         $statusDistribution = array_fill(0, \count($statuses), 0);
-        $budgetByDept = array_fill(0, \count($departments), 0);
+        $budgetByStatus = array_fill(0, \count($statuses), 0);
 
         /** @var array<string, array<int, true>> $deptsByArea */
         $deptsByArea = [];
@@ -75,21 +71,19 @@ final class DashboardData
                 }
             }
 
+            // A project has exactly one status, so the budget bars add up to the
+            // total budget of every project that has a status.
             if (null !== $si) {
                 ++$statusDistribution[$si];
+                $budgetByStatus[$si] += (int) ($row['budget'] ?? 0);
             }
 
-            // Every per-department aggregate counts a shared project once under
-            // each of its departments: the budget shows what each department is
-            // involved in, so the bars sum to more than the plain total. Each of
-            // the project's areas is marked as worked on in each department.
+            // Each of the project's areas is marked as worked on in each of its
+            // departments.
             foreach ($depts as $di) {
                 $deptsSeen[$di] = true;
                 foreach (array_keys($areas) as $area) {
                     $deptsByArea[$area][$di] = true;
-                }
-                if (null !== ($row['budget'] ?? null)) {
-                    $budgetByDept[$di] += (int) $row['budget'];
                 }
             }
         }
@@ -103,20 +97,22 @@ final class DashboardData
 
         // "In progress" on the dashboard means funded and running, i.e. granted;
         // applications still being written or awaiting an answer are not counted.
-        $inProgress = $statusDistribution[$statusIndex[Status::Granted->value]] ?? 0;
+        $inProgressStatus = Status::Granted;
+        $inProgress = $statusDistribution[$statusIndex[$inProgressStatus->value]] ?? 0;
 
         return [
             'kpis' => [
                 'total' => $total,
                 'inProgress' => $inProgress,
+                // The status behind the count, so the KPI can link to the list
+                // filtered the same way it counts.
+                'inProgressStatus' => $inProgressStatus->value,
                 'departments' => \count($deptsSeen),
-                'departmentsTotal' => \count($departments),
                 'collaboration' => $collaborationCount,
             ],
-            'departments' => $departments,
             'statuses' => $this->labelled($statuses),
             'statusDistribution' => $statusDistribution,
-            'budgetByDept' => $budgetByDept,
+            'budgetByStatus' => $budgetByStatus,
         ];
     }
 
@@ -140,21 +136,6 @@ final class DashboardData
         $map = [];
         foreach ($cases as $i => $case) {
             $map[$case->value] = $i;
-        }
-
-        return $map;
-    }
-
-    /**
-     * @param list<array{key: string, label: string}> $rows
-     *
-     * @return array<string, int>
-     */
-    private function indexKeys(array $rows): array
-    {
-        $map = [];
-        foreach ($rows as $i => $row) {
-            $map[$row['key']] = $i;
         }
 
         return $map;

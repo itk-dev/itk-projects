@@ -152,8 +152,8 @@ dashboard:
     collaboration_count_hint: areas across departments
     by_status: By status
     by_status_sub: All projects grouped by their current status.
-    budget_by_dept: Budget by department
-    budget_by_dept_sub: Total budget of the projects in each department.
+    budget_by_status: Budget by status
+    budget_by_status_sub: Total budget of the projects in each status.
     unfinished:
         title: Your work
         sub: Your projects and contacts that are still missing details.

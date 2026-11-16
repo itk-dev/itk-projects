@@ -152,8 +152,8 @@ dashboard:
     collaboration_count_hint: områder på tværs af afdelinger
     by_status: Fordeling på status
     by_status_sub: Alle projekter fordelt på deres aktuelle status.
-    budget_by_dept: Budget pr. afdeling
-    budget_by_dept_sub: Samlet budget for projekterne i hver afdeling.
+    budget_by_status: Budget pr. status
+    budget_by_status_sub: Samlet budget for projekterne i hver status.
     unfinished:
         title: Dit igangværende arbejde
         sub: Dine projekter og kontaktpersoner der mangler de sidste detaljer.
