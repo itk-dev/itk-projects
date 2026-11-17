@@ -75,9 +75,6 @@
     "itk-dev/entity-bundle": {
         "version": "0.1.1"
     },
-    "itk-dev/tidy-feedback": {
-        "version": "dev-feature/allow-symfony-8"
-    },
     "phpstan/phpstan": {
         "version": "2.2",
         "recipe": {
