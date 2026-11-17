@@ -287,3 +287,28 @@ document.addEventListener("turbo:before-cache", () => {
     });
     teardownPoolSelect();
 });
+
+// The feedback widget's script sits in <head>, which Turbo keeps between
+// visits, so it runs only on a full page load. It mounts two elements on
+// <body>, which Turbo swaps, so any Turbo visit would drop the widget.
+// Marking the live elements permanent and giving the incoming body matching
+// placeholders makes Turbo move the initialised elements over instead.
+const FEEDBACK_WIDGET_IDS = ["itk-feedback", "itk-feedback-region"];
+
+document.addEventListener("turbo:before-render", (event) => {
+    const { newBody } = event.detail;
+    for (const id of FEEDBACK_WIDGET_IDS) {
+        const live = document.getElementById(id);
+        if (!live) {
+            continue;
+        }
+        live.setAttribute("data-turbo-permanent", "");
+        let incoming = newBody.querySelector(`#${id}`);
+        if (!incoming) {
+            incoming = document.createElement("div");
+            incoming.id = id;
+            newBody.appendChild(incoming);
+        }
+        incoming.setAttribute("data-turbo-permanent", "");
+    }
+});
