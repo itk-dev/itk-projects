@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.4.0] - 2026-XX-XX
 
+* [PR-56](https://github.com/itk-dev/itk-projects/pull/56)
+  * Allow the feedback widget's origin in the Content-Security-Policy (script and API calls).
+  * Keep the feedback widget across Turbo Drive visits.
 * [PR-55](https://github.com/itk-dev/itk-projects/pull/55)
   Switch to the modern method for using the feedback widget (tidy-feedback).
 * [PR-54](https://github.com/itk-dev/itk-projects/pull/54)
